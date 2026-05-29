@@ -319,6 +319,9 @@ export default function SettingsPage() {
   }, [settings]);
 
   async function saveBusiness() {
+    if (!business.businessEmail) {
+      toast.warning("No business email set — client replies will go to an unmonitored address. Add your email to fix this.");
+    }
     try {
       setSavingBusiness(true);
       await updateCompany({
@@ -589,7 +592,21 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-1">
-            <FieldRow label="Business Email" placeholder="hello@yourbusiness.com" value={business.businessEmail} onChange={(v) => setBusiness((p) => ({ ...p, businessEmail: v }))} optional />
+            <div className="space-y-1">
+              <FieldRow
+                label="Business Email"
+                placeholder="hello@yourbusiness.com"
+                value={business.businessEmail}
+                onChange={(v) => setBusiness((p) => ({ ...p, businessEmail: v }))}
+                type="email"
+                hint="Clients reply to this address when they respond to your invoices"
+              />
+              {!business.businessEmail && (
+                <p className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <span>⚠</span> Add your email so client replies reach you — without it, replies go to an unmonitored address.
+                </p>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={business.showBusinessEmail}
@@ -618,19 +635,25 @@ export default function SettingsPage() {
       <Section
         icon={<Lock className="w-5 h-5 text-gray-500" />}
         title="White Label"
-        description={isPro ? "Full branding control — remove Invoiceser branding, choose invoice font, and customise emails" : "Remove Invoiceser branding and customise email templates — Pro plan"}
+        description="Full branding control — remove Invoiceser branding, choose invoice font, and customise emails"
         onSave={saveBusiness}
         saving={savingBusiness}
       >
         {!isPro ? (
-          <div className="flex items-center gap-5 p-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30">
-            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-700">
-              <Lock className="w-4 h-4 text-gray-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">White Label is a Pro feature</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Remove &quot;Powered by Invoiceser&quot;, choose your invoice font, set a custom email domain, and edit email templates.</p>
-            </div>
+          <div className="rounded-xl border border-dashed border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/10 p-5 space-y-4">
+            <ul className="space-y-2">
+              {[
+                "Remove \"Powered by Invoiceser\" from all invoices",
+                "Custom invoice fonts (Modern, Classic, Typewriter)",
+                "Custom email domain",
+                "Editable email templates",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <Lock className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                  {item}
+                </li>
+              ))}
+            </ul>
             <UpgradeButton />
           </div>
         ) : (

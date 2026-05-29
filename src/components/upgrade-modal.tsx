@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Sparkles, BarChart2, Mail, Palette, CheckCircle2 } from "lucide-react";
@@ -11,7 +9,7 @@ import { toast } from "sonner";
 const PRO_FEATURES = [
   { icon: <BarChart2 className="w-4 h-4" />, text: "Predictive analytics & revenue forecasts" },
   { icon: <Sparkles className="w-4 h-4" />, text: "Unlimited AI chat queries" },
-  { icon: <Palette className="w-4 h-4" />, text: "Full white-label control (remove branding, custom fonts, email templates)" },
+  { icon: <Palette className="w-4 h-4" />, text: "White label — remove branding, custom fonts & email templates" },
   { icon: <Mail className="w-4 h-4" />, text: "Custom email domain" },
 ];
 
@@ -22,19 +20,19 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false);
-  const upgradeToPro = useMutation(api.users.selfUpgradeToPro);
 
   async function handleUpgrade() {
     setLoading(true);
     try {
-      await upgradeToPro({});
-      toast.success("You're now on Pro!");
-      onClose();
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
+      const res = await fetch("/api/payments/initiate", { method: "POST" });
+      const json = await res.json() as { checkoutUrl?: string; error?: string };
+      if (!res.ok) throw new Error(json.error ?? "Something went wrong");
+      window.location.href = json.checkoutUrl!;
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
     }
+    // intentionally no finally — page is redirecting on success
   }
 
   return (
@@ -77,7 +75,7 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
           disabled={loading}
         >
           <Sparkles className="w-4 h-4" />
-          {loading ? "Activating…" : "Activate Pro"}
+          {loading ? "Redirecting to payment…" : "Upgrade to Pro — $12/mo"}
         </Button>
       </DialogContent>
     </Dialog>

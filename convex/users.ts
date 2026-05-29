@@ -96,6 +96,19 @@ export const selfUpgradeToPro = mutation({
   },
 });
 
+export const upgradeUserByClerkId = internalMutation({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+    if (user && user.plan !== "pro") {
+      await ctx.db.patch(user._id, { plan: "pro" });
+    }
+  },
+});
+
 export const updateUserPlan = mutation({
   args: {
     targetUserId: v.id("users"),

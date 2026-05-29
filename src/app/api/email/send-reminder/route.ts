@@ -83,10 +83,12 @@ export async function POST(req: NextRequest) {
     );
 
     const fromName = settings.companyName || "Invoiceser";
+    const replyTo = settings.businessEmail || undefined;
 
     const { error } = await resend.emails.send({
-      from: `${fromName} <invoices@resend.dev>`,
+      from: `${fromName} <onboarding@resend.dev>`,
       to: [invoice.clientSnapshot.email],
+      replyTo,
       subject: invoice.dueDate
         ? `Reminder: Invoice ${invoice.invoiceNumber} is due ${relDue}`
         : `Reminder: Invoice ${invoice.invoiceNumber} from ${fromName}`,

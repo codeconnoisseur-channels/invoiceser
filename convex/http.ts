@@ -29,4 +29,17 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/webhooks/korapay",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const signature = req.headers.get("x-korapay-signature");
+    if (!signature) return new Response("Missing signature header", { status: 400 });
+
+    const body = await req.text();
+    const result = await ctx.runAction(internal.webhooks.processKorapayWebhook, { body, signature });
+    return new Response(result.message, { status: result.status });
+  }),
+});
+
 export default http;

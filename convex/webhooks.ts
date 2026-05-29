@@ -5,6 +5,40 @@ import { internal } from "./_generated/api";
 import { Webhook } from "svix";
 import { v } from "convex/values";
 
+export const processKorapayWebhook = internalAction({
+  args: { body: v.string(), signature: v.string() },
+  handler: async (ctx, args) => {
+    const encryptionKey = process.env.KORAPAY_ENCRYPTION_KEY;
+    if (!encryptionKey) return { message: "Encryption key not configured", status: 500 };
+
+    const crypto = await import("crypto");
+    const expected = crypto
+      .createHmac("sha256", encryptionKey)
+      .update(args.body)
+      .digest("hex");
+
+    if (expected !== args.signature) {
+      return { message: "Invalid signature", status: 400 };
+    }
+
+    let event: { event: string; data?: { status?: string; metadata?: { clerk_user_id?: string } } };
+    try {
+      event = JSON.parse(args.body);
+    } catch {
+      return { message: "Invalid JSON", status: 400 };
+    }
+
+    if (event.event === "charge.success" && event.data?.status === "success") {
+      const clerkUserId = event.data?.metadata?.clerk_user_id;
+      if (clerkUserId) {
+        await ctx.runMutation(internal.users.upgradeUserByClerkId, { clerkId: clerkUserId });
+      }
+    }
+
+    return { message: "OK", status: 200 };
+  },
+});
+
 export const processClerkWebhook = internalAction({
   args: {
     body: v.string(),

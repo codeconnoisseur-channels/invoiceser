@@ -99,9 +99,12 @@ export async function POST(req: NextRequest) {
       ? [{ filename: `${invoice.invoiceNumber}.pdf`, content: pdfBuffer }]
       : [];
 
+    const replyTo = settings.businessEmail || undefined;
+
     const { error } = await resend.emails.send({
-      from: `${fromName} <invoices@resend.dev>`,
+      from: `${fromName} <onboarding@resend.dev>`,
       to: [invoice.clientSnapshot.email],
+      replyTo,
       subject: `Invoice ${invoice.invoiceNumber} from ${fromName}`,
       html,
       attachments,

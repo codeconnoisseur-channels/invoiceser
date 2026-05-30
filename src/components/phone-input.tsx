@@ -117,14 +117,8 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
                     </SelectPrimitive.ItemIndicator>
                   </span>
 
-                  {/*
-                    All dropdown-visible content is outside ItemText.
-                    ItemText is sr-only (hidden) — it holds text for keyboard
-                    type-ahead navigation only. Nothing from here will appear
-                    in the trigger, which eliminates the duplication.
-                  */}
+                  {/* Dropdown-visible: abbreviation + dial code only */}
                   <span className="flex items-center gap-2">
-                    <span className="text-base leading-none">{c.flag}</span>
                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300 w-7 shrink-0">{c.code}</span>
                     <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{c.dial}</span>
                   </span>

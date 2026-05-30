@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Bell, X, CheckCheck, Eye, AlertTriangle, DollarSign, CheckCircle2 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -12,14 +13,17 @@ import { Id } from "../../../convex/_generated/dataModel";
 type NotifType = "invoice_viewed" | "invoice_overdue" | "payment_recorded" | "invoice_paid";
 
 const TYPE_CONFIG: Record<NotifType, { icon: React.ReactNode; dot: string; label: string }> = {
-  invoice_viewed:   { icon: <Eye className="w-4 h-4 text-blue-500" />,        dot: "bg-blue-500",    label: "Invoice viewed" },
-  invoice_overdue:  { icon: <AlertTriangle className="w-4 h-4 text-rose-500" />, dot: "bg-rose-500", label: "Overdue" },
-  payment_recorded: { icon: <DollarSign className="w-4 h-4 text-emerald-500" />, dot: "bg-emerald-500", label: "Payment" },
-  invoice_paid:     { icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, dot: "bg-emerald-500", label: "Paid" },
+  invoice_viewed:   { icon: <Eye className="w-4 h-4 text-blue-500" />,          dot: "bg-blue-500",    label: "Invoice viewed" },
+  invoice_overdue:  { icon: <AlertTriangle className="w-4 h-4 text-rose-500" />, dot: "bg-rose-500",   label: "Overdue"        },
+  payment_recorded: { icon: <DollarSign className="w-4 h-4 text-emerald-500" />, dot: "bg-emerald-500", label: "Payment"       },
+  invoice_paid:     { icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, dot: "bg-emerald-500", label: "Paid"        },
 };
 
 export function NotificationBell() {
-  const [open, setOpen] = useState(false);
+  const [open,    setOpen]    = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const notifications = useQuery(api.notifications.getNotifications);
   const unreadCount   = useQuery(api.notifications.getUnreadCount);
@@ -28,38 +32,24 @@ export function NotificationBell() {
 
   const hasUnread = unreadCount != null && unreadCount > 0;
 
-  return (
+  const panel = (
     <>
-      {/* Bell trigger */}
-      <button
-        onClick={() => setOpen(true)}
-        className="relative h-8 w-8 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        aria-label="Open notifications"
-      >
-        <Bell className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-        {hasUnread && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-primary-500 text-[10px] text-white flex items-center justify-center font-bold px-1 leading-none">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-      </button>
-
-      {/* Backdrop */}
+      {/* Backdrop — click anywhere outside panel to close */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/25 dark:bg-black/50 z-[60] backdrop-blur-[2px] transition-opacity"
+          className="fixed inset-0 bg-black/25 dark:bg-black/50 z-[200] backdrop-blur-[2px]"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Panel */}
+      {/* Slide-in panel */}
       <div
         className={cn(
-          "fixed right-0 top-0 h-full w-[420px] max-w-[95vw] z-[70] flex flex-col",
+          "fixed right-0 top-0 h-full w-[420px] max-w-[95vw] z-[201] flex flex-col",
           "bg-white dark:bg-gray-950 shadow-2xl border-l border-gray-200 dark:border-gray-800",
-          "transition-transform duration-300 ease-spring",
-          open ? "translate-x-0" : "translate-x-full"
+          "transition-transform duration-300 ease-in-out",
+          open ? "translate-x-0" : "translate-x-full pointer-events-none"
         )}
         aria-label="Notifications panel"
       >
@@ -88,9 +78,13 @@ export function NotificationBell() {
                 Mark all read
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setOpen(false)}>
-              <X className="w-4 h-4" />
-            </Button>
+            <button
+              className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => setOpen(false)}
+              aria-label="Close notifications"
+            >
+              <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            </button>
           </div>
         </div>
 
@@ -111,7 +105,7 @@ export function NotificationBell() {
               {notifications.map((n) => {
                 const config = TYPE_CONFIG[n.type as NotifType] ?? {
                   icon: <Bell className="w-4 h-4 text-gray-400" />,
-                  dot: "bg-gray-400",
+                  dot:  "bg-gray-400",
                   label: "Notification",
                 };
                 return (
@@ -124,7 +118,6 @@ export function NotificationBell() {
                         : "hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
                     )}
                   >
-                    {/* Icon */}
                     <div className="relative shrink-0 mt-0.5">
                       <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
                         {config.icon}
@@ -134,7 +127,6 @@ export function NotificationBell() {
                       )}
                     </div>
 
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <p className={cn(
@@ -173,6 +165,27 @@ export function NotificationBell() {
           </p>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Bell trigger stays in place inside the sidebar */}
+      <button
+        onClick={() => setOpen(true)}
+        className="relative h-8 w-8 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        aria-label="Open notifications"
+      >
+        <Bell className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+        {hasUnread && (
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-primary-500 text-[10px] text-white flex items-center justify-center font-bold px-1 leading-none">
+            {unreadCount! > 99 ? "99+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Panel and backdrop portalled to document.body — bypasses sidebar transform stacking context */}
+      {mounted && createPortal(panel, document.body)}
     </>
   );
 }

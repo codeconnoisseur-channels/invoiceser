@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
 import {
   Users, Plus, Pencil, Trash2, Search, FileText,
   Copy, Check, Mail, Building2, User,
@@ -98,6 +99,7 @@ function contactName(c: Client) {
 }
 
 export default function ClientsPage() {
+  const router       = useRouter();
   const clients      = useQuery(api.clients.listClients);
   const createClient = useMutation(api.clients.createClient);
   const updateClient = useMutation(api.clients.updateClient);
@@ -234,17 +236,21 @@ export default function ClientsPage() {
 
             return (
               <div key={c._id} className="flex sm:grid sm:grid-cols-[auto_1fr_1fr_auto] items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors group">
-                {/* Avatar */}
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2 ${avatarColor(primary)}`}>
+                {/* Avatar — click to see this client's invoices */}
+                <button
+                  onClick={() => router.push(`/invoices?clientId=${c._id}`)}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2 cursor-pointer hover:opacity-80 transition-opacity ${avatarColor(primary)}`}
+                  title="View invoices"
+                >
                   {business
                     ? <Building2 className="w-4 h-4" />
                     : <span className="text-sm font-extrabold">{avatarLetter}</span>
                   }
-                </div>
+                </button>
 
-                {/* Primary name */}
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{primary}</p>
+                {/* Primary name — click to see this client's invoices */}
+                <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="min-w-0 text-left cursor-pointer group/name">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">{primary}</p>
                   {contact && (
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{contact}</p>
                   )}
@@ -253,21 +259,21 @@ export default function ClientsPage() {
                       <MapPin className="w-3 h-3 shrink-0" />{c.address}
                     </p>
                   )}
+                  {c.website && (
+                    <span className="flex items-center gap-1 text-xs text-blue-500 truncate mt-0.5">
+                      <Globe className="w-3 h-3 shrink-0" />{c.website.replace("https://", "")}
+                    </span>
+                  )}
+                </button>
+
+                {/* Email + Phone — hidden on smallest screens, shown on sm+ */}
+                <div className="hidden sm:block min-w-0 space-y-1">
+                  <CopyEmail email={c.email} />
                   {c.phone && (
-                    <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
+                    <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 truncate">
                       <Phone className="w-3 h-3 shrink-0" />{c.phone}
                     </p>
                   )}
-                  {c.website && (
-                    <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 truncate mt-0.5" onClick={(e) => e.stopPropagation()}>
-                      <Globe className="w-3 h-3 shrink-0" />{c.website.replace("https://", "")}
-                    </a>
-                  )}
-                </div>
-
-                {/* Email — hidden on smallest screens, shown on sm+ */}
-                <div className="hidden sm:block min-w-0">
-                  <CopyEmail email={c.email} />
                 </div>
 
                 {/* Actions */}
@@ -309,11 +315,11 @@ export default function ClientsPage() {
 
       {/* Create / Edit dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] grid-rows-[auto_1fr_auto] overflow-hidden">
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit Client" : "Add Client"}</DialogTitle>
           </DialogHeader>
-          <div className="px-6 py-4 space-y-4">
+          <div className="overflow-y-auto px-6 py-4 space-y-4">
 
             {/* Type toggle */}
             <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 p-0.5 gap-0.5">

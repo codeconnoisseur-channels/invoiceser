@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { FilePlus, FileText, Search } from "lucide-react";
+import { FilePlus, FileText, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InvoiceStatusBadge } from "@/components/invoices/status-badge";
@@ -28,12 +29,24 @@ const STATUS_DOT: Record<string, string> = {
 };
 
 export default function InvoicesPage() {
+  return (
+    <Suspense>
+      <InvoicesContent />
+    </Suspense>
+  );
+}
+
+function InvoicesContent() {
+  const searchParams   = useSearchParams();
+  const clientIdFilter = searchParams.get("clientId");
+
   const [search,       setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState<"draft" | "sent" | "paid" | "overdue" | undefined>(undefined);
 
   const invoices = useQuery(api.invoices.listInvoices, { status: statusFilter });
 
   const filtered = invoices?.filter((inv) => {
+    if (clientIdFilter && (inv.clientId as string | undefined) !== clientIdFilter) return false;
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -42,6 +55,10 @@ export default function InvoicesPage() {
       (inv.clientSnapshot.companyName ?? "").toLowerCase().includes(q)
     );
   });
+
+  const clientName = clientIdFilter
+    ? (filtered?.[0]?.clientSnapshot.fullName ?? filtered?.[0]?.clientSnapshot.companyName)
+    : null;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -56,6 +73,15 @@ export default function InvoicesPage() {
           <Link href="/invoices/new"><FilePlus className="w-4 h-4" />New Invoice</Link>
         </Button>
       </div>
+
+      {clientIdFilter && (
+        <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-300 w-fit">
+          <span>Showing invoices{clientName ? ` for ${clientName}` : " for selected client"}</span>
+          <Link href="/invoices" className="ml-1 hover:text-blue-900 dark:hover:text-blue-100">
+            <X className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
         {/* Toolbar */}

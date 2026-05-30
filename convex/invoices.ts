@@ -422,21 +422,29 @@ export const getDashboardStats = query({
   args: {},
   handler: async (ctx) => {
     const user = await getCurrentUserOrNull(ctx);
-    if (!user) return { totalCount: 0, totalPending: 0, totalPaid: 0, overdueCount: 0, defaultCurrency: "free" };
+    if (!user) return { totalCount: 0, totalPending: 0, totalPaid: 0, overdueCount: 0, pendingCount: 0 };
 
     const byStatus = (status: "sent" | "paid" | "overdue") =>
       ctx.db.query("invoices")
         .withIndex("by_user_status", (q) => q.eq("userId", user._id).eq("status", status))
         .collect();
 
-    const [sent, paid, overdue] = await Promise.all([byStatus("sent"), byStatus("paid"), byStatus("overdue")]);
+    const [sent, paid, overdue, allPayments] = await Promise.all([
+      byStatus("sent"), byStatus("paid"), byStatus("overdue"),
+      ctx.db.query("payments").withIndex("by_user", (q) => q.eq("userId", user._id)).collect(),
+    ]);
 
     const pending = [...sent, ...overdue];
+    const pendingIds = new Set(pending.map((i) => i._id));
+    const partialTotal = allPayments
+      .filter((p) => pendingIds.has(p.invoiceId))
+      .reduce((s, p) => s + p.amount, 0);
+
     return {
       totalCount:   sent.length + paid.length + overdue.length,
-      totalPending: pending.reduce((s, i) => s + i.total, 0),
+      totalPending: pending.reduce((s, i) => s + i.total, 0) - partialTotal,
       pendingCount: pending.length,
-      totalPaid:    paid.reduce((s, i) => s + i.total, 0),
+      totalPaid:    paid.reduce((s, i) => s + i.total, 0) + partialTotal,
       overdueCount: overdue.length,
     };
   },
@@ -494,16 +502,31 @@ export const getWalletSummary = query({
         .withIndex("by_user_status", (q) => q.eq("userId", user._id).eq("status", status))
         .collect();
 
-    const [paid, sent, overdue] = await Promise.all([byStatus("paid"), byStatus("sent"), byStatus("overdue")]);
+    const [paid, sent, overdue, allPayments] = await Promise.all([
+      byStatus("paid"), byStatus("sent"), byStatus("overdue"),
+      ctx.db.query("payments").withIndex("by_user", (q) => q.eq("userId", user._id)).collect(),
+    ]);
+
+    const pendingInvoices = [...sent, ...overdue];
+    const pendingIds = new Set(pendingInvoices.map((i) => i._id));
+
+    const paymentsByInvoice: Record<string, number> = {};
+    for (const p of allPayments) {
+      if (pendingIds.has(p.invoiceId)) {
+        paymentsByInvoice[p.invoiceId] = (paymentsByInvoice[p.invoiceId] ?? 0) + p.amount;
+      }
+    }
 
     const byCurrency: Record<string, { collected: number; pending: number; pendingCount: number }> = {};
     for (const inv of paid) {
       if (!byCurrency[inv.currency]) byCurrency[inv.currency] = { collected: 0, pending: 0, pendingCount: 0 };
       byCurrency[inv.currency].collected += inv.total;
     }
-    for (const inv of [...sent, ...overdue]) {
+    for (const inv of pendingInvoices) {
       if (!byCurrency[inv.currency]) byCurrency[inv.currency] = { collected: 0, pending: 0, pendingCount: 0 };
-      byCurrency[inv.currency].pending += inv.total;
+      const partialPaid = paymentsByInvoice[inv._id] ?? 0;
+      byCurrency[inv.currency].collected += partialPaid;
+      byCurrency[inv.currency].pending += inv.total - partialPaid;
       byCurrency[inv.currency].pendingCount++;
     }
 

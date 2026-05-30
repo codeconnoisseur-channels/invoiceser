@@ -66,12 +66,16 @@ export default function InvoiceDetailPage() {
     try {
       setLoading(true);
       if (invoice!.status === "draft") await markSent({ invoiceId });
-      await fetch("/api/email/send-invoice", {
+      const res = await fetch("/api/email/send-invoice", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invoiceId }),
       });
+      if (!res.ok) {
+        const data = await res.json() as { error?: string };
+        throw new Error(data.error ?? "Failed to send invoice");
+      }
       toast.success("Invoice sent!");
-    } catch { toast.error("Failed to send invoice"); }
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Failed to send invoice"); }
     finally { setLoading(false); }
   }
 

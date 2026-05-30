@@ -35,11 +35,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Simple rate-limit: prevent the same invoice being re-emailed within 60 seconds
-    if (invoice.sentAt && Date.now() - invoice.sentAt < 60_000) {
-      return NextResponse.json({ error: "Invoice was sent too recently, please wait a moment" }, { status: 429 });
-    }
-
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     const publicUrl = `${appUrl}/invoice/${invoice.publicToken}`;
 

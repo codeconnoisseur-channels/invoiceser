@@ -30,7 +30,22 @@ export async function POST(req: NextRequest) {
     const currency = process.env.KORAPAY_CURRENCY ?? "USD";
 
     const customerName =
-      settings?.displayName ?? settings?.companyName ?? user.name ?? user.email;
+      settings?.displayName ?? settings?.companyName ?? user.name ?? user.email ?? "Customer";
+
+    const requestBody: Record<string, unknown> = {
+      reference,
+      amount,
+      currency,
+      customer: { email: user.email, name: customerName },
+      redirect_url: `${appUrl}/upgrade/success`,
+      metadata: { clerk_user_id: userId, plan: "pro" },
+    };
+
+    if (convexSiteUrl) {
+      requestBody.notification_url = `${convexSiteUrl}/webhooks/korapay`;
+    } else {
+      console.warn("NEXT_PUBLIC_CONVEX_SITE_URL not set — KoraPay webhook will not fire");
+    }
 
     const res = await fetch("https://api.korapay.com/merchant/api/v1/charges/initialize", {
       method: "POST",
@@ -38,21 +53,13 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`,
       },
-      body: JSON.stringify({
-        reference,
-        amount,
-        currency,
-        customer: { email: user.email, name: customerName },
-        redirect_url: `${appUrl}/upgrade/success`,
-        notification_url: `${convexSiteUrl}/webhooks/korapay`,
-        metadata: { clerk_user_id: userId, plan: "pro" },
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const json = await res.json() as { status: boolean; message?: string; data?: { checkout_url?: string } };
 
     if (!json.status || !json.data?.checkout_url) {
-      console.error("KoraPay initiate error:", json);
+      console.error("KoraPay initiate error — full response:", JSON.stringify(json));
       return NextResponse.json({ error: json.message ?? "Failed to create checkout" }, { status: 502 });
     }
 

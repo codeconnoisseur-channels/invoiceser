@@ -78,10 +78,11 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
           compose(code, number);
         }}
       >
-        <SelectTrigger className="w-28 shrink-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm">
+        <SelectTrigger className="w-36 shrink-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm">
           <span className="flex items-center gap-1.5 truncate">
             <span>{current?.flag}</span>
-            <span className="font-mono text-xs">{current?.dial}</span>
+            <span className="text-xs font-bold">{current?.code}</span>
+            <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{current?.dial}</span>
           </span>
         </SelectTrigger>
         <SelectContent className="max-h-64">
@@ -89,8 +90,8 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
             <SelectItem key={c.code} value={c.code}>
               <span className="flex items-center gap-2">
                 <span>{c.flag}</span>
-                <span className="font-mono text-xs">{c.dial}</span>
-                <span className="text-gray-500 dark:text-gray-400">{c.name}</span>
+                <span className="text-xs font-bold w-8 shrink-0">{c.code}</span>
+                <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-12 shrink-0">{c.dial}</span>
               </span>
             </SelectItem>
           ))}

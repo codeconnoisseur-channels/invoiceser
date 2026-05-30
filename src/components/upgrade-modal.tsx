@@ -66,7 +66,7 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
           <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
-              Everything in Free, plus all Pro features — forever.
+              Everything in Free, plus all Pro features, billed monthly.
             </p>
           </div>
 

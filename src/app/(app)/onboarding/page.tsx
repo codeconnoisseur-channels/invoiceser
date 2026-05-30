@@ -136,7 +136,7 @@ export default function OnboardingPage() {
             </div>
             <div className="space-y-5">
               <div>
-                <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Company or Trading Name *</Label>
+                <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Business Name *</Label>
                 <Input className="mt-1.5 h-11 text-base" placeholder="" value={companyName} onChange={(e) => setCompanyName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleStep1()} autoFocus />
               </div>
               <div>
@@ -270,9 +270,11 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-6">
-          {step <= 2 ? "Your details are private and only shown on your invoices." : "You can change everything later in Settings."}
-        </p>
+        {step < 4 && (
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-6">
+            You can change everything later in Settings.
+          </p>
+        )}
       </div>
     </div>
   );

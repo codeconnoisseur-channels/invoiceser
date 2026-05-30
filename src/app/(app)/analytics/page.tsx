@@ -319,7 +319,7 @@ export default function AnalyticsPage() {
       </Card>
 
       {/* ── Predictive Insights (Pro) ── */}
-      {isPro ? (
+      {currentUser === undefined ? null : isPro ? (
         <PredictiveInsights allInvoices={allInvoices ?? []} currency={currency} />
       ) : (
         <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-6 flex items-center gap-5">

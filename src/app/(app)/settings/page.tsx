@@ -665,7 +665,7 @@ export default function SettingsPage() {
         onSave={saveBusiness}
         saving={savingBusiness}
       >
-        {!isPro ? (
+        {currentUser === undefined ? null : !isPro ? (
           <div className="rounded-xl border border-dashed border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/10 p-5 space-y-4">
             <ul className="space-y-2">
               {[
@@ -731,7 +731,6 @@ export default function SettingsPage() {
                 value={business.customEmailDomain}
                 onChange={(e) => setBusiness((p) => ({ ...p, customEmailDomain: e.target.value }))}
               />
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Requires domain verification via Resend</p>
             </div>
 
             {/* Email template */}
@@ -744,7 +743,6 @@ export default function SettingsPage() {
                 value={business.emailTemplate}
                 onChange={(e) => setBusiness((p) => ({ ...p, emailTemplate: e.target.value }))}
               />
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Use &#123;client_name&#125;, &#123;invoice_number&#125;, &#123;total&#125; as placeholders</p>
             </div>
           </div>
         )}

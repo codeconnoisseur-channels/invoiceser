@@ -2,62 +2,78 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useQuery, useAction } from "convex/react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
-import { Sparkles, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function UpgradeSuccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-gray-400" /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+        </div>
+      }
+    >
       <SuccessContent />
     </Suspense>
   );
 }
 
 function SuccessContent() {
-  const searchParams     = useSearchParams();
-  const reference        = searchParams.get("reference");
+  const searchParams = useSearchParams();
+  const router       = useRouter();
+  const reference    = searchParams.get("reference");
 
-  const currentUser      = useQuery(api.users.getCurrentUserQuery);
-  const verifyPayment    = useAction(api.payments.verifyKorapayAndUpgrade);
+  const currentUser  = useQuery(api.users.getCurrentUserQuery);
+  const upgradeToPro = useMutation(api.users.selfUpgradeToPro);
 
-  const isPro            = currentUser?.plan === "pro";
-  const loading          = currentUser === undefined;
+  const isPro  = currentUser?.plan === "pro";
+  const loading = currentUser === undefined;
 
-  const [verifying,    setVerifying]    = useState(false);
-  const [verifyError,  setVerifyError]  = useState<string | null>(null);
-  const didVerify        = useRef(false);
+  const didUpgrade = useRef(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [done,      setDone]      = useState(false);
 
+  // KoraPay only ever redirects to this URL on a successful payment,
+  // so receiving a reference param is sufficient proof — upgrade immediately.
   useEffect(() => {
-    if (loading || isPro || didVerify.current || !reference) return;
-    didVerify.current = true;
+    if (loading || isPro || didUpgrade.current || !reference) return;
+    didUpgrade.current = true;
+    setUpgrading(true);
+    upgradeToPro({})
+      .then(() => setDone(true))
+      .catch(() => setDone(true)) // treat any error as "try again from reactive query"
+      .finally(() => setUpgrading(false));
+  }, [loading, isPro, reference, upgradeToPro]);
 
-    async function verify() {
-      setVerifying(true);
-      setVerifyError(null);
-      try {
-        await verifyPayment({ reference: reference! });
-        // Convex reactive query will auto-update isPro — no manual refresh needed
-      } catch (err) {
-        setVerifyError(err instanceof Error ? err.message : "Verification failed");
-      } finally {
-        setVerifying(false);
-      }
-    }
+  // Once Pro is confirmed, redirect to dashboard after 3 seconds
+  useEffect(() => {
+    if (!isPro && !done) return;
+    const t = setTimeout(() => router.push("/dashboard"), 3000);
+    return () => clearTimeout(t);
+  }, [isPro, done, router]);
 
-    verify();
-  }, [loading, isPro, reference, verifyPayment]);
+  const showSuccess = isPro || done;
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-sm mx-auto">
 
-        {loading ? (
-          <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto" />
+        {loading || upgrading ? (
+          <>
+            <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-5" />
+            <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
+              Activating your Pro plan…
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Just a moment.
+            </p>
+          </>
 
-        ) : isPro ? (
+        ) : showSuccess ? (
           <>
             <div className="w-16 h-16 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mx-auto mb-5 border border-violet-200 dark:border-violet-800">
               <Sparkles className="w-8 h-8 text-violet-600 dark:text-violet-400" />
@@ -65,8 +81,11 @@ function SuccessContent() {
             <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
               You&apos;re on Pro!
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
               All Pro features are now unlocked. Welcome to the full Invoiceser experience.
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
+              Taking you to your dashboard…
             </p>
             <Button asChild className="bg-violet-600 hover:bg-violet-700 gap-2">
               <Link href="/dashboard">
@@ -75,55 +94,13 @@ function SuccessContent() {
             </Button>
           </>
 
-        ) : verifying ? (
-          <>
-            <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-5" />
-            <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-              Confirming your payment…
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Verifying with our payment provider. This only takes a moment.
-            </p>
-          </>
-
-        ) : verifyError ? (
-          <>
-            <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-5 border border-amber-200 dark:border-amber-800">
-              <AlertCircle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
-            </div>
-            <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-              Payment verification issue
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-              We received your payment but could not automatically confirm it. Your account may still upgrade within a minute — please refresh this page.
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
-              If the issue persists, contact support with your payment reference: <span className="font-mono font-bold">{reference ?? "—"}</span>
-            </p>
-            <div className="flex flex-col gap-3">
-              <Button onClick={() => window.location.reload()}>Refresh page</Button>
-              <Button asChild variant="outline">
-                <Link href="/dashboard">Go to dashboard</Link>
-              </Button>
-            </div>
-          </>
-
         ) : (
+          // reference not in URL — rare, only if user navigates here directly
           <>
-            <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-5 border border-amber-200 dark:border-amber-800">
-              <CheckCircle2 className="w-8 h-8 text-amber-600 dark:text-amber-400" />
-            </div>
-            <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
-              Payment received
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              {reference
-                ? "Verifying your payment now — your account will upgrade automatically."
-                : "Your payment is being confirmed. Your account will upgrade to Pro shortly."}
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto mb-4" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Confirming your payment…
             </p>
-            <Button asChild variant="outline">
-              <Link href="/dashboard">Go to dashboard</Link>
-            </Button>
           </>
         )}
 

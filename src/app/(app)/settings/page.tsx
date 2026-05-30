@@ -448,7 +448,7 @@ export default function SettingsPage() {
 
   const hasDefaultPayment = payment.bankName || payment.accountNumber || payment.paymentLink;
 
-  if (!settings) {
+  if (settings === undefined) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-72 w-full rounded-2xl" />)}

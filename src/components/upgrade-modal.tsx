@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, BarChart2, Mail, Palette, CheckCircle2 } from "lucide-react";
+import { Sparkles, BarChart2, Palette, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 const PRO_FEATURES = [
   { icon: <BarChart2 className="w-4 h-4" />, text: "Predictive analytics & revenue forecasts" },
   { icon: <Sparkles className="w-4 h-4" />, text: "Unlimited AI chat queries" },
-  { icon: <Palette className="w-4 h-4" />, text: "White label — remove branding, custom fonts & email templates" },
-  { icon: <Mail className="w-4 h-4" />, text: "Custom email domain" },
+  { icon: <Palette className="w-4 h-4" />, text: "Custom branding — your own fonts, invoice style, and email domain. No Invoiceser mention anywhere." },
 ];
 
 interface UpgradeModalProps {

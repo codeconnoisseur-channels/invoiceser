@@ -658,10 +658,10 @@ export default function SettingsPage() {
         </div>
       </Section>
 
-      {/* White Label — Pro */}
+      {/* Custom Branding — Pro */}
       <Section
         icon={<Lock className="w-5 h-5 text-gray-500" />}
-        title="White Label"
+        title="Custom Branding"
         onSave={saveBusiness}
         saving={savingBusiness}
       >
@@ -669,9 +669,9 @@ export default function SettingsPage() {
           <div className="rounded-xl border border-dashed border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/10 p-5 space-y-4">
             <ul className="space-y-2">
               {[
-                "Remove \"Powered by Invoiceser\" from all invoices",
+                "Your brand only — no Invoiceser mention on invoices or emails",
                 "Custom invoice fonts (Modern, Classic, Typewriter)",
-                "Custom email domain",
+                "Send emails from your own domain",
                 "Editable email templates",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -684,11 +684,11 @@ export default function SettingsPage() {
           </div>
         ) : (
           <div className="space-y-5">
-            {/* Remove branding toggle */}
+            {/* Branding toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Remove &quot;Powered by Invoiceser&quot;</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Hides the footer branding on all invoices and PDFs</p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Your brand only</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No Invoiceser mention appears on your invoices or PDFs</p>
               </div>
               <Switch
                 checked={business.hideBranding}

@@ -6,14 +6,18 @@ AI-powered invoicing for freelancers and small businesses. Create professional i
 
 ## Features
 
-- **Invoicing** — Create, send, and manage invoices with a live preview. Draft and published states, PDF generation, and shareable public links.
+- **Live invoice preview** — See exactly how your invoice looks as you build it. No guessing, no back-and-forth.
+- **Invoicing** — Create, send, and manage invoices with draft and published states, PDF generation, and shareable public links.
 - **Client management** — Store clients (individual or business), with contact details, phone, address, and website. Click any client to see all their invoices.
 - **Payment tracking** — Record full or partial payments. Dashboard stats and wallet summary update in real time to reflect collected vs outstanding amounts.
-- **Email delivery** — Send invoices and payment reminders via Resend with a PDF attachment. Custom reply-to and branding support.
-- **AI assistant** — Chat with your invoice data powered by Groq (Llama 3). Get revenue insights, overdue summaries, and business advice.
+- **Automatic email reminders** — Invoiceser emails your clients on your schedule — before and after the due date — so you never have to chase a payment manually.
+- **Email delivery** — Send invoices via Resend with a PDF attached. Custom reply-to uses your business email from settings.
+- **Real-time notifications** — Get notified the moment a client views your invoice, when a payment is recorded, or when an invoice goes overdue. Powered by Convex's real-time subscriptions.
+- **AI assistant** — Chat with your invoice data powered by Groq (Llama 3). Ask things like "Who owes me the most?" or "What was my best month?" and get instant answers.
 - **Analytics** — Revenue charts and breakdowns across time ranges (30d / 90d / 365d / all time).
 - **Multi-currency** — Set a default currency per account. Earnings wallet shows actual collected amounts per currency with no forced conversion.
-- **Pro plan** — Upgrade via KoraPay to unlock unlimited AI queries, white-label branding, custom email domains, and predictive analytics.
+- **Custom branding (Pro)** — Your own fonts, invoice style, and email domain. No Invoiceser mention anywhere on your invoices or emails.
+- **Pro plan** — Upgrade via KoraPay to unlock unlimited AI queries, custom branding, and predictive analytics.
 - **Dark mode** — Full light/dark theme support.
 - **Admin panel** — Internal dashboard for managing users, announcements, support tickets, and audit logs.
 
@@ -32,7 +36,7 @@ AI-powered invoicing for freelancers and small businesses. Create professional i
 | PDF | `@react-pdf/renderer` |
 | UI | Tailwind CSS + shadcn/ui + Radix UI |
 | Charts | Recharts |
-| Notifications | Sonner (toast) |
+| Notifications | Sonner (toast) + Convex real-time |
 
 ---
 
@@ -129,14 +133,14 @@ invoiceser/
 │   ├── schema.ts            # Database schema
 │   ├── invoices.ts          # Invoice queries & mutations
 │   ├── clients.ts           # Client CRUD
-│   ├── payments.ts          # Payment recording
+│   ├── payments.ts          # Payment recording & KoraPay verification
 │   ├── settings.ts          # User settings
 │   ├── users.ts             # User management & plan upgrades
 │   ├── webhooks.ts          # KoraPay + Clerk webhook handlers
 │   ├── http.ts              # HTTP routes (/webhooks/...)
 │   ├── ai.ts                # AI insights & chat
-│   ├── notifications.ts     # In-app notifications
-│   ├── reminders.ts         # Auto payment reminders
+│   ├── notifications.ts     # Real-time in-app notifications
+│   ├── reminders.ts         # Automatic payment reminder emails
 │   └── crons.ts             # Scheduled jobs (overdue detection, reminders)
 │
 ├── src/
@@ -147,7 +151,7 @@ invoiceser/
 │   │   │   ├── clients/     # Client management
 │   │   │   ├── analytics/   # Revenue analytics
 │   │   │   ├── ai/          # AI assistant
-│   │   │   ├── settings/    # Account & business settings
+│   │   │   ├── settings/    # Account, branding & payment settings
 │   │   │   ├── onboarding/  # New user onboarding wizard
 │   │   │   ├── upgrade/     # Pro upgrade & success page
 │   │   │   └── support/     # Support tickets
@@ -163,11 +167,11 @@ invoiceser/
 │   │
 │   ├── components/
 │   │   ├── ui/              # shadcn/ui primitives
-│   │   ├── invoices/        # Invoice preview, status badge, form
+│   │   ├── invoices/        # Live invoice preview, status badge, form
 │   │   ├── dashboard/       # Onboarding checklist
 │   │   ├── layout/          # Sidebar, app shell, theme toggle
-│   │   ├── notifications/   # Notification bell
-│   │   ├── phone-input.tsx  # Country flag + dial code input
+│   │   ├── notifications/   # Real-time notification bell
+│   │   ├── phone-input.tsx  # Country selector + dial code input
 │   │   └── upgrade-modal.tsx
 │   │
 │   ├── emails/              # React Email templates
@@ -193,17 +197,25 @@ Draft → Sent → (Overdue) → Paid
 
 Invoices move to **Overdue** automatically via a Convex cron job that runs daily. Payments can be recorded in full or as partial amounts — partial payments update the dashboard stats immediately.
 
+### Real-time notifications
+
+When a client opens their invoice link, a notification appears in the app in real time — no refresh needed. Notifications are also triggered when a payment is recorded and when an invoice becomes overdue. All powered by Convex's live query subscriptions.
+
+### Automatic reminders
+
+A cron job checks daily for invoices approaching or past their due date. If automatic reminders are enabled in settings, Resend sends a reminder email to the client — on the schedule the user configures (e.g. 3 days before and 3 days after the due date).
+
 ### Payment / Pro upgrade flow
 
 1. User clicks "Upgrade to Pro" → `/api/payments/initiate` creates a KoraPay checkout session
 2. User completes payment on KoraPay's hosted page
-3. KoraPay redirects to `/upgrade/success`
-4. KoraPay sends a webhook to `{CONVEX_SITE_URL}/webhooks/korapay`
-5. Convex verifies the HMAC signature and upgrades the user's plan to `pro`
+3. KoraPay redirects to `/upgrade/success` with a `?reference=` param
+4. The success page calls the `verifyKorapayAndUpgrade` Convex action, which confirms the payment directly with KoraPay's API and upgrades the user's plan
+5. KoraPay also sends a webhook to `{CONVEX_SITE_URL}/webhooks/korapay` as a secondary confirmation path
 
 ### Email delivery
 
-Invoices are sent via Resend from `onboarding@resend.dev` with the business name as the sender display name. A PDF is generated and attached automatically. Custom reply-to uses the business email from settings.
+Invoices are sent via Resend from `onboarding@resend.dev` (or your custom domain on Pro) with the business name as the sender display name. A PDF is generated and attached automatically. Custom reply-to uses the business email from settings.
 
 ---
 
@@ -231,8 +243,11 @@ In production:
 |---|---|---|
 | Invoices | Unlimited | Unlimited |
 | Clients | Unlimited | Unlimited |
-| AI queries / month | 5 | Unlimited |
+| Live invoice preview | ✓ | ✓ |
+| PDF download & email delivery | ✓ | ✓ |
+| Automatic payment reminders | ✓ | ✓ |
+| Real-time notifications | ✓ | ✓ |
+| AI queries / month | 10 | Unlimited |
 | Analytics | Basic | Predictive |
-| White label branding | — | ✓ |
-| Custom email domain | — | ✓ |
-| Custom fonts & email templates | — | ✓ |
+| Custom branding (fonts, invoice style, email domain) | — | ✓ |
+| Your brand only — no Invoiceser mention | — | ✓ |

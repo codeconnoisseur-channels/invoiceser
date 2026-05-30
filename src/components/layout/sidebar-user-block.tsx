@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { UserButton, useUser, SignOutButton } from "@clerk/nextjs";
 import { Badge } from "@/components/ui/badge";
 import { NotificationBell } from "@/components/notifications/notification-bell";
@@ -14,8 +14,15 @@ export function SidebarUserBlock() {
   const { user } = useUser();
   const currentUser = useQuery(api.users.getCurrentUserQuery);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const isPro = currentUser?.plan === "pro";
-  const showUpgrade = currentUser?.plan === "free";
+
+  // Persist last known plan so any brief undefined state during navigation
+  // never flashes the badge or upgrade button back to the "Free" fallback.
+  const lastKnownPlan = useRef<"free" | "pro" | undefined>(undefined);
+  if (currentUser?.plan !== undefined) lastKnownPlan.current = currentUser.plan;
+  const plan = lastKnownPlan.current;
+
+  const isPro = plan === "pro";
+  const showUpgrade = plan === "free";
 
   return (
     <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800 space-y-3">
@@ -51,9 +58,11 @@ export function SidebarUserBlock() {
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
             {user?.firstName ?? user?.emailAddresses[0]?.emailAddress}
           </p>
-          <Badge variant={currentUser?.plan ?? "free"} className="mt-0.5">
-            {currentUser?.plan === "pro" ? "Pro" : "Free"}
-          </Badge>
+          {plan && (
+            <Badge variant={plan} className="mt-0.5">
+              {plan === "pro" ? "Pro" : "Free"}
+            </Badge>
+          )}
         </div>
         <SignOutButton>
           <button

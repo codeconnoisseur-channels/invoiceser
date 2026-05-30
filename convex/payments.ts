@@ -1,4 +1,5 @@
-import { mutation, query } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
+import { api } from "./_generated/api";
 import { v } from "convex/values";
 import { getCurrentUser, getCurrentUserOrNull } from "./lib/auth";
 
@@ -84,5 +85,38 @@ export const recordPayment = mutation({
         createdAt: Date.now(),
       });
     }
+  },
+});
+
+export const verifyKorapayAndUpgrade = action({
+  args: { reference: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const secretKey = process.env.KORAPAY_SECRET_KEY;
+    if (!secretKey) throw new Error("Payments not configured");
+
+    const res = await fetch(
+      `https://api.korapay.com/merchant/api/v1/charges/${args.reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const json = await res.json() as {
+      status: boolean;
+      data?: { status?: string };
+    };
+
+    if (!json.status || json.data?.status !== "success") {
+      return { upgraded: false, paymentStatus: json.data?.status ?? "pending" };
+    }
+
+    await ctx.runMutation(api.users.selfUpgradeToPro, {});
+    return { upgraded: true, paymentStatus: "success" };
   },
 });

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Check, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 const COUNTRIES = [
   { code: "NG", flag: "🇳🇬", name: "Nigeria",          dial: "+234" },
@@ -44,13 +46,13 @@ interface PhoneInputProps {
 
 export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
   const [countryCode, setCountryCode] = useState("NG");
-  const [number, setNumber] = useState("");
+  const [number,      setNumber]      = useState("");
   const didInit = useRef(false);
 
   useEffect(() => {
     if (value && !didInit.current) {
       didInit.current = true;
-      const sorted = [...COUNTRIES].sort((a, b) => b.dial.length - a.dial.length);
+      const sorted  = [...COUNTRIES].sort((a, b) => b.dial.length - a.dial.length);
       const matched = sorted.find((c) => value.startsWith(c.dial));
       if (matched) {
         setCountryCode(matched.code);
@@ -63,7 +65,7 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
 
   function compose(code: string, num: string) {
     const country = COUNTRIES.find((c) => c.code === code);
-    const dial = country?.dial ?? "";
+    const dial    = country?.dial ?? "";
     onChange(num.trim() ? `${dial} ${num.trim()}` : "");
   }
 
@@ -71,32 +73,73 @@ export function PhoneInput({ value, onChange, className }: PhoneInputProps) {
 
   return (
     <div className={`flex gap-1.5 ${className ?? ""}`}>
-      <Select
+      <SelectPrimitive.Root
         value={countryCode}
         onValueChange={(code) => {
           setCountryCode(code);
           compose(code, number);
         }}
       >
-        <SelectTrigger className="w-36 shrink-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm">
-          <span className="flex items-center gap-1.5 truncate">
-            <span>{current?.flag}</span>
-            <span className="text-xs font-bold">{current?.code}</span>
-            <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{current?.dial}</span>
+        {/*
+          Trigger: shows ONLY the dial code after selection.
+          No flag, no abbreviation — this field is for numbers.
+          The dropdown still shows full context (flag + abbreviation + dial).
+        */}
+        <SelectPrimitive.Trigger
+          className={cn(
+            "flex h-9 w-24 shrink-0 items-center justify-between whitespace-nowrap rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          )}
+        >
+          <span className="font-mono text-sm text-gray-800 dark:text-gray-200">
+            {current?.dial}
           </span>
-        </SelectTrigger>
-        <SelectContent className="max-h-64">
-          {COUNTRIES.map((c) => (
-            <SelectItem key={c.code} value={c.code}>
-              <span className="flex items-center gap-2">
-                <span>{c.flag}</span>
-                <span className="text-xs font-bold w-8 shrink-0">{c.code}</span>
-                <span className="font-mono text-xs text-gray-500 dark:text-gray-400 w-12 shrink-0">{c.dial}</span>
-              </span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectPrimitive.Icon asChild>
+            <ChevronDown className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+          </SelectPrimitive.Icon>
+        </SelectPrimitive.Trigger>
+
+        <SelectPrimitive.Portal>
+          <SelectPrimitive.Content
+            position="popper"
+            className="relative z-50 max-h-64 min-w-[10rem] overflow-hidden rounded-lg border border-gray-100 bg-white dark:bg-gray-900 dark:border-gray-700 text-gray-700 dark:text-gray-200 shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:translate-y-1"
+          >
+            <SelectPrimitive.Viewport className="p-1">
+              {COUNTRIES.map((c) => (
+                <SelectPrimitive.Item
+                  key={c.code}
+                  value={c.code}
+                  className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-7 pr-3 text-sm outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30 data-[state=checked]:bg-blue-50/60 dark:data-[state=checked]:bg-blue-900/20"
+                >
+                  {/* Check mark indicator */}
+                  <span className="absolute left-1.5 flex h-3.5 w-3.5 items-center justify-center">
+                    <SelectPrimitive.ItemIndicator>
+                      <Check className="h-3.5 w-3.5 text-blue-600" />
+                    </SelectPrimitive.ItemIndicator>
+                  </span>
+
+                  {/*
+                    All dropdown-visible content is outside ItemText.
+                    ItemText is sr-only (hidden) — it holds text for keyboard
+                    type-ahead navigation only. Nothing from here will appear
+                    in the trigger, which eliminates the duplication.
+                  */}
+                  <span className="flex items-center gap-2">
+                    <span className="text-base leading-none">{c.flag}</span>
+                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300 w-7 shrink-0">{c.code}</span>
+                    <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{c.dial}</span>
+                  </span>
+
+                  {/* Hidden — only for Radix's internal value/a11y tracking */}
+                  <SelectPrimitive.ItemText>
+                    <span className="sr-only">{c.name} {c.dial}</span>
+                  </SelectPrimitive.ItemText>
+                </SelectPrimitive.Item>
+              ))}
+            </SelectPrimitive.Viewport>
+          </SelectPrimitive.Content>
+        </SelectPrimitive.Portal>
+      </SelectPrimitive.Root>
+
       <Input
         type="tel"
         inputMode="tel"

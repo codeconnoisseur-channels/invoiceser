@@ -19,6 +19,7 @@ import type * as lib_auth from "../lib/auth.js";
 import type * as lineItemTemplates from "../lineItemTemplates.js";
 import type * as notifications from "../notifications.js";
 import type * as payments from "../payments.js";
+import type * as reminders from "../reminders.js";
 import type * as settings from "../settings.js";
 import type * as support from "../support.js";
 import type * as users from "../users.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   lineItemTemplates: typeof lineItemTemplates;
   notifications: typeof notifications;
   payments: typeof payments;
+  reminders: typeof reminders;
   settings: typeof settings;
   support: typeof support;
   users: typeof users;

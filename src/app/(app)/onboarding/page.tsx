@@ -132,13 +132,12 @@ export default function OnboardingPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Set up your business</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">This appears on all your invoices</p>
               </div>
             </div>
             <div className="space-y-5">
               <div>
                 <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Company or Trading Name *</Label>
-                <Input className="mt-1.5 h-11 text-base" placeholder="e.g. Studio Kolade or John Smith Consulting" value={companyName} onChange={(e) => setCompanyName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleStep1()} autoFocus />
+                <Input className="mt-1.5 h-11 text-base" placeholder="" value={companyName} onChange={(e) => setCompanyName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleStep1()} autoFocus />
               </div>
               <div>
                 <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Default Currency</Label>
@@ -167,7 +166,6 @@ export default function OnboardingPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">How should clients pay you?</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">These details appear on every invoice you send</p>
               </div>
             </div>
 
@@ -223,21 +221,20 @@ export default function OnboardingPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Add your first client</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">You need a client to send invoices to</p>
               </div>
             </div>
             <div className="space-y-4">
               <div>
                 <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Full Name *</Label>
-                <Input className="mt-1.5 h-11" placeholder="e.g. Sarah Johnson" value={clientName} onChange={(e) => setClientName(e.target.value)} autoFocus />
+                <Input className="mt-1.5 h-11" placeholder="" value={clientName} onChange={(e) => setClientName(e.target.value)} autoFocus />
               </div>
               <div>
                 <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Email *</Label>
-                <Input className="mt-1.5 h-11" type="email" placeholder="e.g. sarah@company.com" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} />
+                <Input className="mt-1.5 h-11" type="email" placeholder="" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} />
               </div>
               <div>
                 <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Company (optional)</Label>
-                <Input className="mt-1.5 h-11" placeholder="e.g. Acme Corporation" value={clientCompany} onChange={(e) => setClientCompany(e.target.value)} />
+                <Input className="mt-1.5 h-11" placeholder="" value={clientCompany} onChange={(e) => setClientCompany(e.target.value)} />
               </div>
             </div>
             <Button onClick={handleStep3} disabled={savingStep3} className="w-full mt-8 h-11 gap-2 text-base">

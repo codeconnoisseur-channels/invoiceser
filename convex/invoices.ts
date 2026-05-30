@@ -96,6 +96,7 @@ export const createInvoice = mutation({
     total: v.number(),
     notes: v.optional(v.string()),
     paymentInstructions: v.optional(v.string()),
+    paymentTerms: v.optional(v.string()),
     asDraft: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -143,6 +144,7 @@ export const createInvoice = mutation({
       total: args.total,
       notes: args.notes,
       paymentInstructions: args.paymentInstructions,
+      paymentTerms: args.paymentTerms,
       publicToken: token,
       sentAt: args.asDraft ? undefined : Date.now(),
       createdAt: Date.now(),
@@ -186,6 +188,7 @@ export const updateDraftInvoice = mutation({
     total: v.number(),
     notes: v.optional(v.string()),
     paymentInstructions: v.optional(v.string()),
+    paymentTerms: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);

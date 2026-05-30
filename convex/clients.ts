@@ -32,6 +32,8 @@ export const createClient = mutation({
     companyName: v.optional(v.string()),
     clientType: v.optional(v.union(v.literal("individual"), v.literal("business"))),
     address: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    website: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrCreate(ctx);
@@ -43,6 +45,8 @@ export const createClient = mutation({
       companyName: args.companyName,
       clientType: args.clientType,
       address: args.address,
+      phone: args.phone,
+      website: args.website,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -57,6 +61,8 @@ export const updateClient = mutation({
     companyName: v.optional(v.string()),
     clientType: v.optional(v.union(v.literal("individual"), v.literal("business"))),
     address: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    website: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -68,6 +74,8 @@ export const updateClient = mutation({
       companyName: args.companyName,
       clientType: args.clientType,
       address: args.address,
+      phone: args.phone,
+      website: args.website,
       updatedAt: Date.now(),
     });
   },

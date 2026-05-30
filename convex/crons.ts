@@ -10,4 +10,11 @@ crons.cron(
   {}
 );
 
+crons.cron(
+  "send auto reminders",
+  "0 9 * * *", // 09:00 UTC daily
+  internal.reminders.sendAutoReminders,
+  {}
+);
+
 export default crons;

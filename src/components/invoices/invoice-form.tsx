@@ -60,6 +60,7 @@ interface ExistingInvoice {
   currency: string;
   issueDate: string;
   dueDate?: string;
+  paymentTerms?: string;
   lineItems: RawLineItem[];
   subtotal: number;
   salesTaxEnabled: boolean;
@@ -73,6 +74,21 @@ interface ExistingInvoice {
   total: number;
   notes?: string;
   paymentInstructions?: string;
+}
+
+const PAYMENT_TERMS = [
+  { value: "due_on_receipt", label: "Due on receipt", days: 0 },
+  { value: "net_7",          label: "Net 7",           days: 7 },
+  { value: "net_15",         label: "Net 15",          days: 15 },
+  { value: "net_30",         label: "Net 30",          days: 30 },
+  { value: "net_45",         label: "Net 45",          days: 45 },
+  { value: "net_60",         label: "Net 60",          days: 60 },
+];
+
+function dueDateFromTerms(issueDate: string, days: number): string {
+  const d = new Date(issueDate + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split("T")[0];
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -127,6 +143,7 @@ export function InvoiceForm({
   const [clientId,         setClientId]         = useState<string>(initialClientId ?? "new");
   const [newRecipient,     setNewRecipient]      = useState({ fullName: "", email: "", companyName: "", address: "", clientType: "individual" as "individual" | "business" });
   const [currency,         setCurrency]          = useState("GBP");
+  const [paymentTerms,     setPaymentTerms]      = useState("");
   const [issueDate,        setIssueDate]         = useState(new Date().toISOString().split("T")[0]);
   const [dueDate,          setDueDate]           = useState("");
   const [lineItems,        setLineItems]         = useState<LineItem[]>([defaultLineItem()]);
@@ -198,6 +215,7 @@ export function InvoiceForm({
         });
       }
       setCurrency(inv.currency);
+      setPaymentTerms(inv.paymentTerms ?? "");
       setIssueDate(inv.issueDate);
       setDueDate(inv.dueDate ?? "");
       setLineItems(inv.lineItems.map(fromExistingLineItem));
@@ -309,6 +327,7 @@ export function InvoiceForm({
       clientId:            clientId !== "new" ? (clientId as Id<"clients">) : undefined,
       clientSnapshot:      snapshot,
       currency,
+      paymentTerms:        paymentTerms || undefined,
       issueDate,
       dueDate:             dueDate || undefined,
       lineItems:           toRawLineItems(lineItems),
@@ -465,32 +484,32 @@ export function InvoiceForm({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-gray-600 dark:text-gray-400">Full Name *</Label>
-                    <Input className="mt-1 h-9" placeholder="Sarah Johnson" value={newRecipient.fullName} onChange={(e) => setNewRecipient((p) => ({ ...p, fullName: e.target.value }))} />
+                    <Input className="mt-1 h-9" placeholder="" value={newRecipient.fullName} onChange={(e) => setNewRecipient((p) => ({ ...p, fullName: e.target.value }))} />
                   </div>
                   <div>
                     <Label className="text-xs text-gray-600 dark:text-gray-400">Email *</Label>
-                    <Input className="mt-1 h-9" type="email" placeholder="sarah@email.com" value={newRecipient.email} onChange={(e) => setNewRecipient((p) => ({ ...p, email: e.target.value }))} />
+                    <Input className="mt-1 h-9" type="email" placeholder="" value={newRecipient.email} onChange={(e) => setNewRecipient((p) => ({ ...p, email: e.target.value }))} />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs text-gray-600 dark:text-gray-400">Business Name *</Label>
-                    <Input className="mt-1 h-9" placeholder="Acme Corp" value={newRecipient.companyName} onChange={(e) => setNewRecipient((p) => ({ ...p, companyName: e.target.value }))} />
+                    <Input className="mt-1 h-9" placeholder="" value={newRecipient.companyName} onChange={(e) => setNewRecipient((p) => ({ ...p, companyName: e.target.value }))} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <Label className="text-xs text-gray-600 dark:text-gray-400">Contact Person *</Label>
-                      <Input className="mt-1 h-9" placeholder="Sarah Johnson" value={newRecipient.fullName} onChange={(e) => setNewRecipient((p) => ({ ...p, fullName: e.target.value }))} />
+                      <Input className="mt-1 h-9" placeholder="" value={newRecipient.fullName} onChange={(e) => setNewRecipient((p) => ({ ...p, fullName: e.target.value }))} />
                     </div>
                     <div>
                       <Label className="text-xs text-gray-600 dark:text-gray-400">Email *</Label>
-                      <Input className="mt-1 h-9" type="email" placeholder="sarah@acme.com" value={newRecipient.email} onChange={(e) => setNewRecipient((p) => ({ ...p, email: e.target.value }))} />
+                      <Input className="mt-1 h-9" type="email" placeholder="" value={newRecipient.email} onChange={(e) => setNewRecipient((p) => ({ ...p, email: e.target.value }))} />
                     </div>
                   </div>
                   <div>
                     <Label className="text-xs text-gray-600 dark:text-gray-400">Business Address <span className="text-gray-400 font-normal">(optional)</span></Label>
-                    <Input className="mt-1 h-9" placeholder="123 Main Street, Lagos" value={newRecipient.address} onChange={(e) => setNewRecipient((p) => ({ ...p, address: e.target.value }))} />
+                    <Input className="mt-1 h-9" placeholder="" value={newRecipient.address} onChange={(e) => setNewRecipient((p) => ({ ...p, address: e.target.value }))} />
                   </div>
                 </div>
               )}
@@ -504,7 +523,7 @@ export function InvoiceForm({
             <CalendarDays className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Invoice Details</p>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs text-gray-600 dark:text-gray-400">Currency</Label>
               <Select value={currency} onValueChange={setCurrency}>
@@ -517,11 +536,46 @@ export function InvoiceForm({
               </Select>
             </div>
             <div>
+              <Label className="text-xs text-gray-600 dark:text-gray-400">Payment Terms</Label>
+              <Select
+                value={paymentTerms || "__none"}
+                onValueChange={(v) => {
+                  const term = v === "__none" ? "" : v;
+                  setPaymentTerms(term);
+                  if (term) {
+                    const termDef = PAYMENT_TERMS.find((t) => t.value === term);
+                    if (termDef) setDueDate(dueDateFromTerms(issueDate, termDef.days));
+                  }
+                }}
+              >
+                <SelectTrigger className="mt-1.5 h-9"><SelectValue placeholder="Select terms…" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">None</SelectItem>
+                  {PAYMENT_TERMS.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
               <Label className="text-xs text-gray-600 dark:text-gray-400">Issue Date</Label>
-              <Input type="date" className="mt-1.5 h-9" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
+              <Input
+                type="date"
+                className="mt-1.5 h-9"
+                value={issueDate}
+                onChange={(e) => {
+                  setIssueDate(e.target.value);
+                  if (paymentTerms) {
+                    const termDef = PAYMENT_TERMS.find((t) => t.value === paymentTerms);
+                    if (termDef) setDueDate(dueDateFromTerms(e.target.value, termDef.days));
+                  }
+                }}
+              />
             </div>
             <div>
-              <Label className="text-xs text-gray-600 dark:text-gray-400">Due Date <span className="text-gray-400 font-normal">(optional)</span></Label>
+              <Label className="text-xs text-gray-600 dark:text-gray-400">Due Date</Label>
               <Input type="date" className="mt-1.5 h-9" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
             </div>
           </div>

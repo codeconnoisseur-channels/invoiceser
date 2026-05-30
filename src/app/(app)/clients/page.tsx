@@ -7,7 +7,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import {
   Users, Plus, Pencil, Trash2, Search, FileText,
   Copy, Check, Mail, Building2, User,
-  MapPin,
+  MapPin, Globe, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import Link from "next/link";
+import { PhoneInput } from "@/components/phone-input";
 
 type ClientType = "individual" | "business";
 
@@ -27,6 +28,8 @@ interface ClientFormState {
   email: string;
   companyName: string;
   address: string;
+  phone: string;
+  website: string;
 }
 
 const AVATAR_COLORS = [
@@ -77,6 +80,8 @@ type Client = {
   companyName?: string;
   clientType?: "individual" | "business";
   address?: string;
+  phone?: string;
+  website?: string;
   deletedAt?: number;
 };
 
@@ -102,7 +107,7 @@ export default function ClientsPage() {
   const [formOpen,      setFormOpen]      = useState(false);
   const [editingId,     setEditingId]     = useState<Id<"clients"> | null>(null);
   const [form,          setForm]          = useState<ClientFormState>({
-    clientType: "individual", fullName: "", email: "", companyName: "", address: "",
+    clientType: "individual", fullName: "", email: "", companyName: "", address: "", phone: "", website: "",
   });
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"clients"> | null>(null);
   const [saving,        setSaving]        = useState(false);
@@ -116,7 +121,7 @@ export default function ClientsPage() {
 
   function openCreate() {
     setEditingId(null);
-    setForm({ clientType: "individual", fullName: "", email: "", companyName: "", address: "" });
+    setForm({ clientType: "individual", fullName: "", email: "", companyName: "", address: "", phone: "", website: "" });
     setFormOpen(true);
   }
   function openEdit(id: Id<"clients">) {
@@ -130,6 +135,8 @@ export default function ClientsPage() {
       email: c.email,
       companyName: c.companyName ?? "",
       address: c.address ?? "",
+      phone: c.phone ?? "",
+      website: c.website ?? "",
     });
     setFormOpen(true);
   }
@@ -139,12 +146,19 @@ export default function ClientsPage() {
     if (form.clientType === "business" && !form.companyName) { toast.error("Business name is required"); return; }
     try {
       setSaving(true);
+      if (form.website && !form.website.startsWith("https://")) {
+        toast.error("Website URL must start with https://");
+        setSaving(false);
+        return;
+      }
       const args = {
         fullName: form.fullName,
         email: form.email,
         companyName: form.clientType === "business" ? (form.companyName || undefined) : undefined,
         clientType: form.clientType,
         address: form.address || undefined,
+        phone: form.phone || undefined,
+        website: form.website || undefined,
       };
       if (editingId) {
         await updateClient({ clientId: editingId, ...args });
@@ -239,6 +253,16 @@ export default function ClientsPage() {
                       <MapPin className="w-3 h-3 shrink-0" />{c.address}
                     </p>
                   )}
+                  {c.phone && (
+                    <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
+                      <Phone className="w-3 h-3 shrink-0" />{c.phone}
+                    </p>
+                  )}
+                  {c.website && (
+                    <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 truncate mt-0.5" onClick={(e) => e.stopPropagation()}>
+                      <Globe className="w-3 h-3 shrink-0" />{c.website.replace("https://", "")}
+                    </a>
+                  )}
                 </div>
 
                 {/* Email — hidden on smallest screens, shown on sm+ */}
@@ -320,23 +344,23 @@ export default function ClientsPage() {
             {form.clientType === "individual" ? (
               <div>
                 <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Full Name *</Label>
-                <Input className="mt-1.5" placeholder="Sarah Johnson" value={form.fullName} onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))} />
+                <Input className="mt-1.5" placeholder="" value={form.fullName} onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))} />
               </div>
             ) : (
               <>
                 <div>
                   <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Business Name *</Label>
-                  <Input className="mt-1.5" placeholder="Acme Corp" value={form.companyName} onChange={(e) => setForm((p) => ({ ...p, companyName: e.target.value }))} />
+                  <Input className="mt-1.5" placeholder="" value={form.companyName} onChange={(e) => setForm((p) => ({ ...p, companyName: e.target.value }))} />
                 </div>
                 <div>
                   <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Contact Person *</Label>
-                  <Input className="mt-1.5" placeholder="Sarah Johnson" value={form.fullName} onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))} />
+                  <Input className="mt-1.5" placeholder="" value={form.fullName} onChange={(e) => setForm((p) => ({ ...p, fullName: e.target.value }))} />
                 </div>
                 <div>
                   <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                     Business Address <span className="font-normal normal-case text-gray-400">(optional)</span>
                   </Label>
-                  <Input className="mt-1.5" placeholder="123 Main Street, Lagos" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} />
+                  <Input className="mt-1.5" placeholder="" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} />
                 </div>
               </>
             )}
@@ -344,6 +368,29 @@ export default function ClientsPage() {
             <div>
               <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Email *</Label>
               <Input className="mt-1.5" type="email" placeholder="email@example.com" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} />
+            </div>
+
+            <div>
+              <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Phone</Label>
+              <div className="mt-1.5">
+                <PhoneInput value={form.phone} onChange={(v) => setForm((p) => ({ ...p, phone: v }))} />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                Website <span className="font-normal normal-case text-gray-400">(optional)</span>
+              </Label>
+              <Input
+                className="mt-1.5"
+                type="url"
+                placeholder="https://..."
+                value={form.website}
+                onChange={(e) => setForm((p) => ({ ...p, website: e.target.value }))}
+              />
+              {form.website && !form.website.startsWith("https://") && (
+                <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">Must start with https://</p>
+              )}
             </div>
           </div>
           <DialogFooter>

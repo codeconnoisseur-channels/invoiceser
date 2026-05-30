@@ -85,6 +85,23 @@ export const updatePaymentInstructions = mutation({
   },
 });
 
+export const updateReminderSettings = mutation({
+  args: {
+    autoReminderEnabled: v.boolean(),
+    autoReminderDaysBefore: v.optional(v.number()),
+    autoReminderDaysAfter: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const settings = await ctx.db
+      .query("settings")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .unique();
+    if (!settings) throw new Error("Settings not found");
+    await ctx.db.patch(settings._id, { ...args, updatedAt: Date.now() });
+  },
+});
+
 export const updatePaymentDetails = mutation({
   args: {
     paymentBankName:      v.optional(v.string()),

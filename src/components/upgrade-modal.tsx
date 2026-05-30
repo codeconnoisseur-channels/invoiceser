@@ -47,36 +47,38 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
           </div>
         </DialogHeader>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
-          Unlock the full Invoiceser experience with Pro.
-        </p>
-
-        <ul className="space-y-3 mb-6">
-          {PRO_FEATURES.map((f, i) => (
-            <li key={i} className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-md bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-400 mt-0.5">
-                {f.icon}
-              </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">{f.text}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 mb-5">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-          <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
-            Everything in Free, plus all Pro features — forever.
+        <div className="px-6 pb-6 space-y-5">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Unlock the full Invoiceser experience with Pro.
           </p>
-        </div>
 
-        <Button
-          className="w-full bg-violet-600 hover:bg-violet-700 text-white gap-2"
-          onClick={handleUpgrade}
-          disabled={loading}
-        >
-          <Sparkles className="w-4 h-4" />
-          {loading ? "Redirecting to payment…" : "Upgrade to Pro — $12/mo"}
-        </Button>
+          <ul className="space-y-3">
+            {PRO_FEATURES.map((f, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-md bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-400 mt-0.5">
+                  {f.icon}
+                </div>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{f.text}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+              Everything in Free, plus all Pro features — forever.
+            </p>
+          </div>
+
+          <Button
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white gap-2"
+            onClick={handleUpgrade}
+            disabled={loading}
+          >
+            <Sparkles className="w-4 h-4" />
+            {loading ? "Redirecting to payment…" : "Upgrade to Pro — $12/mo"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -13,10 +13,11 @@ import { SUPPORTED_CURRENCIES } from "@/lib/currency";
 import { toast } from "sonner";
 import {
   Building2, Receipt, CreditCard, ImagePlus, CheckCircle2, Landmark, Link2,
-  Plus, X, Pencil, ChevronDown, ChevronUp, MapPin, Lock,
+  Plus, X, Pencil, ChevronDown, ChevronUp, MapPin, Lock, Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { UpgradeButton } from "@/components/upgrade-modal";
+import { PhoneInput } from "@/components/phone-input";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ function Section({
 }: {
   icon: React.ReactNode;
   title: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
   onSave: () => void;
   saving: boolean;
@@ -70,7 +71,7 @@ function Section({
         </div>
         <div>
           <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+          {description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>}
         </div>
       </div>
       <div className="px-6 py-5 space-y-4">{children}</div>
@@ -220,6 +221,7 @@ export default function SettingsPage() {
   const updateTax            = useMutation(api.settings.updateTaxSettings);
   const updatePaymentDetails = useMutation(api.settings.updatePaymentDetails);
   const updatePayAccounts    = useMutation(api.settings.updatePaymentAccounts);
+  const updateReminder       = useMutation(api.settings.updateReminderSettings);
   const generateUploadUrl    = useMutation(api.settings.generateUploadUrl);
 
   const [business, setBusiness] = useState({
@@ -245,9 +247,15 @@ export default function SettingsPage() {
   const [addingAccount,      setAddingAccount]      = useState(false);
   const [newAccount,         setNewAccount]         = useState<PaymentAccountState>(blankAccount());
 
+  const [reminder, setReminder] = useState({
+    autoReminderEnabled: false,
+    autoReminderDaysBefore: 3,
+    autoReminderDaysAfter: 3,
+  });
   const [savingBusiness,  setSavingBusiness]  = useState(false);
   const [savingTax,       setSavingTax]       = useState(false);
   const [savingPayment,   setSavingPayment]   = useState(false);
+  const [savingReminder,  setSavingReminder]  = useState(false);
   const [uploading,       setUploading]       = useState(false);
   const [shownOptional,   setShownOptional]   = useState<Set<string>>(new Set());
   const [showDefaultAcct, setShowDefaultAcct] = useState(false);
@@ -298,6 +306,12 @@ export default function SettingsPage() {
     if (settings.paymentSwiftBic) io.add("swiftBic");
     setShownOptional(io);
 
+    setReminder({
+      autoReminderEnabled:    settings.autoReminderEnabled    ?? false,
+      autoReminderDaysBefore: settings.autoReminderDaysBefore ?? 3,
+      autoReminderDaysAfter:  settings.autoReminderDaysAfter  ?? 3,
+    });
+
     if (settings.paymentAccounts) {
       setPaymentAccounts(settings.paymentAccounts.map((a) => ({
         ...a,
@@ -319,8 +333,9 @@ export default function SettingsPage() {
   }, [settings]);
 
   async function saveBusiness() {
-    if (!business.businessEmail) {
-      toast.warning("No business email set — client replies will go to an unmonitored address. Add your email to fix this.");
+    if (business.businessWebsite && !business.businessWebsite.startsWith("https://")) {
+      toast.error("Website URL must start with https://");
+      return;
     }
     try {
       setSavingBusiness(true);
@@ -399,6 +414,19 @@ export default function SettingsPage() {
     });
   }
 
+  async function saveReminderSettings() {
+    try {
+      setSavingReminder(true);
+      await updateReminder({
+        autoReminderEnabled:    reminder.autoReminderEnabled,
+        autoReminderDaysBefore: reminder.autoReminderEnabled ? reminder.autoReminderDaysBefore : undefined,
+        autoReminderDaysAfter:  reminder.autoReminderEnabled ? reminder.autoReminderDaysAfter  : undefined,
+      });
+      toast.success("Reminder settings saved");
+    } catch { toast.error("Failed to save"); }
+    finally { setSavingReminder(false); }
+  }
+
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -467,16 +495,15 @@ export default function SettingsPage() {
       <Section
         icon={<Building2 className="w-5 h-5 text-gray-500" />}
         title="Business Profile"
-        description="Your name, logo, and invoice preferences"
         onSave={saveBusiness}
         saving={savingBusiness}
       >
         {/* Display name */}
         <div>
-          <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Display Name <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
+          <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Display Name</Label>
           <Input
             className="mt-1.5 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-            placeholder="e.g. Alex"
+            placeholder=""
             value={business.displayName}
             onChange={(e) => setBusiness((p) => ({ ...p, displayName: e.target.value }))}
           />
@@ -484,7 +511,7 @@ export default function SettingsPage() {
 
         <FieldRow
           label="Business Name"
-          placeholder="e.g. Studio Kolade or Adeyemi Consulting"
+          placeholder=""
           value={business.companyName}
           onChange={(v) => setBusiness((p) => ({ ...p, companyName: v }))}
         />
@@ -518,7 +545,7 @@ export default function SettingsPage() {
 
         {/* Brand color — available to all */}
         <div>
-          <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Brand Colour <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
+          <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Brand Colour</Label>
           <div className="flex items-center gap-3 mt-1.5">
             <input
               type="color"
@@ -560,11 +587,10 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-1">
             <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Business Contact</span>
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-normal normal-case ml-1">— toggle which fields appear on invoices</span>
           </div>
 
           <div className="space-y-1">
-            <FieldRow label="Street Address" placeholder="123 Business St" value={business.businessAddress} onChange={(v) => setBusiness((p) => ({ ...p, businessAddress: v }))} optional />
+            <FieldRow label="Street Address" placeholder="" value={business.businessAddress} onChange={(v) => setBusiness((p) => ({ ...p, businessAddress: v }))} />
             <div className="flex items-center gap-2">
               <Switch
                 checked={business.showBusinessAddress}
@@ -574,13 +600,19 @@ export default function SettingsPage() {
               <span className="text-[11px] text-gray-400">Show address on invoice</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FieldRow label="City" placeholder="Your city" value={business.businessCity} onChange={(v) => setBusiness((p) => ({ ...p, businessCity: v }))} optional />
-              <FieldRow label="Country" placeholder="Your country" value={business.businessCountry} onChange={(v) => setBusiness((p) => ({ ...p, businessCountry: v }))} optional />
+              <FieldRow label="City" placeholder="" value={business.businessCity} onChange={(v) => setBusiness((p) => ({ ...p, businessCity: v }))} />
+              <FieldRow label="Country" placeholder="" value={business.businessCountry} onChange={(v) => setBusiness((p) => ({ ...p, businessCountry: v }))} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <FieldRow label="Phone" placeholder="+1 234 567 8900" value={business.businessPhone} onChange={(v) => setBusiness((p) => ({ ...p, businessPhone: v }))} optional />
+            <div>
+              <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Phone</Label>
+              <PhoneInput
+                value={business.businessPhone}
+                onChange={(v) => setBusiness((p) => ({ ...p, businessPhone: v }))}
+              />
+            </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={business.showBusinessPhone}
@@ -592,21 +624,13 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-1">
-            <div className="space-y-1">
-              <FieldRow
-                label="Business Email"
-                placeholder="hello@yourbusiness.com"
-                value={business.businessEmail}
-                onChange={(v) => setBusiness((p) => ({ ...p, businessEmail: v }))}
-                type="email"
-                hint="Clients reply to this address when they respond to your invoices"
-              />
-              {!business.businessEmail && (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <span>⚠</span> Add your email so client replies reach you — without it, replies go to an unmonitored address.
-                </p>
-              )}
-            </div>
+            <FieldRow
+              label="Business Email"
+              placeholder="hello@yourbusiness.com"
+              value={business.businessEmail}
+              onChange={(v) => setBusiness((p) => ({ ...p, businessEmail: v }))}
+              type="email"
+            />
             <div className="flex items-center gap-2">
               <Switch
                 checked={business.showBusinessEmail}
@@ -618,7 +642,10 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-1">
-            <FieldRow label="Website" placeholder="https://yourbusiness.com" value={business.businessWebsite} onChange={(v) => setBusiness((p) => ({ ...p, businessWebsite: v }))} optional type="url" />
+            <FieldRow label="Website" placeholder="https://..." value={business.businessWebsite} onChange={(v) => setBusiness((p) => ({ ...p, businessWebsite: v }))} type="url" />
+            {business.businessWebsite && !business.businessWebsite.startsWith("https://") && (
+              <p className="text-[11px] text-amber-600 dark:text-amber-400">URL must start with https://</p>
+            )}
             <div className="flex items-center gap-2">
               <Switch
                 checked={business.showBusinessWebsite}
@@ -635,7 +662,6 @@ export default function SettingsPage() {
       <Section
         icon={<Lock className="w-5 h-5 text-gray-500" />}
         title="White Label"
-        description="Full branding control — remove Invoiceser branding, choose invoice font, and customise emails"
         onSave={saveBusiness}
         saving={savingBusiness}
       >
@@ -728,7 +754,6 @@ export default function SettingsPage() {
       <Section
         icon={<Receipt className="w-5 h-5 text-gray-500" />}
         title="Tax Configuration"
-        description="Sales tax and VAT settings applied to invoices"
         onSave={saveTax}
         saving={savingTax}
       >
@@ -921,6 +946,63 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Automated Reminders */}
+      <Section
+        icon={<Bell className="w-5 h-5 text-gray-500" />}
+        title="Automated Reminders"
+        onSave={saveReminderSettings}
+        saving={savingReminder}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Send automatic reminders</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Invoiceser emails your clients automatically on your schedule</p>
+          </div>
+          <Switch
+            checked={reminder.autoReminderEnabled}
+            onCheckedChange={(v) => setReminder((p) => ({ ...p, autoReminderEnabled: v }))}
+          />
+        </div>
+
+        {reminder.autoReminderEnabled && (
+          <div className="grid grid-cols-2 gap-4 pt-1">
+            <div>
+              <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Days before due</Label>
+              <Select
+                value={String(reminder.autoReminderDaysBefore)}
+                onValueChange={(v) => setReminder((p) => ({ ...p, autoReminderDaysBefore: Number(v) }))}
+              >
+                <SelectTrigger className="mt-1.5 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 5, 7].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n} day{n !== 1 ? "s" : ""} before</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Days after due</Label>
+              <Select
+                value={String(reminder.autoReminderDaysAfter)}
+                onValueChange={(v) => setReminder((p) => ({ ...p, autoReminderDaysAfter: Number(v) }))}
+              >
+                <SelectTrigger className="mt-1.5 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 5, 7].map((n) => (
+                    <SelectItem key={n} value={String(n)}>{n} day{n !== 1 ? "s" : ""} after</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+      </Section>
+
     </div>
   );
 }

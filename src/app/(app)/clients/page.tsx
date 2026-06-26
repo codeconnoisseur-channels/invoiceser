@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -104,6 +104,7 @@ export default function ClientsPage() {
   const createClient = useMutation(api.clients.createClient);
   const updateClient = useMutation(api.clients.updateClient);
   const deleteClient = useMutation(api.clients.deleteClient);
+  const restoreClient = useMutation(api.clients.restoreClient);
 
   const [search,        setSearch]        = useState("");
   const [formOpen,      setFormOpen]      = useState(false);
@@ -113,6 +114,9 @@ export default function ClientsPage() {
   });
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"clients"> | null>(null);
   const [saving,        setSaving]        = useState(false);
+  const [pageSize,      setPageSize]      = useState(25);
+
+  useEffect(() => { setPageSize(25); }, [search]);
 
   const active   = (clients as Client[] | undefined)?.filter((c) => !c.deletedAt) ?? [];
   const filtered = active.filter((c) => {
@@ -120,6 +124,8 @@ export default function ClientsPage() {
     const q = search.toLowerCase();
     return c.fullName.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || (c.companyName ?? "").toLowerCase().includes(q);
   });
+  const paginated = filtered.slice(0, pageSize);
+  const hasMore   = filtered.length > pageSize;
 
   function openCreate() {
     setEditingId(null);
@@ -176,7 +182,14 @@ export default function ClientsPage() {
   }
 
   async function handleDelete(id: Id<"clients">) {
-    try { await deleteClient({ clientId: id }); setDeleteConfirm(null); toast.success("Client deleted"); }
+    try {
+      await deleteClient({ clientId: id });
+      setDeleteConfirm(null);
+      toast("Client deleted", {
+        action: { label: "Undo", onClick: () => { restoreClient({ clientId: id }).catch(() => toast.error("Failed to undo")); } },
+        duration: 6000,
+      });
+    }
     catch { toast.error("Failed to delete client"); }
   }
 
@@ -228,7 +241,7 @@ export default function ClientsPage() {
         </div>
       ) : (
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden divide-y divide-gray-100 dark:divide-gray-800">
-          {filtered.map((c) => {
+          {paginated.map((c) => {
             const business = isBusiness(c);
             const primary  = primaryName(c);
             const contact  = contactName(c);
@@ -310,6 +323,18 @@ export default function ClientsPage() {
               </div>
             );
           })}
+          {hasMore && (
+            <div className="px-5 py-4 text-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPageSize((p) => p + 25)}
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                Show {filtered.length - pageSize} more client{filtered.length - pageSize !== 1 ? "s" : ""}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 

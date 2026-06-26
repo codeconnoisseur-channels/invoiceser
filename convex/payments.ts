@@ -62,7 +62,7 @@ export const recordPayment = mutation({
       .query("payments")
       .withIndex("by_invoice", (q) => q.eq("invoiceId", args.invoiceId))
       .collect();
-    const totalPaid = allPayments.reduce((s, p) => s + p.amount, 0) + args.amount;
+    const totalPaid = allPayments.reduce((s, p) => s + p.amount, 0);
 
     if (totalPaid >= invoice.total) {
       await ctx.db.patch(args.invoiceId, {
@@ -83,6 +83,13 @@ export const recordPayment = mutation({
         message: `Invoice ${invoice.invoiceNumber} marked as paid`,
         read: false,
         createdAt: Date.now(),
+      });
+
+      await ctx.runMutation(api.users.updateInvoiceStats, {
+        pendingCount: -1,
+        pendingAmount: -invoice.total,
+        collectedAmount: invoice.total,
+        ...(invoice.status === "overdue" ? { overdueCount: -1 } : {}),
       });
     }
   },

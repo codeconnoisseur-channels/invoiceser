@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 import { getCurrentUser, requirePlatformAdmin } from "./lib/auth";
 
 export const getAnnouncements = query({
@@ -154,5 +155,49 @@ export const writeAuditLog = mutation({
       details: args.details,
       createdAt: Date.now(),
     });
+  },
+});
+
+export const deleteUserData = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const userId = args.userId;
+
+    // Settings
+    const settings = await ctx.db.query("settings").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const s of settings) await ctx.db.delete(s._id);
+
+    // Invoices → payments → activityLog → notifications
+    const invoices = await ctx.db.query("invoices").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const inv of invoices) {
+      const payments = await ctx.db.query("payments").withIndex("by_invoice", (q) => q.eq("invoiceId", inv._id)).collect();
+      for (const p of payments) await ctx.db.delete(p._id);
+      const log = await ctx.db.query("activityLog").withIndex("by_invoice", (q) => q.eq("invoiceId", inv._id)).collect();
+      for (const l of log) await ctx.db.delete(l._id);
+      await ctx.db.delete(inv._id);
+    }
+
+    // Notifications
+    const notifications = await ctx.db.query("notifications").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const n of notifications) await ctx.db.delete(n._id);
+
+    // Clients
+    const clients = await ctx.db.query("clients").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const c of clients) await ctx.db.delete(c._id);
+
+    // Line item templates
+    const templates = await ctx.db.query("lineItemTemplates").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const t of templates) await ctx.db.delete(t._id);
+
+    // Support tickets → messages
+    const tickets = await ctx.db.query("supportTickets").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
+    for (const ticket of tickets) {
+      const msgs = await ctx.db.query("supportMessages").withIndex("by_ticket", (q) => q.eq("ticketId", ticket._id)).collect();
+      for (const m of msgs) await ctx.db.delete(m._id);
+      await ctx.db.delete(ticket._id);
+    }
+
+    // User
+    await ctx.db.delete(userId);
   },
 });

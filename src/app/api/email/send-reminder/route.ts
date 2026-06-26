@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { auth } from "@clerk/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";
@@ -10,8 +9,7 @@ import { formatDate, relativeDueDate } from "@/lib/dates";
 import { renderAsync } from "@react-email/components";
 import React from "react";
 import { parseISO } from "date-fns";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -83,20 +81,22 @@ export async function POST(req: NextRequest) {
     );
 
     const fromName = settings.companyName || "Invoiceser";
+    const fromEmail = process.env.SMTP_USER || "noreply@invoiceser.app";
     const replyTo = settings.businessEmail || undefined;
 
-    const { error } = await resend.emails.send({
-      from: `${fromName} <onboarding@resend.dev>`,
-      to: [invoice.clientSnapshot.email],
-      replyTo,
-      subject: invoice.dueDate
-        ? `Reminder: Invoice ${invoice.invoiceNumber} is due ${relDue}`
-        : `Reminder: Invoice ${invoice.invoiceNumber} from ${fromName}`,
-      html,
-    });
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    try {
+      await sendEmail({
+        from: `${fromName} <${fromEmail}>`,
+        to: invoice.clientSnapshot.email,
+        replyTo,
+        subject: invoice.dueDate
+          ? `Reminder: Invoice ${invoice.invoiceNumber} is due ${relDue}`
+          : `Reminder: Invoice ${invoice.invoiceNumber} from ${fromName}`,
+        html,
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send email";
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

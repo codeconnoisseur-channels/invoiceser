@@ -78,9 +78,9 @@ const plans = [
       "PDF download & email delivery",
       "Automatic payment reminders",
       "Logo upload & brand colour",
-      "Shareable invoice link for clients",
-      "Analytics dashboard",
-      "AI chatbot — 10 queries/month",
+      "No Invoiceser mention on invoices",
+      "Custom invoice fonts (Modern, Classic, Typewriter)",
+      "AI chatbot — 50 queries/month",
     ],
     cta: "Get started free",
     href: "/sign-up",
@@ -95,7 +95,7 @@ const plans = [
       "Everything in Free",
       "Predictive analytics & revenue forecasts",
       "Unlimited AI chatbot queries",
-      "Custom branding — your own fonts, invoice style, and email domain. No Invoiceser mention anywhere.",
+      "Custom email domain & editable templates",
       "Priority support",
     ],
     cta: "Start Pro trial",
@@ -647,32 +647,6 @@ export default function LandingPage() {
                   { label: "How It Works", href: "#how-it-works" },
                   { label: "Pricing", href: "#pricing" },
                   { label: "Dashboard", href: "/dashboard" },
-                  { label: "Changelog", href: "/changelog" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:underline"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">
-                Company
-              </h3>
-              <ul className="space-y-3" role="list">
-                {[
-                  { label: "About", href: "/about" },
-                  { label: "Blog", href: "/blog" },
-                  { label: "Careers", href: "/careers" },
-                  { label: "Contact", href: "/contact" },
-                  { label: "Press", href: "/press" },
                 ].map((link) => (
                   <li key={link.label}>
                     <Link
@@ -695,8 +669,6 @@ export default function LandingPage() {
                 {[
                   { label: "Privacy Policy", href: "/privacy" },
                   { label: "Terms of Service", href: "/terms" },
-                  { label: "Cookie Policy", href: "/cookies" },
-                  { label: "Security", href: "/security" },
                 ].map((link) => (
                   <li key={link.label}>
                     <Link

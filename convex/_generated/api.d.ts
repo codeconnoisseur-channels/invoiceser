@@ -11,6 +11,7 @@
 import type * as activityLog from "../activityLog.js";
 import type * as admin from "../admin.js";
 import type * as ai from "../ai.js";
+import type * as analytics from "../analytics.js";
 import type * as clients from "../clients.js";
 import type * as crons from "../crons.js";
 import type * as http from "../http.js";
@@ -20,6 +21,7 @@ import type * as lineItemTemplates from "../lineItemTemplates.js";
 import type * as notifications from "../notifications.js";
 import type * as payments from "../payments.js";
 import type * as reminders from "../reminders.js";
+import type * as reminders_actions from "../reminders_actions.js";
 import type * as settings from "../settings.js";
 import type * as support from "../support.js";
 import type * as users from "../users.js";
@@ -35,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   activityLog: typeof activityLog;
   admin: typeof admin;
   ai: typeof ai;
+  analytics: typeof analytics;
   clients: typeof clients;
   crons: typeof crons;
   http: typeof http;
@@ -44,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   payments: typeof payments;
   reminders: typeof reminders;
+  reminders_actions: typeof reminders_actions;
   settings: typeof settings;
   support: typeof support;
   users: typeof users;

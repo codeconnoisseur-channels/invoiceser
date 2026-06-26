@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Sparkles, BarChart2, Palette, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAnalytics } from "@/lib/use-analytics";
 
 const PRO_FEATURES = [
   { icon: <BarChart2 className="w-4 h-4" />, text: "Predictive analytics & revenue forecasts" },
@@ -19,8 +20,10 @@ interface UpgradeModalProps {
 
 export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false);
+  const { track } = useAnalytics();
 
   async function handleUpgrade() {
+    track("pro_attempted");
     setLoading(true);
     try {
       const res = await fetch("/api/payments/initiate", { method: "POST" });

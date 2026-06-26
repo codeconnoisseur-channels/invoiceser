@@ -203,7 +203,7 @@ export function InvoicePreview({
 
         {/* Payment details */}
         {paymentInstructions && (
-          <div className="px-7 py-4 border-t border-gray-100">
+          <div id="payment-details" className="px-7 py-4 border-t border-gray-100">
             <p className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{ color: accent }}>
               Payment Details
             </p>

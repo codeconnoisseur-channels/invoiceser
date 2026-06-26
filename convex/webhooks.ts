@@ -5,6 +5,20 @@ import { internal } from "./_generated/api";
 import { Webhook } from "svix";
 import { v } from "convex/values";
 
+const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
+
+async function captureEvent(event: string, distinctId: string, properties?: Record<string, unknown>) {
+  const apiKey = process.env.POSTHOG_API_KEY;
+  if (!apiKey) return;
+  try {
+    await fetch(`${POSTHOG_HOST}/capture/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event, api_key: apiKey, distinct_id: distinctId, properties }),
+    });
+  } catch { /* non-critical */ }
+}
+
 export const processKorapayWebhook = internalAction({
   args: { body: v.string(), signature: v.string() },
   handler: async (ctx, args) => {
@@ -77,6 +91,9 @@ export const processClerkWebhook = internalAction({
       const email = email_addresses[0]?.email_address ?? "";
       const name = [first_name, last_name].filter(Boolean).join(" ") || undefined;
       await ctx.runMutation(internal.users.syncUser, { clerkId: id, email, name });
+      if (event.type === "user.created") {
+        await captureEvent("user_signed_up", id, { email, name });
+      }
     }
 
     if (event.type === "user.deleted") {

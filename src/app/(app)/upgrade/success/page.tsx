@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { useAnalytics } from "@/lib/use-analytics";
 import { Sparkles, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -37,6 +38,7 @@ function SuccessContent() {
   const [upgrading,       setUpgrading]       = useState(false);
   const [waitingForPro,   setWaitingForPro]   = useState(false);
   const [failed,          setFailed]          = useState(false);
+  const { track } = useAnalytics();
 
   // Step 1: run the upgrade mutation once, after user record loads
   useEffect(() => {
@@ -44,7 +46,10 @@ function SuccessContent() {
     didUpgrade.current = true;
     setUpgrading(true);
     upgradeToPro({})
-      .then(() => setWaitingForPro(true))
+      .then(() => {
+        track("pro_upgraded", { reference });
+        setWaitingForPro(true);
+      })
       .catch(() => setFailed(true))
       .finally(() => setUpgrading(false));
   }, [loading, isPro, reference, upgradeToPro]);

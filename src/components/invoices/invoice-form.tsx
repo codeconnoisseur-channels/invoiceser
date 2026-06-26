@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SUPPORTED_CURRENCIES, formatCurrency } from "@/lib/currency";
+import { useAnalytics } from "@/lib/use-analytics";
 import { toast } from "sonner";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -131,6 +132,7 @@ export function InvoiceForm({
   initialClientId?: string;
 }) {
   const router = useRouter();
+  const { track } = useAnalytics();
   const isEditing = !!invoiceId && !!existingInvoice;
 
   const settings  = useQuery(api.settings.getSettings);
@@ -154,7 +156,8 @@ export function InvoiceForm({
   const [selectedAccountId,   setSelectedAccountId]   = useState<string>("__default__");
   const [includePaymentLink,  setIncludePaymentLink]  = useState(true);
   const [saving,              setSaving]              = useState(false);
-  const [confirmSend,      setConfirmSend]       = useState(false);
+  const [confirmSend,         setConfirmSend]         = useState(false);
+  const [emailPreviewTab,     setEmailPreviewTab]     = useState<"summary" | "email">("summary");
 
   const defaultAccountExists = !!(
     settings?.paymentBankName || settings?.paymentAccountNumber || settings?.paymentLink
@@ -362,6 +365,7 @@ export function InvoiceForm({
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invoiceId: finalId }),
       });
+      track("invoice_sent", { invoice_id: finalId, total: baseArgs().total, currency: baseArgs().currency, is_first: (settings?.invoiceCounter ?? 0) === 0 });
       toast.success("Invoice sent!");
       router.push(`/invoices/${finalId}`);
     } catch (err: unknown) {
@@ -380,6 +384,7 @@ export function InvoiceForm({
         router.push(`/invoices/${invoiceId}`);
       } else {
         const r = await createInvoice({ ...baseArgs(), asDraft: true });
+        track("invoice_draft_created", { invoice_id: r.invoiceId, total: baseArgs().total });
         toast.success("Draft saved");
         router.push(`/invoices/${r.invoiceId}`);
       }
@@ -799,33 +804,110 @@ export function InvoiceForm({
 
       {/* Send confirmation */}
       <Dialog open={confirmSend} onOpenChange={setConfirmSend}>
-        <DialogContent>
+        <DialogContent className="max-w-xl">
           <DialogHeader><DialogTitle>Send this invoice?</DialogTitle></DialogHeader>
-          <div className="px-6 py-4 space-y-4">
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Recipient</span>
-                <span className="font-medium text-gray-800 dark:text-gray-200">{recipientName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Email</span>
-                <span className="font-mono text-gray-700 dark:text-gray-300 text-xs">{recipientEmail}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Amount</span>
-                <span className="tabular-nums font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(total, currency)}</span>
-              </div>
-              {dueDate && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Due date</span>
-                  <span className="text-gray-800 dark:text-gray-200">{formatDate(dueDate)}</span>
+          <div className="px-6 py-2">
+            <div className="flex gap-1 rounded-lg bg-gray-100 p-0.5 text-sm mb-4">
+              <button
+                type="button"
+                onClick={() => setEmailPreviewTab("summary")}
+                className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  emailPreviewTab === "summary" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Summary
+              </button>
+              <button
+                type="button"
+                onClick={() => setEmailPreviewTab("email")}
+                className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  emailPreviewTab === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Email Preview
+              </button>
+            </div>
+
+            {emailPreviewTab === "summary" ? (
+              <div className="space-y-4">
+                <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Recipient</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">{recipientName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Email</span>
+                    <span className="font-mono text-gray-700 dark:text-gray-300 text-xs">{recipientEmail}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Amount</span>
+                    <span className="tabular-nums font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(total, currency)}</span>
+                  </div>
+                  {dueDate && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Due date</span>
+                      <span className="text-gray-800 dark:text-gray-200">{formatDate(dueDate)}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex items-start gap-2 text-xs text-gray-400">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>The invoice PDF will be attached to the email. The client will receive a link to view it online.</span>
-            </div>
+                <div className="flex items-start gap-2 text-xs text-gray-400">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>The invoice PDF will be attached to the email. The client will receive a link to view it online.</span>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-gray-200 rounded-xl overflow-hidden max-h-[400px] overflow-y-auto">
+                {/* Email mockup */}
+                <div className="bg-gray-900 px-6 py-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-bold text-white">{settings?.companyName || "Company"}</p>
+                      <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">Invoice</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-gray-400">Invoice #</p>
+                      <p className="text-sm font-bold text-gray-200 font-mono">{previewInvoiceNum}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white px-6 py-5">
+                  <p className="text-sm text-gray-700">
+                    Hi <strong>{recipientName}</strong>,
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1 mb-4">
+                    A new invoice has been prepared for you. Please review the details below and make payment before the due date.
+                  </p>
+
+                  {/* Amount box */}
+                  <div className="bg-sky-50 border border-sky-200 rounded-xl p-5 text-center mb-4">
+                    <p className="text-[10px] font-bold text-sky-700 uppercase tracking-widest">Amount Due</p>
+                    <p className="text-3xl font-extrabold text-gray-900 mt-1">{formatCurrency(total, currency)}</p>
+                    {dueDate && <p className="text-xs text-gray-500 mt-1">Due {formatDate(dueDate)}</p>}
+                  </div>
+
+                  {/* Invoice details */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+                    <div className="flex justify-between py-0.5">
+                      <span className="text-xs text-gray-500">Invoice number</span>
+                      <span className="text-xs font-semibold text-gray-800 font-mono">{previewInvoiceNum}</span>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="text-center mb-4">
+                    <div className="inline-block bg-gray-900 text-white text-sm font-bold rounded-lg px-8 py-3">
+                      View &amp; Pay Invoice →
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-2">The client will see a link to view and pay online.</p>
+                  </div>
+                </div>
+                <div className="bg-gray-50 border-t border-gray-200 px-6 py-3 text-center">
+                  <p className="text-[10px] text-gray-400">
+                    This invoice was sent by <strong className="text-gray-500">{settings?.companyName || "Company"}</strong> via <strong className="text-gray-600">Invoiceser</strong>.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmSend(false)}>Cancel</Button>

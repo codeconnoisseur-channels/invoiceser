@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Menu, X, FileText } from "lucide-react";
+import { Menu, X, FileText, Search } from "lucide-react";
+import { CommandPalette } from "./command-palette";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, BarChart2, Sparkles, Settings, HelpCircle,
@@ -81,10 +82,23 @@ function NavLinks({ onNav }: { onNav?: () => void }) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false);
   const pathname = usePathname();
 
   // Close drawer on route change
   useEffect(() => { setOpen(false); }, [pathname]);
+
+  // Cmd+K global shortcut
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCmdPaletteOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-gray-950">
@@ -97,6 +111,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <span className="font-semibold text-gray-900 dark:text-white text-md">Invoiceser</span>
           </Link>
+          <button
+            onClick={() => setCmdPaletteOpen(true)}
+            className="mt-3 w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span>Search pages…</span>
+            <kbd className="ml-auto text-[10px] font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-1 rounded border border-gray-200 dark:border-gray-700">
+              ⌘K
+            </kbd>
+          </button>
         </div>
         <NavLinks />
         <SidebarUserBlock />
@@ -151,10 +175,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <span className="font-semibold text-gray-900 dark:text-white text-sm">Invoiceser</span>
           </Link>
+          <button
+            onClick={() => setCmdPaletteOpen(true)}
+            className="ml-auto p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <Search className="w-4 h-4" />
+          </button>
         </div>
 
         {children}
       </main>
+
+      {cmdPaletteOpen && <CommandPalette onClose={() => setCmdPaletteOpen(false)} />}
     </div>
   );
 }

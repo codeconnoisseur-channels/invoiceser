@@ -15,6 +15,12 @@ export default defineSchema({
     aiInsightsGeneratedAt: v.optional(v.number()),
     aiQueriesThisMonth: v.optional(v.number()),
     aiMonthKey: v.optional(v.string()),
+    lastActiveAt: v.optional(v.number()),
+    invoiceTotalCount: v.optional(v.number()),
+    invoicePendingAmount: v.optional(v.number()),
+    invoiceCollectedAmount: v.optional(v.number()),
+    invoicePendingCount: v.optional(v.number()),
+    invoiceOverdueCount: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_clerk_id", ["clerkId"]),
 
@@ -185,7 +191,10 @@ export default defineSchema({
       v.literal("voided"),
       v.literal("reissued"),
       v.literal("reminder_sent"),
-      v.literal("email_failed")
+      v.literal("email_failed"),
+      v.literal("marked_paid"),
+      v.literal("marked_overdue"),
+      v.literal("deleted")
     ),
     metadata: v.optional(v.string()),
     createdAt: v.number(),

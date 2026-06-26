@@ -12,8 +12,12 @@ export function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (pathname === "/onboarding") return;
-    if (settings === undefined || settings === null) return;
     if (typeof window !== "undefined" && localStorage.getItem("onboarding_dismissed")) return;
+    if (settings === undefined) return;
+    if (settings === null) {
+      router.replace("/onboarding");
+      return;
+    }
     if (!settings.companyName) {
       router.replace("/onboarding");
     }

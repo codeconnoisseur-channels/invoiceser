@@ -259,6 +259,14 @@ export default function SettingsPage() {
   const [uploading,       setUploading]       = useState(false);
   const [shownOptional,   setShownOptional]   = useState<Set<string>>(new Set());
   const [showDefaultAcct, setShowDefaultAcct] = useState(false);
+  const [activeTab, setActiveTab] = useState<"general" | "tax" | "payments" | "reminders">("general");
+
+  const tabs = [
+    { id: "general",   label: "General",   icon: <Building2 className="w-4 h-4" /> },
+    { id: "tax",       label: "Tax",       icon: <Receipt className="w-4 h-4" /> },
+    { id: "payments",  label: "Payments",  icon: <CreditCard className="w-4 h-4" /> },
+    { id: "reminders", label: "Reminders", icon: <Bell className="w-4 h-4" /> },
+  ] as const;
 
   useEffect(() => {
     if (!settings) return;
@@ -491,6 +499,28 @@ export default function SettingsPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your business profile, invoices, and payment details</p>
       </div>
 
+      {/* Tab bar */}
+      <div className="flex gap-1 rounded-xl bg-gray-100 dark:bg-gray-800 p-0.5">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1.5 flex-1 justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+              activeTab === tab.id
+                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* General Tab */}
+      {activeTab === "general" && (
+        <>
       {/* Business Profile */}
       <Section
         icon={<Building2 className="w-5 h-5 text-gray-500" />}
@@ -655,74 +685,55 @@ export default function SettingsPage() {
               <span className="text-[11px] text-gray-400">Show website on invoice</span>
             </div>
           </div>
+          {/* Hide branding — now free */}
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Your brand only</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No Invoiceser mention appears on your invoices or PDFs</p>
+            </div>
+            <Switch
+              checked={business.hideBranding}
+              onCheckedChange={(v) => setBusiness((p) => ({ ...p, hideBranding: v }))}
+            />
+          </div>
+
+          {/* Invoice font — now free */}
+          <div className="pt-2">
+            <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Invoice Font</Label>
+            <div className="grid grid-cols-3 gap-2 mt-1.5">
+              {([
+                { value: "default", label: "Modern",      preview: "Aa" },
+                { value: "serif",   label: "Classic",     preview: "Aa" },
+                { value: "mono",    label: "Typewriter",  preview: "Aa" },
+              ] as const).map((f) => (
+                <button
+                  key={f.value}
+                  type="button"
+                  onClick={() => setBusiness((p) => ({ ...p, invoiceFont: f.value }))}
+                  className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all text-xs ${
+                    business.invoiceFont === f.value
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                  }`}
+                >
+                  <span className={`text-xl font-bold ${f.value === "serif" ? "font-serif" : f.value === "mono" ? "font-mono" : "font-sans"}`}>{f.preview}</span>
+                  <span className="font-semibold">{f.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </Section>
 
-      {/* Custom Branding — Pro */}
-      <Section
-        icon={<Lock className="w-5 h-5 text-gray-500" />}
-        title="Custom Branding"
-        onSave={saveBusiness}
-        saving={savingBusiness}
-      >
-        {currentUser === undefined ? null : !isPro ? (
-          <div className="rounded-xl border border-dashed border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-900/10 p-5 space-y-4">
-            <ul className="space-y-2">
-              {[
-                "Your brand only — no Invoiceser mention on invoices or emails",
-                "Custom invoice fonts (Modern, Classic, Typewriter)",
-                "Send emails from your own domain",
-                "Editable email templates",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <Lock className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <UpgradeButton />
-          </div>
-        ) : (
+      {/* Pro Features */}
+      {currentUser !== undefined && isPro ? (
+        <Section
+          icon={<Lock className="w-5 h-5 text-gray-500" />}
+          title="Pro Features"
+          onSave={saveBusiness}
+          saving={savingBusiness}
+        >
           <div className="space-y-5">
-            {/* Branding toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Your brand only</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No Invoiceser mention appears on your invoices or PDFs</p>
-              </div>
-              <Switch
-                checked={business.hideBranding}
-                onCheckedChange={(v) => setBusiness((p) => ({ ...p, hideBranding: v }))}
-              />
-            </div>
-
-            {/* Invoice font */}
-            <div>
-              <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Invoice Font</Label>
-              <div className="grid grid-cols-3 gap-2 mt-1.5">
-                {([
-                  { value: "default", label: "Modern",      preview: "Aa" },
-                  { value: "serif",   label: "Classic",     preview: "Aa" },
-                  { value: "mono",    label: "Typewriter",  preview: "Aa" },
-                ] as const).map((f) => (
-                  <button
-                    key={f.value}
-                    type="button"
-                    onClick={() => setBusiness((p) => ({ ...p, invoiceFont: f.value }))}
-                    className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all text-xs ${
-                      business.invoiceFont === f.value
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-                        : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
-                    }`}
-                  >
-                    <span className={`text-xl font-bold ${f.value === "serif" ? "font-serif" : f.value === "mono" ? "font-mono" : "font-sans"}`}>{f.preview}</span>
-                    <span className="font-semibold">{f.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom email domain */}
             <div>
               <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Custom Email Domain <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
               <Input
@@ -732,8 +743,6 @@ export default function SettingsPage() {
                 onChange={(e) => setBusiness((p) => ({ ...p, customEmailDomain: e.target.value }))}
               />
             </div>
-
-            {/* Email template */}
             <div>
               <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Email Template <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
               <textarea
@@ -745,59 +754,71 @@ export default function SettingsPage() {
               />
             </div>
           </div>
-        )}
-      </Section>
-
-      {/* Tax */}
-      <Section
-        icon={<Receipt className="w-5 h-5 text-gray-500" />}
-        title="Tax Configuration"
-        onSave={saveTax}
-        saving={savingTax}
-      >
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Sales Tax</p>
-            </div>
-            <Switch checked={tax.salesTaxActive} onCheckedChange={(v) => setTax((p) => ({ ...p, salesTaxActive: v }))} />
-          </div>
-          {tax.salesTaxActive && (
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div>
-                <Label className="text-xs text-gray-500 dark:text-gray-400">Label</Label>
-                <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" value={tax.salesTaxLabel} onChange={(e) => setTax((p) => ({ ...p, salesTaxLabel: e.target.value }))} placeholder="Sales Tax" />
-              </div>
-              <div>
-                <Label className="text-xs text-gray-500 dark:text-gray-400">Rate (%)</Label>
-                <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" type="number" min="0" max="100" step="0.01" value={tax.salesTaxRate} onChange={(e) => setTax((p) => ({ ...p, salesTaxRate: e.target.value }))} placeholder="0" />
-              </div>
-            </div>
-          )}
+        </Section>
+      ) : (
+        <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm p-6 text-center">
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">Unlock Pro features</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Custom email domain, editable email templates, and priority support.</p>
+          <UpgradeButton />
         </div>
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">VAT</p>
-            </div>
-            <Switch checked={tax.vatActive} onCheckedChange={(v) => setTax((p) => ({ ...p, vatActive: v }))} />
-          </div>
-          {tax.vatActive && (
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div>
-                <Label className="text-xs text-gray-500 dark:text-gray-400">Label</Label>
-                <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" value={tax.vatLabel} onChange={(e) => setTax((p) => ({ ...p, vatLabel: e.target.value }))} placeholder="VAT" />
-              </div>
-              <div>
-                <Label className="text-xs text-gray-500 dark:text-gray-400">Rate (%)</Label>
-                <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" type="number" min="0" max="100" step="0.01" value={tax.vatRate} onChange={(e) => setTax((p) => ({ ...p, vatRate: e.target.value }))} placeholder="0" />
-              </div>
-            </div>
-          )}
-        </div>
-      </Section>
+      )}
 
-      {/* Payment Accounts */}
+        </>
+      )}
+
+      {/* Tax Tab */}
+      {activeTab === "tax" && (
+        <Section
+          icon={<Receipt className="w-5 h-5 text-gray-500" />}
+          title="Tax Configuration"
+          onSave={saveTax}
+          saving={savingTax}
+        >
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Sales Tax</p>
+              </div>
+              <Switch checked={tax.salesTaxActive} onCheckedChange={(v) => setTax((p) => ({ ...p, salesTaxActive: v }))} />
+            </div>
+            {tax.salesTaxActive && (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <Label className="text-xs text-gray-500 dark:text-gray-400">Label</Label>
+                  <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" value={tax.salesTaxLabel} onChange={(e) => setTax((p) => ({ ...p, salesTaxLabel: e.target.value }))} placeholder="Sales Tax" />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500 dark:text-gray-400">Rate (%)</Label>
+                  <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" type="number" min="0" max="100" step="0.01" value={tax.salesTaxRate} onChange={(e) => setTax((p) => ({ ...p, salesTaxRate: e.target.value }))} placeholder="0" />
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">VAT</p>
+              </div>
+              <Switch checked={tax.vatActive} onCheckedChange={(v) => setTax((p) => ({ ...p, vatActive: v }))} />
+            </div>
+            {tax.vatActive && (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <Label className="text-xs text-gray-500 dark:text-gray-400">Label</Label>
+                  <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" value={tax.vatLabel} onChange={(e) => setTax((p) => ({ ...p, vatLabel: e.target.value }))} placeholder="VAT" />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500 dark:text-gray-400">Rate (%)</Label>
+                  <Input className="mt-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" type="number" min="0" max="100" step="0.01" value={tax.vatRate} onChange={(e) => setTax((p) => ({ ...p, vatRate: e.target.value }))} placeholder="0" />
+                </div>
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
+
+      {/* Payments Tab */}
+      {activeTab === "payments" && (
       <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div className="flex items-start gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
           <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 mt-0.5">
@@ -944,8 +965,10 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+      )}
 
-      {/* Automated Reminders */}
+      {/* Reminders Tab */}
+      {activeTab === "reminders" && (
       <Section
         icon={<Bell className="w-5 h-5 text-gray-500" />}
         title="Automated Reminders"
@@ -1000,6 +1023,7 @@ export default function SettingsPage() {
           </div>
         )}
       </Section>
+      )}
 
     </div>
   );

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { fetchQuery } from "convex/nextjs";
+import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";
 import { nanoid } from "nanoid";
 
@@ -10,8 +10,6 @@ export async function POST(req: NextRequest) {
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const secretKey = process.env.KORAPAY_SECRET_KEY;
-    if (!secretKey) return NextResponse.json({ error: "Payments are not configured" }, { status: 500 });
-
     const token = await getToken({ template: "convex" });
     if (!token) return NextResponse.json({ error: "Auth token unavailable" }, { status: 401 });
 
@@ -22,6 +20,14 @@ export async function POST(req: NextRequest) {
 
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
     if (user.plan === "pro") return NextResponse.json({ error: "Already on Pro" }, { status: 400 });
+
+    // Dev fallback: if KoraPay isn't configured, upgrade directly
+    if (!secretKey) {
+      await fetchMutation(api.users.selfUpgradeToPro, {}, { token });
+      return NextResponse.json({
+        checkoutUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/upgrade/success`,
+      });
+    }
 
     const reference = `pro_${nanoid(12)}`;
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { useAnalytics } from "@/lib/use-analytics";
 import {
   Send, Download, Ban, CreditCard, Copy, RefreshCw,
   AlertTriangle, Pencil, AlertCircle,
@@ -27,6 +28,7 @@ import { InvoicePreview } from "@/components/invoices/invoice-preview";
 export default function InvoiceDetailPage() {
   const params = useParams();
   const invoiceId = params.id as Id<"invoices">;
+  const { track } = useAnalytics();
 
   const invoice  = useQuery(api.invoices.getInvoice, { invoiceId });
   const payments = useQuery(api.payments.getPaymentsForInvoice, { invoiceId });
@@ -35,6 +37,7 @@ export default function InvoiceDetailPage() {
   const logoUrl  = useQuery(api.settings.getLogoUrl, settings?.logoStorageId ? { storageId: settings.logoStorageId } : "skip");
 
   const voidInvoice    = useMutation(api.invoices.voidInvoice);
+  const unvoidInvoice  = useMutation(api.invoices.unvoidInvoice);
   const reissueInvoice = useMutation(api.invoices.reissueInvoice);
   const markSent       = useMutation(api.invoices.markInvoiceSent);
   const recordPayment  = useMutation(api.payments.recordPayment);
@@ -95,9 +98,13 @@ export default function InvoiceDetailPage() {
     if (!voidReason.trim()) { toast.error("Please enter a void reason"); return; }
     try {
       setLoading(true);
-      await voidInvoice({ invoiceId, voidReason });
+      const invId = invoiceId;
+      await voidInvoice({ invoiceId: invId, voidReason });
       setVoidDialog(false);
-      toast.success("Invoice voided");
+      toast("Invoice voided", {
+        action: { label: "Undo", onClick: () => { unvoidInvoice({ invoiceId: invId }).catch(() => toast.error("Failed to undo")); } },
+        duration: 6000,
+      });
     } catch { toast.error("Failed to void invoice"); }
     finally { setLoading(false); }
   }
@@ -113,12 +120,17 @@ export default function InvoiceDetailPage() {
   }
 
   async function handleRecordPayment() {
+    if (!paymentAmount || Number(paymentAmount) <= 0) {
+      toast.error("Please enter a valid payment amount");
+      return;
+    }
     try {
       setLoading(true);
       await recordPayment({
         invoiceId, amount: Number(paymentAmount),
         dateReceived: paymentDate, note: paymentNote || undefined,
       });
+      track("payment_recorded", { invoice_id: invoiceId, amount: Number(paymentAmount) });
       setPaymentDialog(false);
       setPaymentAmount("");
       setPaymentNote("");

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { auth } from "@clerk/nextjs/server";
 import { fetchQuery, fetchMutation } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";
@@ -9,8 +8,7 @@ import { formatCurrency } from "@/lib/currency";
 import { formatDate } from "@/lib/dates";
 import { renderAsync } from "@react-email/components";
 import React from "react";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -90,28 +88,30 @@ export async function POST(req: NextRequest) {
     }
 
     const fromName = settings.companyName || "Invoiceser";
+    const fromEmail = process.env.SMTP_USER || "noreply@invoiceser.app";
     const attachments = pdfBuffer
       ? [{ filename: `${invoice.invoiceNumber}.pdf`, content: pdfBuffer }]
       : [];
 
     const replyTo = settings.businessEmail || undefined;
 
-    const { error } = await resend.emails.send({
-      from: `${fromName} <onboarding@resend.dev>`,
-      to: [invoice.clientSnapshot.email],
-      replyTo,
-      subject: `Invoice ${invoice.invoiceNumber} from ${fromName}`,
-      html,
-      attachments,
-    });
-
-    if (error) {
+    try {
+      await sendEmail({
+        from: `${fromName} <${fromEmail}>`,
+        to: invoice.clientSnapshot.email,
+        replyTo,
+        subject: `Invoice ${invoice.invoiceNumber} from ${fromName}`,
+        html,
+        attachments,
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send email";
       await fetchMutation(
         api.invoices.markEmailDelivery,
-        { invoiceId: invoiceId as Id<"invoices">, status: "failed", error: error.message },
+        { invoiceId: invoiceId as Id<"invoices">, status: "failed", error: message },
         { token }
       );
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     await fetchMutation(

@@ -149,7 +149,7 @@ export const getAiUsage = query({
   handler: async (ctx) => {
     const user = await getCurrentUserOrNull(ctx);
     if (!user) return null;
-    const FREE_MONTHLY_LIMIT = 10;
+    const FREE_MONTHLY_LIMIT = 50;
     if (user.plan === "pro") return { used: 0, limit: -1, isPro: true };
     const monthKey = new Date().toISOString().slice(0, 7);
     const sameMonth = user.aiMonthKey === monthKey;
@@ -158,11 +158,42 @@ export const getAiUsage = query({
   },
 });
 
+export const touchUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrNull(ctx);
+    if (!user) return;
+    const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+    if (user.lastActiveAt && user.lastActiveAt > fiveMinAgo) return;
+    await ctx.db.patch(user._id, { lastActiveAt: Date.now() });
+  },
+});
+
+export const updateInvoiceStats = mutation({
+  args: {
+    totalCount: v.optional(v.number()),
+    pendingAmount: v.optional(v.number()),
+    collectedAmount: v.optional(v.number()),
+    pendingCount: v.optional(v.number()),
+    overdueCount: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const patch: Record<string, number> = {};
+    if (args.totalCount !== undefined) patch.invoiceTotalCount = (user.invoiceTotalCount ?? 0) + args.totalCount;
+    if (args.pendingAmount !== undefined) patch.invoicePendingAmount = (user.invoicePendingAmount ?? 0) + args.pendingAmount;
+    if (args.collectedAmount !== undefined) patch.invoiceCollectedAmount = (user.invoiceCollectedAmount ?? 0) + args.collectedAmount;
+    if (args.pendingCount !== undefined) patch.invoicePendingCount = (user.invoicePendingCount ?? 0) + args.pendingCount;
+    if (args.overdueCount !== undefined) patch.invoiceOverdueCount = (user.invoiceOverdueCount ?? 0) + args.overdueCount;
+    await ctx.db.patch(user._id, patch);
+  },
+});
+
 export const checkAndIncrementAiQuery = mutation({
   args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    const FREE_MONTHLY_LIMIT = 10;
+    const FREE_MONTHLY_LIMIT = 50;
     if (user.plan === "pro") return { allowed: true, used: 0, limit: -1 };
     const monthKey = new Date().toISOString().slice(0, 7);
     const sameMonth = user.aiMonthKey === monthKey;

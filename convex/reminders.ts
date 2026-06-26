@@ -1,6 +1,5 @@
 import { v } from "convex/values";
-import { internalAction, internalMutation, internalQuery } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { internalMutation, internalQuery } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 
 function addDays(dateStr: string, days: number): string {
@@ -95,62 +94,4 @@ export const logReminderSent = internalMutation({
   },
 });
 
-export const sendAutoReminders = internalAction({
-  args: {},
-  handler: async (ctx) => {
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
-    if (!RESEND_API_KEY) {
-      console.warn("RESEND_API_KEY not set in Convex env — skipping auto reminders");
-      return;
-    }
 
-    const today = new Date().toISOString().split("T")[0];
-    const targets = await ctx.runQuery(internal.reminders.getReminderTargets, { today });
-
-    for (const t of targets) {
-      try {
-        const formatted = new Intl.NumberFormat("en", {
-          style: "currency",
-          currency: t.currency,
-        }).format(t.total);
-
-        const subject = `Reminder: Invoice ${t.invoiceNumber} — ${formatted} due`;
-        const html = `
-          <p>Hi ${t.clientName},</p>
-          <p>This is a friendly reminder from <strong>${t.businessName}</strong> regarding invoice <strong>${t.invoiceNumber}</strong>.</p>
-          <p>Amount due: <strong>${formatted}</strong></p>
-          ${APP_URL ? `<p>Please reach out to ${t.businessName} if you have any questions.</p>` : ""}
-          <p>Thank you.</p>
-          <p>— ${t.businessName}</p>
-        `;
-
-        const res = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: "onboarding@resend.dev",
-            to: t.clientEmail,
-            subject,
-            html,
-          }),
-        });
-
-        if (!res.ok) {
-          console.error(`Resend error for invoice ${t.invoiceId}:`, await res.text());
-          continue;
-        }
-
-        await ctx.runMutation(internal.reminders.logReminderSent, {
-          invoiceId: t.invoiceId,
-          userId: t.userId,
-        });
-      } catch (err) {
-        console.error(`Auto-reminder failed for invoice ${t.invoiceId}:`, err);
-      }
-    }
-  },
-});

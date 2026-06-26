@@ -2,6 +2,7 @@ import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { getCurrentUser, getCurrentUserOrNull } from "./lib/auth";
+import { api } from "./_generated/api";
 
 const lineItemValidator = v.object({
   description: v.string(),
@@ -60,6 +61,50 @@ export const getInvoiceByToken = query({
       .query("invoices")
       .withIndex("by_token", (q) => q.eq("publicToken", args.token))
       .unique();
+  },
+});
+
+export const getPublicInvoiceData = query({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    const invoice = await ctx.db
+      .query("invoices")
+      .withIndex("by_token", (q) => q.eq("publicToken", args.token))
+      .unique();
+    if (!invoice) return { invoice: null };
+
+    const settings = await ctx.db
+      .query("settings")
+      .withIndex("by_user", (q) => q.eq("userId", invoice.userId))
+      .unique();
+
+    let logoUrl: string | null = null;
+    if (settings?.logoStorageId) {
+      logoUrl = await ctx.storage.getUrl(settings.logoStorageId);
+    }
+
+    return {
+      invoice,
+      settings: settings
+        ? {
+            companyName:        settings.companyName,
+            brandColor:         settings.brandColor,
+            businessAddress:    settings.businessAddress,
+            businessCity:       settings.businessCity,
+            businessCountry:    settings.businessCountry,
+            businessPhone:      settings.businessPhone,
+            businessEmail:      settings.businessEmail,
+            businessWebsite:    settings.businessWebsite,
+            showBusinessAddress: settings.showBusinessAddress,
+            showBusinessPhone:   settings.showBusinessPhone,
+            showBusinessEmail:   settings.showBusinessEmail,
+            showBusinessWebsite: settings.showBusinessWebsite,
+            hideBranding:        settings.hideBranding,
+            invoiceFont:         settings.invoiceFont,
+          }
+        : null,
+      logoUrl,
+    };
   },
 });
 
@@ -158,6 +203,14 @@ export const createInvoice = mutation({
       createdAt: Date.now(),
     });
 
+    if (!args.asDraft) {
+      await ctx.runMutation(api.users.updateInvoiceStats, {
+        totalCount: 1,
+        pendingCount: 1,
+        pendingAmount: args.total,
+      });
+    }
+
     return { invoiceId, invoiceNumber };
   },
 });
@@ -218,6 +271,12 @@ export const markInvoiceSent = mutation({
       eventType: "sent",
       createdAt: Date.now(),
     });
+
+    await ctx.runMutation(api.users.updateInvoiceStats, {
+      totalCount: 1,
+      pendingCount: 1,
+      pendingAmount: invoice.total,
+    });
   },
 });
 
@@ -272,6 +331,90 @@ export const voidInvoice = mutation({
       metadata: args.voidReason,
       createdAt: Date.now(),
     });
+
+    const isOverdue = invoice.status === "overdue";
+    await ctx.runMutation(api.users.updateInvoiceStats, {
+      totalCount: -1,
+      pendingCount: -1,
+      pendingAmount: -invoice.total,
+      ...(isOverdue ? { overdueCount: -1 } : {}),
+    });
+  },
+});
+
+export const unvoidInvoice = mutation({
+  args: { invoiceId: v.id("invoices") },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const invoice = await ctx.db.get(args.invoiceId);
+    if (!invoice || invoice.userId !== user._id) throw new Error("Not found");
+    if (invoice.status !== "voided") throw new Error("Invoice is not voided");
+    await ctx.db.patch(args.invoiceId, {
+      status: "sent",
+      voidedAt: undefined,
+      voidReason: undefined,
+      updatedAt: Date.now(),
+    });
+    await ctx.runMutation(api.users.updateInvoiceStats, {
+      totalCount: 1,
+      pendingCount: 1,
+      pendingAmount: invoice.total,
+      overdueCount: 0,
+    });
+  },
+});
+
+export const bulkUpdateStatus = mutation({
+  args: {
+    invoiceIds: v.array(v.id("invoices")),
+    status: v.union(v.literal("paid"), v.literal("overdue")),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const invoices = await Promise.all(args.invoiceIds.map((id) => ctx.db.get(id)));
+    const valid = invoices.filter(
+      (inv): inv is NonNullable<typeof inv> =>
+        inv !== null && inv.userId === user._id && inv.status !== "paid" && inv.status !== "voided"
+    );
+    for (const inv of valid) {
+      await ctx.db.patch(inv._id, {
+        status: args.status,
+        ...(args.status === "paid" ? { paidAt: Date.now() } : {}),
+        updatedAt: Date.now(),
+      });
+      await ctx.db.insert("activityLog", {
+        invoiceId: inv._id,
+        userId: user._id,
+        eventType: args.status === "paid" ? "marked_paid" : "marked_overdue",
+        metadata: "Bulk update",
+        createdAt: Date.now(),
+      });
+    }
+    // Recalculate stats
+    await ctx.runMutation(api.users.updateInvoiceStats, {});
+  },
+});
+
+export const bulkDeleteInvoices = mutation({
+  args: { invoiceIds: v.array(v.id("invoices")) },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const invoices = await Promise.all(args.invoiceIds.map((id) => ctx.db.get(id)));
+    const valid = invoices.filter(
+      (inv): inv is NonNullable<typeof inv> =>
+        inv !== null && inv.userId === user._id
+    );
+    for (const inv of valid) {
+      await ctx.db.delete(inv._id);
+      await ctx.db.insert("activityLog", {
+        invoiceId: inv._id,
+        userId: user._id,
+        eventType: "deleted",
+        metadata: "Bulk delete",
+        createdAt: Date.now(),
+      });
+    }
+    await ctx.runMutation(api.users.updateInvoiceStats, {});
   },
 });
 
@@ -393,6 +536,7 @@ export const markOverdueInvoices = internalMutation({
       .filter((q) => q.neq(q.field("dueDate"), undefined))
       .collect();
 
+    const userIdCounts: Record<string, number> = {};
     for (const invoice of overdue) {
       await ctx.db.patch(invoice._id, {
         status: "overdue",
@@ -412,6 +556,13 @@ export const markOverdueInvoices = internalMutation({
         read: false,
         createdAt: Date.now(),
       });
+      userIdCounts[invoice.userId] = (userIdCounts[invoice.userId] ?? 0) + 1;
+    }
+
+    for (const [userId, count] of Object.entries(userIdCounts)) {
+      await ctx.runMutation(api.users.updateInvoiceStats, {
+        overdueCount: count,
+      });
     }
 
     return overdue.length;
@@ -424,28 +575,41 @@ export const getDashboardStats = query({
     const user = await getCurrentUserOrNull(ctx);
     if (!user) return { totalCount: 0, totalPending: 0, totalPaid: 0, overdueCount: 0, pendingCount: 0 };
 
-    const byStatus = (status: "sent" | "paid" | "overdue") =>
-      ctx.db.query("invoices")
-        .withIndex("by_user_status", (q) => q.eq("userId", user._id).eq("status", status))
-        .collect();
+    const totalCount = user.invoiceTotalCount ?? 0;
+    const pendingCount = user.invoicePendingCount ?? 0;
+    const overdueCount = user.invoiceOverdueCount ?? 0;
+    const invoicePendingAmount = user.invoicePendingAmount ?? 0;
+    const invoiceCollectedAmount = user.invoiceCollectedAmount ?? 0;
 
-    const [sent, paid, overdue, allPayments] = await Promise.all([
-      byStatus("sent"), byStatus("paid"), byStatus("overdue"),
-      ctx.db.query("payments").withIndex("by_user", (q) => q.eq("userId", user._id)).collect(),
-    ]);
-
-    const pending = [...sent, ...overdue];
-    const pendingIds = new Set(pending.map((i) => i._id));
-    const partialTotal = allPayments
-      .filter((p) => pendingIds.has(p.invoiceId))
-      .reduce((s, p) => s + p.amount, 0);
+    // Compute partial payments on pending invoices (lightweight: only invoice IDs)
+    let partialTotal = 0;
+    if (pendingCount > 0) {
+      const [sent, overdue] = await Promise.all([
+        ctx.db.query("invoices")
+          .withIndex("by_user_status", (q) => q.eq("userId", user._id).eq("status", "sent"))
+          .take(500),
+        overdueCount > 0
+          ? ctx.db.query("invoices")
+              .withIndex("by_user_status", (q) => q.eq("userId", user._id).eq("status", "overdue"))
+              .take(200)
+          : Promise.resolve([]),
+      ]);
+      const pendingIds = new Set([...sent, ...overdue].map((i) => i._id));
+      const allPayments = await ctx.db
+        .query("payments")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .take(1000);
+      partialTotal = allPayments
+        .filter((p) => pendingIds.has(p.invoiceId))
+        .reduce((s, p) => s + p.amount, 0);
+    }
 
     return {
-      totalCount:   sent.length + paid.length + overdue.length,
-      totalPending: pending.reduce((s, i) => s + i.total, 0) - partialTotal,
-      pendingCount: pending.length,
-      totalPaid:    paid.reduce((s, i) => s + i.total, 0) + partialTotal,
-      overdueCount: overdue.length,
+      totalCount,
+      totalPending: invoicePendingAmount - partialTotal,
+      pendingCount,
+      totalPaid: invoiceCollectedAmount + partialTotal,
+      overdueCount,
     };
   },
 });

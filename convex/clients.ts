@@ -90,3 +90,13 @@ export const deleteClient = mutation({
     await ctx.db.patch(args.clientId, { deletedAt: Date.now() });
   },
 });
+
+export const restoreClient = mutation({
+  args: { clientId: v.id("clients") },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const client = await ctx.db.get(args.clientId);
+    if (!client || client.userId !== user._id) throw new Error("Not found");
+    await ctx.db.patch(args.clientId, { deletedAt: undefined });
+  },
+});

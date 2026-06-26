@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { useAnalytics } from "@/lib/use-analytics";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Send, MessageSquare, Bot, RefreshCw } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UpgradeModal } from "@/components/upgrade-modal";
 import { toast } from "sonner";
 
@@ -19,6 +21,7 @@ const STARTER_QUESTIONS = [
 ];
 
 export default function AIPage() {
+  const { track } = useAnalytics();
   const aiUsage           = useQuery(api.users.getAiUsage);
   const checkAndIncrement = useMutation(api.users.checkAndIncrementAiQuery);
   const askQuestion       = useAction(api.ai.askQuestion);
@@ -53,6 +56,7 @@ export default function AIPage() {
     setChatLoading(true);
     try {
       const answer = await askQuestion({ question: q }) as string;
+      track("ai_query", { question_length: q.length, isPro });
       setChatMessages((prev) => [...prev, { role: "assistant", content: answer }]);
     } catch {
       setChatMessages((prev) => [
@@ -78,7 +82,9 @@ export default function AIPage() {
             Ask anything about your invoices, clients, and revenue
           </p>
         </div>
-        {!isPro && (
+        {aiUsage === undefined ? (
+          <div className="h-7 w-36 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
+        ) : !isPro ? (
           <div className={`text-xs font-medium px-3 py-1.5 rounded-full border ${
             limitReached
               ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800"
@@ -86,8 +92,7 @@ export default function AIPage() {
           }`}>
             {limitReached ? `${monthlyLimit}/${monthlyLimit} queries used this month` : `${queriesUsed}/${monthlyLimit} queries this month`}
           </div>
-        )}
-        {isPro && (
+        ) : (
           <div className="text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
             Unlimited queries
           </div>
@@ -115,7 +120,16 @@ export default function AIPage() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {chatMessages.length === 0 && (
+          {aiUsage === undefined ? (
+            <div className="h-full flex flex-col items-center justify-center space-y-4">
+              <Skeleton className="h-16 w-16 rounded-2xl" />
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-4 w-72" />
+              <div className="grid grid-cols-1 gap-2 w-full max-w-md mt-4">
+                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-11 w-full rounded-xl" />)}
+              </div>
+            </div>
+          ) : chatMessages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 flex items-center justify-center mb-4">
                 <MessageSquare className="w-8 h-8 text-violet-400" />
@@ -138,38 +152,41 @@ export default function AIPage() {
                 ))}
               </div>
             </div>
-          )}
-          {chatMessages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              {msg.role === "assistant" && (
-                <div className="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 mr-2 mt-0.5 border border-violet-200 dark:border-violet-700">
-                  <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+          ) : (
+            <>
+              {chatMessages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  {msg.role === "assistant" && (
+                    <div className="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 mr-2 mt-0.5 border border-violet-200 dark:border-violet-700">
+                      <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-gray-900 dark:bg-blue-600 text-white rounded-br-sm"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-sm border border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {chatLoading && (
+                <div className="flex justify-start">
+                  <div className="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 mr-2 mt-0.5 border border-violet-200 dark:border-violet-700">
+                    <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  </div>
                 </div>
               )}
-              <div
-                className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-gray-900 dark:bg-blue-600 text-white rounded-br-sm"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-sm border border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                {msg.content}
-              </div>
-            </div>
-          ))}
-          {chatLoading && (
-            <div className="flex justify-start">
-              <div className="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 mr-2 mt-0.5 border border-violet-200 dark:border-violet-700">
-                <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-              </div>
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                </div>
-              </div>
-            </div>
+            </>
           )}
           <div ref={chatEndRef} />
         </div>

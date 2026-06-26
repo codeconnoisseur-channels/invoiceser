@@ -155,6 +155,20 @@ export default defineSchema({
       v.union(v.literal("delivered"), v.literal("failed"))
     ),
     emailDeliveryError: v.optional(v.string()),
+    fromName: v.optional(v.string()),
+    fromAddress: v.optional(v.string()),
+    fromPhone: v.optional(v.string()),
+    fromEmail: v.optional(v.string()),
+    fromLogoStorageId: v.optional(v.id("_storage")),
+    brandColor: v.optional(v.string()),
+    invoiceFont: v.optional(v.string()),
+    hideBranding: v.optional(v.boolean()),
+    taxLines: v.optional(v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      rate: v.number(),
+      amount: v.number(),
+    }))),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

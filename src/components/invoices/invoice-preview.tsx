@@ -10,6 +10,13 @@ export interface PreviewLineItem {
 
 export type InvoiceFont = "default" | "serif" | "mono";
 
+export interface TaxLine {
+  id: string;
+  label: string;
+  rate: number;
+  amount: number;
+}
+
 export interface InvoicePreviewProps {
   companyName: string;
   logoUrl?: string | null;
@@ -48,6 +55,7 @@ export interface InvoicePreviewProps {
   total: number;
   paymentInstructions?: string;
   notes?: string;
+  taxLines?: TaxLine[];
 }
 
 const FONT_CLASS: Record<string, string> = {
@@ -70,6 +78,7 @@ export function InvoicePreview({
   total,
   paymentInstructions,
   notes,
+  taxLines,
 }: InvoicePreviewProps) {
   const accent = brandColor || "#2563EB";
   const fontClass = FONT_CLASS[invoiceFont ?? "default"] ?? "font-sans";
@@ -79,6 +88,12 @@ export function InvoicePreview({
   const displayPhone   = showBusinessPhone   !== false && businessPhone;
   const displayEmail   = showBusinessEmail   !== false && businessEmail;
   const displayWebsite = showBusinessWebsite !== false && businessWebsite;
+  const effectiveTaxLines = taxLines && taxLines.length > 0
+    ? taxLines
+    : [
+        ...(salesTaxEnabled && salesTaxAmount > 0 ? [{ id: "salesTax", label: salesTaxLabel || "Sales Tax", rate: salesTaxRate ?? 0, amount: salesTaxAmount }] : []),
+        ...(vatEnabled && vatAmount > 0 ? [{ id: "vat", label: vatLabel || "VAT", rate: vatRate ?? 0, amount: vatAmount }] : []),
+      ];
 
   return (
     <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-5 flex justify-center">
@@ -178,18 +193,12 @@ export function InvoicePreview({
                   <span className="tabular-nums">{formatCurrency(subtotal, currency)}</span>
                 </div>
               )}
-              {salesTaxEnabled && salesTaxAmount > 0 && (
-                <div className="flex justify-between text-gray-500">
-                  <span>{salesTaxLabel || "Sales Tax"} ({salesTaxRate}%)</span>
-                  <span className="tabular-nums">{formatCurrency(salesTaxAmount, currency)}</span>
+              {effectiveTaxLines.map((t) => (
+                <div key={t.id} className="flex justify-between text-gray-500">
+                  <span>{t.label} ({t.rate}%)</span>
+                  <span className="tabular-nums">{formatCurrency(t.amount, currency)}</span>
                 </div>
-              )}
-              {vatEnabled && vatAmount > 0 && (
-                <div className="flex justify-between text-gray-500">
-                  <span>{vatLabel || "VAT"} ({vatRate}%)</span>
-                  <span className="tabular-nums">{formatCurrency(vatAmount, currency)}</span>
-                </div>
-              )}
+              ))}
               <div
                 className="border-t pt-2 flex justify-between font-black text-sm"
                 style={{ borderColor: `${accent}40`, color: accent }}

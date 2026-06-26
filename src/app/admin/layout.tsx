@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { ClerkProvider, useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Users, Settings, BarChart2, MessageSquare, Megaphone, ScrollText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,7 @@ const adminNav = [
   { href: "/admin/audit-log", label: "Audit Log", icon: ScrollText },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
 
@@ -66,5 +67,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
       <main className="flex-1 bg-gray-25 px-8 py-6">{children}</main>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/onboarding"
+    >
+      <ThemeProvider>
+        <AdminLayoutInner>{children}</AdminLayoutInner>
+      </ThemeProvider>
+    </ClerkProvider>
   );
 }

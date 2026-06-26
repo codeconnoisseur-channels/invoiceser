@@ -101,6 +101,7 @@ export const getPublicInvoiceData = query({
             showBusinessWebsite: settings.showBusinessWebsite,
             hideBranding:        settings.hideBranding,
             invoiceFont:         settings.invoiceFont,
+            logoStorageId:       settings.logoStorageId,
           }
         : null,
       logoUrl,
@@ -114,6 +115,13 @@ export const getInvoiceByPublicId = query({
   handler: async (ctx, args) => {
     return ctx.db.get(args.invoiceId);
   },
+});
+
+const taxLineValidator = v.object({
+  id: v.string(),
+  label: v.string(),
+  rate: v.number(),
+  amount: v.number(),
 });
 
 export const createInvoice = mutation({
@@ -142,6 +150,15 @@ export const createInvoice = mutation({
     notes: v.optional(v.string()),
     paymentInstructions: v.optional(v.string()),
     paymentTerms: v.optional(v.string()),
+    fromName: v.optional(v.string()),
+    fromAddress: v.optional(v.string()),
+    fromPhone: v.optional(v.string()),
+    fromEmail: v.optional(v.string()),
+    brandColor: v.optional(v.string()),
+    invoiceFont: v.optional(v.string()),
+    hideBranding: v.optional(v.boolean()),
+    taxLines: v.optional(v.array(taxLineValidator)),
+    fromLogoStorageId: v.optional(v.id("_storage")),
     asDraft: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -190,6 +207,15 @@ export const createInvoice = mutation({
       notes: args.notes,
       paymentInstructions: args.paymentInstructions,
       paymentTerms: args.paymentTerms,
+      fromName: args.fromName,
+      fromAddress: args.fromAddress,
+      fromPhone: args.fromPhone,
+      fromEmail: args.fromEmail,
+      brandColor: args.brandColor,
+      invoiceFont: args.invoiceFont,
+      hideBranding: args.hideBranding,
+      taxLines: args.taxLines,
+      fromLogoStorageId: args.fromLogoStorageId,
       publicToken: token,
       sentAt: args.asDraft ? undefined : Date.now(),
       createdAt: Date.now(),
@@ -242,6 +268,15 @@ export const updateDraftInvoice = mutation({
     notes: v.optional(v.string()),
     paymentInstructions: v.optional(v.string()),
     paymentTerms: v.optional(v.string()),
+    fromName: v.optional(v.string()),
+    fromAddress: v.optional(v.string()),
+    fromPhone: v.optional(v.string()),
+    fromEmail: v.optional(v.string()),
+    brandColor: v.optional(v.string()),
+    invoiceFont: v.optional(v.string()),
+    hideBranding: v.optional(v.boolean()),
+    taxLines: v.optional(v.array(taxLineValidator)),
+    fromLogoStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -465,6 +500,15 @@ export const reissueInvoice = mutation({
       total: original.total,
       notes: original.notes,
       paymentInstructions: original.paymentInstructions,
+      fromName: original.fromName,
+      fromAddress: original.fromAddress,
+      fromPhone: original.fromPhone,
+      fromEmail: original.fromEmail,
+      brandColor: original.brandColor,
+      invoiceFont: original.invoiceFont,
+      hideBranding: original.hideBranding,
+      taxLines: original.taxLines,
+      fromLogoStorageId: original.fromLogoStorageId,
       publicToken: token,
       reissuedFromId: args.invoiceId,
       createdAt: Date.now(),

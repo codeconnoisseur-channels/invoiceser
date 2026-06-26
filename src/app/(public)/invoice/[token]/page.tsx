@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "../../../../../convex/_generated/api";
 import { FileText, ArrowDown, ExternalLink, Download } from "lucide-react";
 import { InvoicePreview } from "@/components/invoices/invoice-preview";
 import { formatCurrency } from "@/lib/currency";
@@ -65,21 +65,21 @@ export default function PublicInvoicePage() {
       <div className="py-10 px-4">
         <div className="max-w-[600px] mx-auto">
           <InvoicePreview
-            companyName={biz?.companyName ?? ""}
+            companyName={invoice.fromName || biz?.companyName || ""}
             logoUrl={logoUrl}
-            brandColor={biz?.brandColor ?? "#2563EB"}
-            businessAddress={biz?.businessAddress ?? ""}
-            businessCity={biz?.businessCity ?? ""}
-            businessCountry={biz?.businessCountry ?? ""}
-            businessPhone={biz?.businessPhone ?? ""}
-            businessEmail={biz?.businessEmail ?? ""}
-            businessWebsite={biz?.businessWebsite ?? ""}
-            showBusinessAddress={biz?.showBusinessAddress}
-            showBusinessPhone={biz?.showBusinessPhone}
-            showBusinessEmail={biz?.showBusinessEmail}
-            showBusinessWebsite={biz?.showBusinessWebsite}
-            hideBranding={biz?.hideBranding}
-            invoiceFont={biz?.invoiceFont}
+            brandColor={invoice.brandColor || biz?.brandColor || "#2563EB"}
+            businessAddress={invoice.fromAddress || biz?.businessAddress || ""}
+            businessCity=""
+            businessCountry=""
+            businessPhone={invoice.fromPhone || biz?.businessPhone || ""}
+            businessEmail={invoice.fromEmail || biz?.businessEmail || ""}
+            businessWebsite=""
+            showBusinessAddress={true}
+            showBusinessPhone={true}
+            showBusinessEmail={true}
+            showBusinessWebsite={false}
+            hideBranding={invoice.hideBranding ?? biz?.hideBranding}
+            invoiceFont={invoice.invoiceFont || biz?.invoiceFont || "default"}
             invoiceNumber={invoice.invoiceNumber}
             issueDate={invoice.issueDate}
             dueDate={invoice.dueDate}
@@ -90,15 +90,16 @@ export default function PublicInvoicePage() {
             lineItems={invoice.lineItems}
             currency={invoice.currency}
             subtotal={invoice.subtotal}
-            hasTax={invoice.salesTaxEnabled || invoice.vatEnabled}
-            salesTaxEnabled={invoice.salesTaxEnabled}
-            salesTaxAmount={invoice.salesTaxAmount ?? 0}
-            salesTaxLabel={invoice.salesTaxLabel}
-            salesTaxRate={invoice.salesTaxRate}
-            vatEnabled={invoice.vatEnabled}
-            vatAmount={invoice.vatAmount ?? 0}
-            vatLabel={invoice.vatLabel}
-            vatRate={invoice.vatRate}
+            hasTax={(invoice.taxLines && invoice.taxLines.length > 0) || invoice.salesTaxEnabled || invoice.vatEnabled}
+            salesTaxEnabled={false}
+            salesTaxAmount={0}
+            salesTaxLabel=""
+            salesTaxRate={0}
+            vatEnabled={false}
+            vatAmount={0}
+            vatLabel=""
+            vatRate={0}
+            taxLines={invoice.taxLines as { id: string; label: string; rate: number; amount: number }[] | undefined}
             total={invoice.total}
             paymentInstructions={invoice.paymentInstructions}
             notes={invoice.notes}

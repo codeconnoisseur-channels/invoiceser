@@ -8,6 +8,7 @@ import {
   Users,
   BarChart2,
   Sparkles,
+  Building2,
   Settings,
   HelpCircle,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/clients",   label: "Clients",   icon: Users         },
   { href: "/invoices",  label: "Invoices",  icon: FileText      },
+  { href: "/business",  label: "Business",  icon: Building2     },
   { href: "/analytics", label: "Analytics", icon: BarChart2     },
   { href: "/ai",        label: "AI",        icon: Sparkles      },
 ];

@@ -1,7 +1,7 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Brand side */}
@@ -11,30 +11,46 @@ export default function SignInPage() {
             Invoice<span className="text-blue-200">ser</span>
           </Link>
         </div>
-        <div>
-          <blockquote className="text-lg font-medium leading-relaxed">
-            &ldquo;Invoiceser saved me hours every month. My clients pay faster, and I
-            never have to chase invoices manually.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-sm text-blue-200">— Alex, Freelance Designer</p>
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold leading-tight">
+            Invoicing that gets you paid faster.
+          </h1>
+          <ul className="space-y-3 text-sm text-blue-100">
+            <li className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs font-bold">✓</span>
+              Unlimited invoices and clients — always free
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs font-bold">✓</span>
+              Auto-reminders so you never chase a payment
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs font-bold">✓</span>
+              Multi-currency support for global freelancers
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs font-bold">✓</span>
+              AI-powered cash flow insights
+            </li>
+          </ul>
         </div>
         <p className="text-sm text-blue-200">
           © {new Date().getFullYear()} Invoiceser. All rights reserved.
         </p>
       </div>
       {/* Form side */}
-      <div className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
+      <div className="flex items-start lg:items-center justify-center px-6 py-8 sm:py-12 overflow-y-auto min-h-0">
+        <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <Link href="/" className="text-xl font-bold tracking-tight text-gray-900">
               Invoice<span className="text-blue-600">ser</span>
             </Link>
           </div>
-          <SignIn
+          <SignUp
             appearance={{
               elements: {
                 rootBox: "w-full",
-                card: "shadow-none p-0",
+                card: "shadow-none",
                 headerTitle: "text-2xl font-bold text-gray-900",
                 headerSubtitle: "text-sm text-gray-500 mt-1",
                 socialButtonsBlockButton:

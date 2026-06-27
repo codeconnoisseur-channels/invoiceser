@@ -8,11 +8,11 @@ It eliminates the friction of manual billing by automating invoice generation, t
 
 ## 📚 Documentation
 
-### 🎯 [Product Overview & Requirements](./docs/PRODUCT_REQUIREMENTS.md)
+### 🎯 [Product Overview & Requirements](./docs/PRODUCT_REQUIREMENT_DOCUMENT.md)
 *For Product Managers, Stakeholders, and Visionaries.*
 Understand the core problems Invoiceser solves and the data-driven product strategy. View the complete feature breakdown, target audience personas, and a comprehensive, multi-phase future roadmap spanning from MVP to a full ecosystem.
 
-### 🏗️ [Architecture & System Design](./docs/ARCHITECTURE.md)
+### 🏗️ [Architecture & System Design](./docs/SYSTEM_ARCHITECTURE.md)
 *For Technical Product Managers (TPMs) and Systems Architects.*
 Dive into the technical architecture that powers our real-time engine. This document includes deep-dive diagrams visualizing:
 - System Architecture (including PostHog Analytics and Groq LLMs)
@@ -20,7 +20,7 @@ Dive into the technical architecture that powers our real-time engine. This docu
 - User Flows & Payment Lifecycles
 - Automated Reminders Flow (via SMTP/Nodemailer)
 
-### 💻 [Development Guide](./docs/DEVELOPMENT.md)
+### 💻 [Development Guide](./docs/DEVELOPMENT_SETUP.md)
 *For Engineers and Technical Contributors.*
 Get the project running locally in minutes. This comprehensive guide covers the technology stack, environment variables, required third-party services (Clerk, Convex, KoraPay, PostHog), project structure, and Vercel deployment steps.
 

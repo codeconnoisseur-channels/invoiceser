@@ -4,18 +4,18 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import {
-  BarChart, Bar, LineChart, Line,
+  BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/currency";
-import { BarChart2, TrendingUp, TrendingDown, Sparkles, AlertTriangle, CalendarCheck } from "lucide-react";
+import { BarChart2, TrendingUp, TrendingDown, Sparkles, PieChart as PieChartIcon, AlertTriangle, CalendarCheck, AreaChart as AreaChartIcon } from "lucide-react";
 import { UpgradeButton } from "@/components/upgrade-modal";
 
 type Range     = "30d" | "90d" | "365d" | "all";
-type ChartType = "bar" | "line";
+type ChartType = "bar" | "area";
 
 const STATUS_COLORS: Record<string, string> = {
   draft:   "#D1D5DB",
@@ -44,7 +44,7 @@ function TrendBadge({ current, prev, label }: { current: number; prev: number; l
 }
 
 export default function AnalyticsPage() {
-  const [range,     setRange]     = useState<Range>("365d");
+  const [range,     setRange]     = useState<Range>("30d");
   const [chartType, setChartType] = useState<ChartType>("bar");
 
   const currentUser = useQuery(api.users.getCurrentUserQuery);
@@ -202,7 +202,7 @@ export default function AnalyticsPage() {
               <BarChart2 key="b" className="w-4.5 h-4.5 text-white" />,
               <TrendingUp key="t" className="w-4.5 h-4.5 text-white" />,
               <CalendarCheck key="c" className="w-4.5 h-4.5 text-white" />,
-              <Sparkles key="s" className="w-4.5 h-4.5 text-white" />,
+              <PieChartIcon key="s" className="w-4.5 h-4.5 text-white" />,
             ];
             return (
               <div key={s.label} className={`group rounded-2xl ${bgColors[i]} border border-gray-200/50 dark:border-gray-800 border-l-4 ${borderColors[i]} shadow-card dark:shadow-card-dark p-6 relative overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg`}>
@@ -219,7 +219,7 @@ export default function AnalyticsPage() {
                   </div>
                 ) : (
                   <div className="relative z-10">
-                    <p className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{s.value}</p>
+                    <p className="text-2xl lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{s.value}</p>
                     {showTrend
                       ? <TrendBadge current={s.current} prev={s.prev} label={s.sub} />
                       : <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">{s.sub}</p>}
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
             <div className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 shadow-sm">
               {([
                 { type: "bar",  icon: <BarChart2  className="w-3.5 h-3.5" />, title: "Bar"  },
-                { type: "line", icon: <TrendingUp className="w-3.5 h-3.5" />, title: "Line" },
+                { type: "area", icon: <AreaChartIcon className="w-3.5 h-3.5" />, title: "Area" },
               ] as { type: ChartType; icon: React.ReactNode; title: string }[]).map(({ type, icon, title }) => (
                 <button
                   key={type}
@@ -280,13 +280,23 @@ export default function AnalyticsPage() {
                     <Bar dataKey="Collected" fill="#10B981" radius={[4,4,0,0]} />
                   </BarChart>
                 ) : (
-                  <LineChart data={monthlyData} margin={{ left: 0, right: 4 }}>
+                  <AreaChart data={monthlyData} margin={{ left: 0, right: 4 }}>
+                    <defs>
+                      <linearGradient id="colorBilled" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorCollected" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <XAxis dataKey="month" {...axisProps} axisLine={false} />
                     <YAxis {...axisProps} axisLine={false} tickFormatter={fmtTip} width={70} />
                     <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} />
-                    <Line type="monotone" dataKey="Billed"    stroke="#3B82F6" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 5 }} />
-                    <Line type="monotone" dataKey="Collected" stroke="#10B981" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 5 }} />
-                  </LineChart>
+                    <Area type="monotone" dataKey="Billed"    stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorBilled)" />
+                    <Area type="monotone" dataKey="Collected" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorCollected)" />
+                  </AreaChart>
                 )}
               </ResponsiveContainer>
             )}
@@ -301,7 +311,7 @@ export default function AnalyticsPage() {
           <CardHeader className="pb-4 pt-5 px-6 border-b border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/70 dark:bg-emerald-950/30">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-md">
-                <Sparkles className="w-4 h-4 text-white" />
+                <PieChartIcon className="w-4 h-4 text-white" />
               </div>
               <CardTitle className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Invoice Status</CardTitle>
             </div>

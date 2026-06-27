@@ -61,7 +61,7 @@ function StatCard({
         </>
       ) : (
         <>
-          <p className={`text-3xl font-extrabold ${t.valColor} tracking-tight tabular-nums`}>{value}</p>
+          <p className={`text-2xl lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold ${t.valColor} tracking-tight tabular-nums`}>{value}</p>
           {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">{sub}</p>}
         </>
       )}

@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { FilePlus, FileText, Download, Search, X, CheckSquare, Square, CheckCheck, AlertTriangle, Trash2, MoreHorizontal } from "lucide-react";
+import { FilePlus, FileText, Download, Search, X, CheckSquare, Square, CheckCheck, AlertTriangle, Trash2, MoreHorizontal, Hash, User, Calendar, Banknote, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -214,12 +214,12 @@ function InvoicesContent() {
         ) : (
           <>
             {/* Mobile card list */}
-            <div className="sm:hidden divide-y divide-gray-50 dark:divide-gray-800/50">
+            <div className="sm:hidden space-y-4">
               {visible.map((inv) => (
                 <div
                   key={inv._id}
-                  className={`px-5 py-4 flex flex-col gap-3 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-800/40 active:bg-gray-100 dark:active:bg-gray-800 transition-colors group relative ${
-                    selected.has(inv._id) ? "bg-blue-50/40 dark:bg-blue-900/10" : ""
+                  className={`px-5 py-4 flex flex-col gap-3 cursor-pointer rounded-2xl border border-gray-200/70 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900 transition-all duration-200 group relative ${
+                    selected.has(inv._id) ? "bg-blue-50/40 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800/50" : ""
                   }`}
                   onClick={() => (window.location.href = `/invoices/${inv._id}`)}
                 >
@@ -232,15 +232,15 @@ function InvoicesContent() {
                           else next.add(inv._id);
                           setSelected(next);
                         }}
-                        className="p-1 -ml-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        className="p-1 -ml-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                       >
                         {selected.has(inv._id)
                           ? <CheckSquare className="w-5 h-5 text-blue-600" />
                           : <Square className="w-5 h-5 text-gray-400" />
                         }
                       </button>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold tracking-wider text-blue-600 dark:text-blue-400">{inv.invoiceNumber}</p>
+                      <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-md border border-blue-100 dark:border-blue-800/50">
+                        <p className="text-xs font-bold tracking-wider text-blue-600 dark:text-blue-400">{inv.invoiceNumber}</p>
                         <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[inv.status] ?? "bg-gray-300"}`} />
                       </div>
                     </div>
@@ -279,12 +279,14 @@ function InvoicesContent() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between pl-9">
+                  <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0 pr-4">
                       <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {inv.clientSnapshot.fullName}
                       </p>
-                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Due: {formatDate(inv.dueDate)}</p>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+                        <Calendar className="w-3 h-3" /> Due: {formatDate(inv.dueDate)}
+                      </p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-lg font-extrabold tabular-nums text-gray-900 dark:text-gray-100">{formatCurrency(inv.total, inv.currency)}</p>
@@ -297,7 +299,7 @@ function InvoicesContent() {
             {/* Desktop table */}
             <table className="hidden sm:table w-full text-left">
               <thead>
-                <tr className="border-b border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-900/20">
+                <tr className="border-b border-gray-200/70 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
                   <th className="px-6 py-4 w-12 font-medium">
                     <button onClick={() => {
                       if (selected.size === visible.length) setSelected(new Set());
@@ -309,12 +311,24 @@ function InvoicesContent() {
                       }
                     </button>
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36">Invoice #</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Client</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 hidden md:table-cell">Issued</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 hidden md:table-cell">Due</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36 text-right">Amount</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36">Status</th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36">
+                    <div className="flex items-center gap-1.5"><Hash className="w-3.5 h-3.5 text-blue-500" /> Invoice</div>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-violet-500" /> Client</div>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 hidden md:table-cell">
+                    <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-amber-500" /> Issued</div>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 hidden md:table-cell">
+                    <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-rose-500" /> Due</div>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36 text-right">
+                    <div className="flex items-center justify-end gap-1.5"><Banknote className="w-3.5 h-3.5 text-emerald-500" /> Amount</div>
+                  </th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36">
+                    <div className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-indigo-500" /> Status</div>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">

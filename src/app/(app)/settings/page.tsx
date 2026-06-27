@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -54,19 +54,17 @@ function blankAccount(id?: string): PaymentAccountState {
 // ─── Sub-components ─────────────────────────────────────────────────────────────
 
 function Section({
-  icon, title, description, children, onSave, saving,
+  icon, title, description, children,
 }: {
   icon: React.ReactNode;
   title: string;
   description?: string;
   children: React.ReactNode;
-  onSave: () => void;
-  saving: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200/50 dark:border-slate-900/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
-      <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-900/30 bg-slate-50/70 dark:bg-slate-950/30">
-        <div className="w-8 h-8 rounded-lg bg-slate-500 flex items-center justify-center shrink-0 shadow-md">
+    <div className="rounded-2xl bg-white dark:bg-gray-800/80 border border-slate-200/50 dark:border-slate-800/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
+      <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-800/30 bg-slate-50/70 dark:bg-slate-900/50">
+        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center shrink-0 shadow-sm">
           {icon}
         </div>
         <div className="pt-1.5">
@@ -75,11 +73,6 @@ function Section({
         </div>
       </div>
       <div className="px-6 py-6 space-y-6">{children}</div>
-      <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/50 flex justify-end">
-        <Button onClick={onSave} disabled={saving} size="sm" className="gap-2 h-9 font-semibold shadow-sm transition-all hover:scale-105 bg-slate-500 hover:bg-slate-600 text-white">
-          {saving ? "Saving…" : <><CheckCircle2 className="w-4 h-4" />Save Changes</>}
-        </Button>
-      </div>
     </div>
   );
 }
@@ -252,10 +245,79 @@ export default function SettingsPage() {
     autoReminderDaysBefore: 3,
     autoReminderDaysAfter: 3,
   });
-  const [savingBusiness,  setSavingBusiness]  = useState(false);
-  const [savingTax,       setSavingTax]       = useState(false);
-  const [savingPayment,   setSavingPayment]   = useState(false);
-  const [savingReminder,  setSavingReminder]  = useState(false);
+  const prevBusiness = useRef(business);
+  const prevTax = useRef(tax);
+  const prevPayment = useRef(payment);
+  const prevReminder = useRef(reminder);
+
+  useEffect(() => {
+    if (!settings) return;
+    const isDirty = JSON.stringify(business) !== JSON.stringify(prevBusiness.current);
+    if (!isDirty) return;
+    const t = setTimeout(() => {
+      prevBusiness.current = business;
+      saveBusiness();
+    }, 3000);
+    return () => {
+      clearTimeout(t);
+      if (JSON.stringify(business) !== JSON.stringify(prevBusiness.current)) {
+        prevBusiness.current = business;
+        saveBusiness();
+      }
+    };
+  }, [business, settings]);
+
+  useEffect(() => {
+    if (!settings) return;
+    const isDirty = JSON.stringify(tax) !== JSON.stringify(prevTax.current);
+    if (!isDirty) return;
+    const t = setTimeout(() => {
+      prevTax.current = tax;
+      saveTax();
+    }, 3000);
+    return () => {
+      clearTimeout(t);
+      if (JSON.stringify(tax) !== JSON.stringify(prevTax.current)) {
+        prevTax.current = tax;
+        saveTax();
+      }
+    };
+  }, [tax, settings]);
+
+  useEffect(() => {
+    if (!settings) return;
+    const isDirty = JSON.stringify(payment) !== JSON.stringify(prevPayment.current);
+    if (!isDirty) return;
+    const t = setTimeout(() => {
+      prevPayment.current = payment;
+      saveDefaultPayment();
+    }, 3000);
+    return () => {
+      clearTimeout(t);
+      if (JSON.stringify(payment) !== JSON.stringify(prevPayment.current)) {
+        prevPayment.current = payment;
+        saveDefaultPayment();
+      }
+    };
+  }, [payment, settings]);
+
+  useEffect(() => {
+    if (!settings) return;
+    const isDirty = JSON.stringify(reminder) !== JSON.stringify(prevReminder.current);
+    if (!isDirty) return;
+    const t = setTimeout(() => {
+      prevReminder.current = reminder;
+      saveReminderSettings();
+    }, 3000);
+    return () => {
+      clearTimeout(t);
+      if (JSON.stringify(reminder) !== JSON.stringify(prevReminder.current)) {
+        prevReminder.current = reminder;
+        saveReminderSettings();
+      }
+    };
+  }, [reminder, settings]);
+
   const [uploading,       setUploading]       = useState(false);
   const [shownOptional,   setShownOptional]   = useState<Set<string>>(new Set());
   const [showDefaultAcct, setShowDefaultAcct] = useState(false);
@@ -291,6 +353,27 @@ export default function SettingsPage() {
       customEmailDomain:   (settings as { customEmailDomain?: string }).customEmailDomain ?? "",
       emailTemplate:       (settings as { emailTemplate?: string }).emailTemplate ?? "",
     });
+    prevBusiness.current = {
+      companyName:         settings.companyName,
+      displayName:         settings.displayName         ?? "",
+      defaultCurrency:     settings.defaultCurrency,
+      invoicePrefix:       settings.invoicePrefix,
+      brandColor:          settings.brandColor          ?? "",
+      businessAddress:     settings.businessAddress     ?? "",
+      businessCity:        settings.businessCity        ?? "",
+      businessCountry:     settings.businessCountry     ?? "",
+      businessPhone:       settings.businessPhone       ?? "",
+      businessEmail:       settings.businessEmail       ?? "",
+      businessWebsite:     settings.businessWebsite     ?? "",
+      showBusinessAddress: settings.showBusinessAddress ?? true,
+      showBusinessPhone:   settings.showBusinessPhone   ?? true,
+      showBusinessEmail:   settings.showBusinessEmail   ?? true,
+      showBusinessWebsite: settings.showBusinessWebsite ?? true,
+      hideBranding:        (settings as { hideBranding?: boolean }).hideBranding ?? false,
+      invoiceFont:         (settings as { invoiceFont?: string }).invoiceFont ?? "default",
+      customEmailDomain:   (settings as { customEmailDomain?: string }).customEmailDomain ?? "",
+      emailTemplate:       (settings as { emailTemplate?: string }).emailTemplate ?? "",
+    };
     setTax({
       salesTaxLabel:  settings.salesTaxLabel ?? "",
       salesTaxRate:   settings.salesTaxRate  != null ? String(settings.salesTaxRate) : "",
@@ -299,6 +382,14 @@ export default function SettingsPage() {
       vatRate:        settings.vatRate   != null ? String(settings.vatRate) : "",
       vatActive:      settings.vatActive,
     });
+    prevTax.current = {
+      salesTaxLabel:  settings.salesTaxLabel ?? "",
+      salesTaxRate:   settings.salesTaxRate  != null ? String(settings.salesTaxRate) : "",
+      salesTaxActive: settings.salesTaxActive,
+      vatLabel:       settings.vatLabel ?? "",
+      vatRate:        settings.vatRate   != null ? String(settings.vatRate) : "",
+      vatActive:      settings.vatActive,
+    };
     setPayment({
       bankName:      settings.paymentBankName      ?? "",
       accountName:   settings.paymentAccountName   ?? "",
@@ -308,6 +399,15 @@ export default function SettingsPage() {
       swiftBic:      settings.paymentSwiftBic      ?? "",
       paymentLink:   settings.paymentLink           ?? "",
     });
+    prevPayment.current = {
+      bankName:      settings.paymentBankName      ?? "",
+      accountName:   settings.paymentAccountName   ?? "",
+      accountNumber: settings.paymentAccountNumber ?? "",
+      sortCode:      settings.paymentSortCode      ?? "",
+      iban:          settings.paymentIban           ?? "",
+      swiftBic:      settings.paymentSwiftBic      ?? "",
+      paymentLink:   settings.paymentLink           ?? "",
+    };
     const io = new Set<string>();
     if (settings.paymentSortCode) io.add("sortCode");
     if (settings.paymentIban)     io.add("iban");
@@ -319,6 +419,11 @@ export default function SettingsPage() {
       autoReminderDaysBefore: settings.autoReminderDaysBefore ?? 3,
       autoReminderDaysAfter:  settings.autoReminderDaysAfter  ?? 3,
     });
+    prevReminder.current = {
+      autoReminderEnabled:    settings.autoReminderEnabled    ?? false,
+      autoReminderDaysBefore: settings.autoReminderDaysBefore ?? 3,
+      autoReminderDaysAfter:  settings.autoReminderDaysAfter  ?? 3,
+    };
 
     if (settings.paymentAccounts) {
       setPaymentAccounts(settings.paymentAccounts.map((a) => ({
@@ -346,7 +451,6 @@ export default function SettingsPage() {
       return;
     }
     try {
-      setSavingBusiness(true);
       await updateCompany({
         companyName:         business.companyName,
         displayName:         business.displayName     || undefined,
@@ -368,14 +472,12 @@ export default function SettingsPage() {
         customEmailDomain:   business.customEmailDomain || undefined,
         emailTemplate:       business.emailTemplate || undefined,
       });
-      toast.success("Business profile saved");
+      toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
-    finally { setSavingBusiness(false); }
   }
 
   async function saveTax() {
     try {
-      setSavingTax(true);
       await updateTax({
         salesTaxLabel:  tax.salesTaxLabel || undefined,
         salesTaxRate:   tax.salesTaxRate ? Number(tax.salesTaxRate) : undefined,
@@ -384,14 +486,12 @@ export default function SettingsPage() {
         vatRate:        tax.vatRate      ? Number(tax.vatRate)      : undefined,
         vatActive:      tax.vatActive,
       });
-      toast.success("Tax settings saved");
+      toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
-    finally { setSavingTax(false); }
   }
 
   async function saveDefaultPayment() {
     try {
-      setSavingPayment(true);
       await updatePaymentDetails({
         paymentBankName:      payment.bankName      || undefined,
         paymentAccountName:   payment.accountName   || undefined,
@@ -401,9 +501,8 @@ export default function SettingsPage() {
         paymentSwiftBic:      payment.swiftBic      || undefined,
         paymentLink:          payment.paymentLink    || undefined,
       });
-      toast.success("Default payment saved");
+      toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
-    finally { setSavingPayment(false); }
   }
 
   async function savePaymentAccounts(accounts: PaymentAccountState[]) {
@@ -424,15 +523,13 @@ export default function SettingsPage() {
 
   async function saveReminderSettings() {
     try {
-      setSavingReminder(true);
       await updateReminder({
         autoReminderEnabled:    reminder.autoReminderEnabled,
         autoReminderDaysBefore: reminder.autoReminderEnabled ? reminder.autoReminderDaysBefore : undefined,
         autoReminderDaysAfter:  reminder.autoReminderEnabled ? reminder.autoReminderDaysAfter  : undefined,
       });
-      toast.success("Reminder settings saved");
+      toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
-    finally { setSavingReminder(false); }
   }
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -528,10 +625,8 @@ export default function SettingsPage() {
         <div className="space-y-6 animate-fade-in">
       {/* Business Profile */}
       <Section
-        icon={<Building2 className="w-4 h-4 text-white" />}
+        icon={<Building2 className="w-4 h-4" />}
         title="Business Profile"
-        onSave={saveBusiness}
-        saving={savingBusiness}
       >
         {/* Display name */}
         <div>
@@ -690,17 +785,7 @@ export default function SettingsPage() {
               <span className="text-[11px] text-gray-400">Show website on invoice</span>
             </div>
           </div>
-          {/* Hide branding — now free */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
-            <div>
-              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Your brand only</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No Invoiceser mention appears on your invoices or PDFs</p>
-            </div>
-            <Switch
-              checked={business.hideBranding}
-              onCheckedChange={(v) => setBusiness((p) => ({ ...p, hideBranding: v }))}
-            />
-          </div>
+
 
           {/* Invoice font — now free */}
           <div className="pt-2">
@@ -733,12 +818,20 @@ export default function SettingsPage() {
       {/* Pro Features */}
       {currentUser !== undefined && isPro ? (
         <Section
-          icon={<Lock className="w-4 h-4 text-white" />}
+          icon={<Lock className="w-4 h-4" />}
           title="Pro Features"
-          onSave={saveBusiness}
-          saving={savingBusiness}
         >
           <div className="space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+              <div>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Remove Branding</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No Invoiceser mention appears on your invoices or PDFs</p>
+              </div>
+              <Switch
+                checked={business.hideBranding}
+                onCheckedChange={(v) => setBusiness((p) => ({ ...p, hideBranding: v }))}
+              />
+            </div>
             <div>
               <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Custom Email Domain <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
               <Input
@@ -775,10 +868,8 @@ export default function SettingsPage() {
       {activeTab === "tax" && (
         <div className="space-y-6 animate-fade-in">
         <Section
-          icon={<Receipt className="w-4 h-4 text-white" />}
+          icon={<Receipt className="w-4 h-4" />}
           title="Tax Configuration"
-          onSave={saveTax}
-          saving={savingTax}
         >
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-3">
             <div className="flex items-center justify-between">
@@ -829,8 +920,8 @@ export default function SettingsPage() {
         <div className="space-y-6 animate-fade-in">
       <div className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200/50 dark:border-slate-900/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
         <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-900/30 bg-slate-50/70 dark:bg-slate-950/30">
-          <div className="w-8 h-8 rounded-lg bg-slate-500 flex items-center justify-center shrink-0 shadow-md">
-            <CreditCard className="w-4 h-4 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center shrink-0 shadow-sm">
+            <CreditCard className="w-4 h-4" />
           </div>
           <div className="pt-1.5">
             <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none">Payment Accounts</h2>
@@ -906,11 +997,7 @@ export default function SettingsPage() {
                   </div>
                   <FieldRow label="URL" placeholder="e.g. https://paystack.com/pay/yourname" value={payment.paymentLink} onChange={(v) => setPayment((p) => ({ ...p, paymentLink: v }))} optional type="url" />
                 </div>
-                <div className="flex justify-end pt-2">
-                  <Button size="sm" onClick={saveDefaultPayment} disabled={savingPayment} className="gap-2 h-9 font-semibold shadow-sm transition-transform hover:scale-105">
-                    {savingPayment ? "Saving…" : <><CheckCircle2 className="w-4 h-4" />Save Default</>}
-                  </Button>
-                </div>
+
               </div>
             )}
           </div>
@@ -986,10 +1073,8 @@ export default function SettingsPage() {
       {activeTab === "reminders" && (
         <div className="space-y-6 animate-fade-in">
       <Section
-        icon={<Bell className="w-4 h-4 text-white" />}
+        icon={<Bell className="w-4 h-4" />}
         title="Automated Reminders"
-        onSave={saveReminderSettings}
-        saving={savingReminder}
       >
         <div className="flex items-center justify-between">
           <div>

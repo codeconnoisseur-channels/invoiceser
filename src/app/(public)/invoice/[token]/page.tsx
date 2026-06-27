@@ -61,7 +61,7 @@ export default function PublicInvoicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-100 pb-10">
       <div className="py-10 px-4">
         <div className="max-w-[600px] mx-auto">
           <InvoicePreview
@@ -104,62 +104,6 @@ export default function PublicInvoicePage() {
             paymentInstructions={invoice.paymentInstructions}
             notes={invoice.notes}
           />
-        </div>
-      </div>
-
-      {/* Sticky Pay Now bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-10">
-        <div className="max-w-[600px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs text-gray-500">Total Due</p>
-            <p className="text-lg font-bold text-gray-900 tabular-nums">
-              {formatCurrency(invoice.total, invoice.currency)}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {!invoice.paidAt && invoice.status !== "voided" && invoice.status !== "draft" && (
-              <>
-                <a
-                  href={`/api/pdf/${invoice._id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  PDF
-                </a>
-                {paymentUrls.length > 0 ? (
-                  <a
-                    href={paymentUrls[0]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
-                  >
-                    Pay Now
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                ) : (
-                  <button
-                    onClick={scrollToPayment}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
-                  >
-                    View Payment Details
-                    <ArrowDown className="w-4 h-4" />
-                  </button>
-                )}
-              </>
-            )}
-            {invoice.status === "paid" && (
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-5 py-2.5 text-sm font-semibold text-green-700 border border-green-200">
-                Paid
-              </span>
-            )}
-            {invoice.status === "voided" && (
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 px-5 py-2.5 text-sm font-semibold text-gray-500 border border-gray-200">
-                Voided
-              </span>
-            )}
-          </div>
         </div>
       </div>
     </div>

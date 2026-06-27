@@ -32,7 +32,6 @@ export function Pricing() {
           "PDF download & email delivery",
           "Automatic payment reminders",
           "Logo upload & brand colour",
-          "No Invoiceser mention on invoices",
           "Custom invoice fonts",
           "AI chatbot (10 queries/month)",
         ],
@@ -48,6 +47,7 @@ export function Pricing() {
         description: "For freelancers who want the full picture.",
         features: [
           "Everything in Free",
+          "No Invoiceser mention on invoices",
           "Predictive analytics & revenue forecasts",
           "Unlimited AI chatbot queries",
           "Custom email domain & editable templates",
@@ -69,7 +69,6 @@ export function Pricing() {
           "PDF download & email delivery",
           "Automatic payment reminders",
           "Logo upload & brand colour",
-          "No Invoiceser mention on invoices",
           "Custom invoice fonts",
           "AI chatbot (10 queries/month)",
         ],
@@ -86,6 +85,7 @@ export function Pricing() {
         description: "For freelancers who want the full picture.",
         features: [
           "Everything in Free",
+          "No Invoiceser mention on invoices",
           "Predictive analytics & revenue forecasts",
           "Unlimited AI chatbot queries",
           "Custom email domain & editable templates",

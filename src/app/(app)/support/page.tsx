@@ -1,32 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { MessageSquare, Plus } from "lucide-react";
+import { MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { formatDate } from "@/lib/dates";
-import { timeAgo } from "@/lib/dates";
 import { toast } from "sonner";
 
 export default function SupportPage() {
-  const tickets = useQuery(api.support.listMyTickets);
   const createTicket = useMutation(api.support.createTicket);
 
-  const [formOpen, setFormOpen] = useState(false);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
@@ -38,116 +25,68 @@ export default function SupportPage() {
     }
     try {
       setSaving(true);
-      const ticketId = await createTicket({ subject, message });
-      setFormOpen(false);
+      // This will now just act as sending a message to admin via email
+      await createTicket({ subject, message });
       setSubject("");
       setMessage("");
-      toast.success("Support request submitted");
-      window.location.href = `/support/${ticketId}`;
+      toast.success("Your message has been sent to our support team!");
     } catch {
-      toast.error("Failed to submit request");
+      toast.error("Failed to send message. Please try again.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shadow-md">
-            <MessageSquare className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Help & Support</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Submit a request or view your support history</p>
-          </div>
+    <div className="max-w-2xl mx-auto animate-fade-in pb-12">
+      <div className="flex items-start gap-3 mb-8">
+        <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center ring-1 ring-teal-200 dark:ring-teal-800 mt-0.5 shrink-0 shadow-sm">
+          <MessageSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
         </div>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="w-4 h-4" />
-          Submit a Request
-        </Button>
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Contact Support</h1>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+            Need help? Send us a message and we'll get back to you via email.
+          </p>
+        </div>
       </div>
 
-      <Card className="rounded-2xl border-teal-200/50 dark:border-teal-900/30 shadow-card dark:shadow-card-dark overflow-hidden">
-        <CardContent className="p-0">
-          {tickets === undefined ? (
-            <div className="py-12 text-center text-sm text-gray-400">
-              Loading...
-            </div>
-          ) : tickets.length === 0 ? (
-            <div className="py-16 text-center">
-              <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-lg font-medium text-gray-700">
-                No support requests
-              </p>
-              <p className="text-sm text-gray-400 mt-1 mb-4">
-                Submit a request if you need help
-              </p>
-              <Button onClick={() => setFormOpen(true)}>
-                Submit a request
-              </Button>
-            </div>
-          ) : (
-            tickets.map((ticket) => (
-              <Link
-                key={ticket._id}
-                href={`/support/${ticket._id}`}
-                className="flex items-center justify-between px-5 py-4 border-b border-gray-50 hover:bg-gray-25 transition-colors last:border-0"
-              >
-                <div>
-                  <p className="text-sm font-medium text-gray-800">
-                    {ticket.subject}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {timeAgo(ticket.updatedAt)}
-                  </p>
-                </div>
-                <Badge variant={ticket.status}>
-                  {ticket.status.replace("_", " ")}
-                </Badge>
-              </Link>
-            ))
-          )}
+      <Card className="rounded-2xl border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark overflow-hidden bg-white dark:bg-gray-900">
+        <CardContent className="p-8 space-y-6">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+              Subject
+            </Label>
+            <Input
+              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 text-base focus-visible:ring-teal-500"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Brief description of your issue"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+              Message
+            </Label>
+            <Textarea
+              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 min-h-[160px] text-base p-3 resize-y focus-visible:ring-teal-500"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Describe how we can help you..."
+            />
+          </div>
+          
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+            <Button 
+              onClick={handleCreate} 
+              disabled={saving}
+              className="h-11 px-8 bg-teal-600 hover:bg-teal-700 text-white font-bold gap-2 shadow-sm shadow-teal-500/20"
+            >
+              {saving ? "Sending..." : <><Send className="w-4 h-4" /> Send Message</>}
+            </Button>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Submit a Support Request</DialogTitle>
-          </DialogHeader>
-          <div className="px-6 py-4 space-y-4">
-            <div>
-              <Label>Subject *</Label>
-              <Input
-                className="mt-1.5"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Brief description of your issue"
-              />
-            </div>
-            <div>
-              <Label>Message *</Label>
-              <Textarea
-                className="mt-1.5"
-                rows={5}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Describe your issue in detail..."
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFormOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreate} disabled={saving}>
-              Submit Request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

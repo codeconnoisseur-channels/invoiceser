@@ -257,8 +257,8 @@ export default function ClientsPage() {
           )}
         </div>
       ) : (
-        <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark overflow-hidden">
-          <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {paginated.map((c) => {
               const business = isBusiness(c);
               const primary  = primaryName(c);
@@ -266,92 +266,109 @@ export default function ClientsPage() {
               const avatarLetter = primary.charAt(0).toUpperCase();
 
               return (
-                <div key={c._id} className="flex flex-col sm:flex-row sm:items-center gap-4 px-6 py-5 hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors group relative">
-                  {/* Avatar */}
-                  <button
-                    onClick={() => router.push(`/invoices?clientId=${c._id}`)}
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border-2 cursor-pointer hover:scale-105 transition-transform ${avatarColor(primary)}`}
-                    title="View invoices"
-                  >
-                    {business
-                      ? <Building2 className="w-5 h-5" />
-                      : <span className="text-base font-extrabold">{avatarLetter}</span>
-                    }
-                  </button>
-
-                  {/* Primary Info */}
-                  <div className="flex-1 min-w-0">
-                    <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="text-left cursor-pointer group/name block">
-                      <p className="text-base font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">
-                        {primary}
-                      </p>
-                      {contact && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{contact}</p>
-                      )}
-                    </button>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-                      {c.address && (
-                        <p className="flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 truncate">
-                          <MapPin className="w-3.5 h-3.5" />{c.address}
+                <div key={c._id} className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark hover:shadow-md transition-all duration-200 overflow-hidden group">
+                  <div className="p-6 flex-1">
+                    <div className="flex items-start justify-between mb-4">
+                      <button
+                        onClick={() => router.push(`/invoices?clientId=${c._id}`)}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border-2 cursor-pointer hover:scale-105 transition-transform ${avatarColor(primary)}`}
+                        title="View invoices"
+                      >
+                        {business
+                          ? <Building2 className="w-5 h-5" />
+                          : <span className="text-base font-extrabold">{avatarLetter}</span>
+                        }
+                      </button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          onClick={() => openEdit(c._id)}
+                          title="Edit client"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-rose-600 dark:text-gray-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                          onClick={() => setDeleteConfirm(c._id)}
+                          title="Delete client"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="text-left cursor-pointer group/name block w-full">
+                        <p className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">
+                          {primary}
                         </p>
-                      )}
-                      {c.website && (
-                        <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 truncate transition-colors">
-                          <Globe className="w-3.5 h-3.5" />{c.website.replace("https://", "")}
-                        </a>
+                        {contact && (
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate mt-0.5">{contact}</p>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/40 p-3.5 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center shrink-0">
+                            <Mail className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email</p>
+                            <CopyEmail email={c.email} />
+                          </div>
+                        </div>
+                        
+                        {c.phone && (
+                          <div className="flex items-center gap-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
+                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center shrink-0">
+                              <Phone className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Phone</p>
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{c.phone}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {(c.address || c.website) && (
+                        <div className="space-y-2 px-1">
+                          {c.address && (
+                            <p className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
+                              <MapPin className="w-3.5 h-3.5 shrink-0 text-gray-400" />{c.address}
+                            </p>
+                          )}
+                          {c.website && (
+                            <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-medium text-blue-500 hover:text-blue-600 truncate transition-colors">
+                              <Globe className="w-3.5 h-3.5 shrink-0" />{c.website.replace("https://", "")}
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
-
-                  {/* Contact Info */}
-                  <div className="hidden md:block w-48 shrink-0 space-y-1.5 border-l border-gray-100 dark:border-gray-800 pl-4">
-                    <CopyEmail email={c.email} />
-                    {c.phone && (
-                      <p className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 truncate">
-                        <Phone className="w-3.5 h-3.5" />{c.phone}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0 transition-all duration-200">
+                  <div className="p-4 pt-0">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-3 text-xs font-semibold gap-2 border-gray-200 dark:border-gray-700 hover:border-blue-200 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:border-blue-800 dark:hover:text-blue-300 transition-colors shadow-sm"
+                      className="w-full h-10 text-sm font-bold gap-2 shadow-sm shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 text-white transition-all"
                       asChild
                     >
                       <Link href={`/invoices/new?clientId=${c._id}`}>
-                        <FileText className="w-3.5 h-3.5" />New Invoice
+                        <FileText className="w-4 h-4" />Create Invoice
                       </Link>
                     </Button>
-                    <div className="flex gap-1 border-l border-gray-100 dark:border-gray-800 pl-2 ml-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                        onClick={() => openEdit(c._id)}
-                        title="Edit client"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 text-gray-400 hover:text-rose-600 dark:text-gray-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
-                        onClick={() => setDeleteConfirm(c._id)}
-                        title="Delete client"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
           {hasMore && (
-            <div className="px-5 py-4 text-center">
+            <div className="px-5 py-4 text-center mt-6">
               <Button
                 variant="ghost"
                 size="sm"

@@ -17,12 +17,13 @@ export const SUPPORTED_CURRENCIES = [
 ] as const;
 
 export function formatCurrency(amount: number, currencyCode: string): string {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: currencyCode,
+  const symbol = getCurrencySymbol(currencyCode);
+  const num = new Intl.NumberFormat("en-GB", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+  // Using narrow symbol directly saves space compared to native currency style for some codes
+  return `${symbol}${num}`;
 }
 
 export function getCurrencySymbol(currencyCode: string): string {

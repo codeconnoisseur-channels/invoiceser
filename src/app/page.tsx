@@ -21,10 +21,18 @@ import {
   CreditCard,
   Settings,
   MoreHorizontal,
-  Instagram
+  Instagram,
+  Lock,
+  Clock,
+  AlertCircle,
+  TrendingUp,
+  TrendingDown,
+  Star
 } from "lucide-react";
 
 import { Pricing } from "@/components/home/pricing";
+import { CTA } from "@/components/home/cta";
+import { Footer } from "@/components/home/footer";
 
 const features = [
   {
@@ -102,7 +110,7 @@ const plans = [
     description: "For freelancers who want the full picture",
     features: [
       "Everything in Free",
-      "Predictive analytics & revenue forecasts",
+      "Analytics & revenue forecasts",
       "Unlimited AI chatbot queries",
       "Custom email domain & editable templates",
       "Priority support",
@@ -114,12 +122,12 @@ const plans = [
 ];
 
 const stats = [
-  { value: "2,400+", label: "Active freelancers" },
-  { value: "$4.2M", label: "Invoiced this month" },
-  { value: "98%", label: "On-time payments" },
-  { value: "< 2 min", label: "To create an invoice" },
-  { value: "150+", label: "Countries supported" },
-  { value: "4.9 / 5", label: "Average rating" },
+  { value: "2,400+", label: "Active freelancers", icon: Users, color: "text-blue-600", bg: "bg-blue-100" },
+  { value: "$4.2M", label: "Invoiced this month", icon: Banknote, color: "text-emerald-600", bg: "bg-emerald-100" },
+  { value: "98%", label: "On-time payments", icon: CheckCircle2, color: "text-amber-600", bg: "bg-amber-100" },
+  { value: "< 2 min", label: "To create an invoice", icon: Zap, color: "text-violet-600", bg: "bg-violet-100" },
+  { value: "150+", label: "Countries supported", icon: Globe, color: "text-rose-600", bg: "bg-rose-100" },
+  { value: "4.9 / 5", label: "Average rating", icon: Star, color: "text-orange-500", bg: "bg-orange-100" },
 ];
 
 const steps = [
@@ -242,7 +250,7 @@ export default function LandingPage() {
 
           {/* Dashboard Preview Image/Mockup */}
           <div className="mt-16 lg:mt-20 mx-auto max-w-6xl relative animate-fade-in [animation-delay:500ms] opacity-0 fill-mode-forwards">
-            <div className="relative rounded-2xl border border-gray-200/60 bg-white shadow-2xl overflow-hidden">
+            <div className="relative rounded-2xl border border-gray-200/60 bg-white shadow-2xl overflow-hidden ring-1 ring-black/5">
               {/* Browser chrome */}
               <div className="flex items-center gap-2 border-b border-gray-200/60 bg-white px-4 py-3">
                 <div className="flex gap-1.5">
@@ -251,30 +259,33 @@ export default function LandingPage() {
                   <div className="h-3 w-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
                 </div>
                 <div className="ml-4 flex-1 flex justify-center">
-                  <div className="w-64 rounded-md bg-gray-100/80 px-3 py-1 font-mono text-[10px] text-gray-400 text-center">
+                  <div className="w-64 flex items-center justify-center gap-2 rounded-md bg-gray-100/80 px-3 py-1 font-mono text-[10px] text-gray-400 text-center">
+                    <Lock className="w-3 h-3 text-gray-400" />
                     invoiceser.com
                   </div>
                 </div>
                 <div className="w-12" /> {/* Spacer */}
               </div>
               
-              <div className="p-2 sm:p-4 bg-gray-50/50 flex gap-4 h-[440px]">
+              <div className="p-4 bg-gray-50/80 flex gap-6 h-[560px]">
                 {/* Sidebar */}
-                <div className="hidden md:flex flex-col w-56 rounded-xl border border-gray-200/50 bg-white shadow-sm p-4 shrink-0">
-                  <div className="flex items-center gap-2 mb-8 px-2">
-                    <Receipt className="w-5 h-5 text-primary-600" />
-                    <span className="font-bold text-gray-900">Invoiceser</span>
+                <div className="hidden md:flex flex-col w-56 rounded-xl border border-gray-200/60 bg-white shadow-sm p-4 shrink-0">
+                  <div className="flex items-center gap-3 mb-8 px-2">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-600 shadow-sm">
+                      <Receipt className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-extrabold text-gray-900 tracking-tight">Invoice<span className="text-primary-600">ser</span></span>
                   </div>
                   <nav className="space-y-1">
                     {[
-                      { icon: LayoutDashboard, label: "Dashboard", active: true },
+                      { icon: LayoutDashboard, label: "Overview", active: true },
+                      { icon: Banknote, label: "Invoices", active: false },
                       { icon: Users, label: "Clients", active: false },
-                      { icon: FileText, label: "Invoices", active: false },
                       { icon: BarChart2, label: "Analytics", active: false },
-                      { icon: Sparkles, label: "AI", active: false },
+                      { icon: Sparkles, label: "AI Insights", active: false },
                       { icon: Settings, label: "Settings", active: false },
                     ].map((item, idx) => (
-                      <div key={idx} className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${item.active ? 'bg-primary-50 text-primary-700' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
+                      <div key={idx} className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${item.active ? 'bg-primary-50 border border-primary-100 text-primary-700 shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
                         <item.icon className={`w-4 h-4 ${item.active ? 'text-primary-600' : 'text-gray-400'}`} />
                         {item.label}
                       </div>
@@ -283,57 +294,75 @@ export default function LandingPage() {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col gap-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="flex-1 flex flex-col gap-6">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-extrabold text-gray-900">Overview</h2>
-                      <p className="text-xs font-medium text-gray-500 mt-0.5">Welcome back, Sarah</p>
+                      <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Good morning, Sarah 👋</h2>
+                      <p className="text-sm font-medium text-gray-500 mt-1">Here is your invoice summary for today.</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm">
+                        Last 30 Days
+                      </div>
+                      <button className="px-4 py-1.5 text-xs font-bold text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800">
+                        New Invoice
+                      </button>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     {[
-                      { label: "Total Revenue", val: "$24,800", trend: "+12%" },
-                      { label: "Outstanding", val: "$3,200", trend: "3 inv" },
-                      { label: "Paid", val: "47", trend: "+2" }
+                      { label: "Invoices Paid", icon: CheckCircle2, val: "$24,800", count: "47 invoices", color: "text-emerald-500", bg: "bg-emerald-50 border-emerald-100", trend: "+12.5%", trendIcon: TrendingUp, trendColor: "text-emerald-600", trendBg: "bg-emerald-100/50" },
+                      { label: "Awaiting Payment", icon: Clock, val: "$3,200", count: "3 unpaid", color: "text-amber-500", bg: "bg-amber-50 border-amber-100", trend: "+2.1%", trendIcon: TrendingUp, trendColor: "text-amber-600", trendBg: "bg-amber-100/50" },
+                      { label: "Overdue Invoices", icon: AlertCircle, val: "$950", count: "2 overdue", color: "text-rose-500", bg: "bg-rose-50 border-rose-100", trend: "-5.2%", trendIcon: TrendingDown, trendColor: "text-emerald-600", trendBg: "bg-emerald-100/50" }
                     ].map(s => (
-                      <div key={s.label} className="rounded-xl border border-gray-200/50 bg-white shadow-sm p-4 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                          <BarChart2 className="w-12 h-12 text-primary-600" />
+                      <div key={s.label} className="rounded-xl border border-gray-200/80 bg-white shadow-sm p-4 relative overflow-hidden group">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-lg ${s.bg}`}>
+                              <s.icon className={`w-3.5 h-3.5 ${s.color}`} />
+                            </div>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{s.label}</p>
+                          </div>
                         </div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">{s.label}</p>
-                        <div className="flex items-end gap-2 mt-1 relative z-10">
-                          <p className="text-2xl font-extrabold text-gray-900">{s.val}</p>
-                          <p className="text-xs font-bold text-emerald-500 mb-1">{s.trend}</p>
+                        <div className="flex items-end gap-3 mb-1.5">
+                          <p className="text-3xl font-extrabold text-gray-900 tracking-tight">{s.val}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className={`text-xs font-bold text-gray-500`}>{s.count} <span className="text-gray-400 font-medium">this month</span></p>
+                          <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-md ${s.trendBg} ${s.trendColor}`}>
+                            <s.trendIcon className="w-3 h-3" />
+                            <span className="text-[10px] font-bold">{s.trend}</span>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="rounded-xl border border-gray-200/50 bg-white shadow-sm flex-1 p-4 flex flex-col">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-sm font-bold text-gray-900">Recent Activity</h3>
+                  <div className="rounded-xl border border-gray-200/80 bg-white shadow-sm flex-1 p-5 flex flex-col">
+                    <div className="flex justify-between items-center mb-5">
+                      <h3 className="text-sm font-bold text-gray-900">Recent Invoices</h3>
                       <button className="text-xs font-bold text-primary-600 hover:text-primary-700">View All</button>
                     </div>
                     <div className="space-y-3 flex-1 overflow-hidden">
                       {[
-                        { client: "Acme Corp", amount: "$1,800", status: "Paid", color: "text-emerald-700 bg-emerald-50 border-emerald-200/50" },
-                        { client: "Studio Blue", amount: "$950", status: "Sent", color: "text-blue-700 bg-blue-50 border-blue-200/50" },
-                        { client: "Horizon Ltd", amount: "$2,400", status: "Overdue", color: "text-rose-700 bg-rose-50 border-rose-200/50" },
+                        { client: "Acme Corp", amount: "$1,800.00", status: "Paid", color: "text-emerald-700 bg-emerald-50 border-emerald-200/50" },
+                        { client: "Studio Blue", amount: "$950.00", status: "Sent", color: "text-blue-700 bg-blue-50 border-blue-200/50" },
+                        { client: "Horizon Ltd", amount: "$2,400.00", status: "Overdue", color: "text-rose-700 bg-rose-50 border-rose-200/50" },
                       ].map((i, idx) => (
-                        <div key={idx} className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                        <div key={idx} className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-white hover:border-gray-300 hover:shadow-sm transition-all">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-[10px] font-bold text-primary-700 border border-primary-200/50">
+                            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-xs font-extrabold text-gray-700 border border-gray-200">
                               {i.client.substring(0,2).toUpperCase()}
                             </div>
                             <div>
                               <p className="text-sm font-bold text-gray-900">{i.client}</p>
-                              <p className="text-xs font-medium text-gray-500">Invoice #{1047 + idx}</p>
+                              <p className="text-xs font-medium text-gray-500">INV-2026-{1047 + idx}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <p className="text-sm font-bold text-gray-900">{i.amount}</p>
-                            <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${i.color}`}>
+                          <div className="flex items-center gap-4">
+                            <p className="text-sm font-extrabold text-gray-900">{i.amount}</p>
+                            <div className={`px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider ${i.color}`}>
                               {i.status}
                             </div>
                           </div>
@@ -350,24 +379,26 @@ export default function LandingPage() {
 
       {/* Stats ticker */}
       <section
-        className="overflow-hidden border-y border-gray-100 bg-gray-50/50 py-8"
+        className="overflow-hidden border-y-2 border-gray-200 bg-gray-50/80 py-10"
         aria-label="Platform statistics"
       >
         <div
-          className="flex animate-marquee gap-0 whitespace-nowrap"
+          className="flex animate-marquee gap-6 whitespace-nowrap px-6"
           aria-hidden="true"
           style={{ width: "max-content" }}
         >
           {[...stats, ...stats].map((s, i) => (
             <div
               key={i}
-              className="flex items-center gap-12 px-12"
+              className="flex items-center gap-4 px-6 py-4 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="flex items-baseline gap-3">
+              <div className={`p-3 rounded-xl ${s.bg}`}>
+                <s.icon className={`w-6 h-6 ${s.color}`} />
+              </div>
+              <div className="flex flex-col">
                 <span className="text-2xl font-extrabold text-gray-900 tracking-tight">{s.value}</span>
                 <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{s.label}</span>
               </div>
-              <div className="h-1.5 w-1.5 rounded-full bg-primary-200" />
             </div>
           ))}
         </div>
@@ -382,10 +413,10 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-16 lg:py-24 bg-gray-50/50">
+      <section id="how-it-works" className="py-16 lg:py-24 bg-gray-900 text-white border-y border-gray-800">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mb-20 text-center max-w-3xl mx-auto">
-            <h2 className="mb-6 text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
+            <h2 className="mb-6 text-4xl font-extrabold text-white tracking-tight sm:text-5xl">
               From invoice to payment in minutes
             </h2>
           </div>
@@ -394,7 +425,7 @@ export default function LandingPage() {
               <li key={step.number} className="relative flex flex-col items-center text-center group">
                 {/* Arrow pointing to next step */}
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-12 left-[calc(50%+4rem)] w-[calc(100%-8rem)] pointer-events-none text-gray-200">
+                  <div className="hidden lg:block absolute top-12 left-[calc(50%+4rem)] w-[calc(100%-8rem)] pointer-events-none text-gray-700">
                     <svg className="w-full h-4" viewBox="0 0 100 24" fill="none" preserveAspectRatio="none">
                       <line x1="0" y1="12" x2="95" y2="12" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
                       <path d="M 90 7 L 97 12 L 90 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -402,15 +433,15 @@ export default function LandingPage() {
                   </div>
                 )}
                 
-                <div className="relative mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-white shadow-xl border-t-4 border-t-primary-500 border-x border-b border-gray-100 group-hover:-translate-y-2 transition-transform duration-300 z-10">
-                  <div className="absolute inset-0 rounded-3xl bg-primary-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <step.icon className="relative h-10 w-10 text-primary-600" aria-hidden="true" />
-                  <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-[11px] font-bold text-primary-700 shadow-sm ring-4 ring-white">
+                <div className="relative mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-gray-800 shadow-xl border border-gray-700 group-hover:-translate-y-2 group-hover:border-primary-500 transition-all duration-300 z-10">
+                  <div className="absolute inset-0 rounded-3xl bg-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <step.icon className="relative h-10 w-10 text-primary-400" aria-hidden="true" />
+                  <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary-600 text-[11px] font-bold text-white shadow-sm ring-4 ring-gray-900">
                     {step.number.slice(-1)}
                   </span>
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-gray-900 z-10">{step.title}</h3>
-                <p className="text-base font-medium leading-relaxed text-gray-500 max-w-sm z-10">{step.description}</p>
+                <h3 className="mb-3 text-xl font-bold text-white z-10">{step.title}</h3>
+                <p className="text-base font-medium leading-relaxed text-gray-400 max-w-sm z-10">{step.description}</p>
               </li>
             ))}
           </ol>
@@ -509,184 +540,8 @@ export default function LandingPage() {
 
       <Pricing />
 
-      {/* CTA */}
-      <section className="py-12 bg-white" aria-labelledby="cta-heading">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-gray-900 py-16 lg:py-20 px-8 lg:px-16 shadow-2xl flex flex-col lg:flex-row items-center justify-between min-h-[450px]">
-            {/* Left Content */}
-            <div className="relative z-10 flex flex-col items-start text-left lg:w-[55%]">
-              <h2 id="cta-heading" className="mb-6 text-3xl font-extrabold text-white tracking-tight sm:text-4xl lg:text-5xl leading-tight">
-                Ready to get paid on time?
-              </h2>
-              <p className="mb-10 text-lg leading-relaxed text-gray-400 font-medium max-w-lg">
-                Join thousands of freelancers who use Invoiceser to take the stress
-                out of billing and get back to their real work.
-              </p>
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-gray-900 shadow-xl transition-transform hover:scale-105"
-              >
-                Create your free account
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </div>
-
-            {/* Right Graphic (Orbits) */}
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-full lg:w-[45%] h-[600px] flex items-center justify-center pointer-events-none opacity-20 lg:opacity-100">
-              <div className="relative w-[600px] h-[600px] flex items-center justify-center translate-x-1/4">
-                {/* Center Icon */}
-                <div className="absolute w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 z-10">
-                  <Receipt className="w-10 h-10 text-white/80" />
-                </div>
-                
-                {/* Inner Ring */}
-                <div className="absolute w-[220px] h-[220px] rounded-full border border-white/20" />
-                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(200deg) translate(110px) rotate(-200deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(60deg) translate(110px) rotate(-60deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/men/33.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                
-                {/* Middle Ring */}
-                <div className="absolute w-[380px] h-[380px] rounded-full border border-white/20" />
-                <div className="absolute w-14 h-14 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(320deg) translate(190px) rotate(-320deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(140deg) translate(190px) rotate(-140deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/women/17.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(250deg) translate(190px) rotate(-250deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/women/64.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-
-                {/* Outer Ring */}
-                <div className="absolute w-[540px] h-[540px] rounded-full border border-white/20" />
-                <div className="absolute w-16 h-16 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(280deg) translate(270px) rotate(-280deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(110deg) translate(270px) rotate(-110deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/women/19.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-14 h-14 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(170deg) translate(270px) rotate(-170deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(190deg) translate(270px) rotate(-190deg)' }}>
-                  <img src="https://randomuser.me/api/portraits/women/51.jpg" alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-100 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Brand + social */}
-            <div className="lg:col-span-1">
-              <Link href="/" className="text-lg font-bold tracking-tight text-gray-900">
-                Invoice<span className="text-blue-600">ser</span>
-              </Link>
-              <p className="mt-3 text-sm leading-relaxed text-gray-500">
-                Professional invoicing for freelancers and small teams who want to get paid faster.
-              </p>
-              <div className="mt-6 flex items-center gap-3">
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow us on Twitter"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-gray-900 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <Twitter className="h-4 w-4" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow us on LinkedIn"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-gray-900 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <Linkedin className="h-4 w-4" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="View our GitHub"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-gray-900 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <Github className="h-4 w-4" aria-hidden="true" />
-                </a>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow us on Instagram"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-gray-900 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <Instagram className="h-4 w-4" aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-
-            {/* Product */}
-            <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">
-                Product
-              </h3>
-              <ul className="space-y-3" role="list">
-                {[
-                  { label: "Features", href: "#features" },
-                  { label: "How It Works", href: "#how-it-works" },
-                  { label: "Pricing", href: "#pricing" },
-                  { label: "Dashboard", href: "/dashboard" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:underline"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-900">
-                Legal
-              </h3>
-              <ul className="space-y-3" role="list">
-                {[
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Terms of Service", href: "/terms" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:underline"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="mt-16 flex justify-center border-t border-gray-100 pt-8">
-            <p className="text-xs text-gray-400">
-              © {new Date().getFullYear()} Invoiceser. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <CTA />
+      <Footer />
     </div>
   );
 }

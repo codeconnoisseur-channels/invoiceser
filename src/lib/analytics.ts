@@ -5,12 +5,18 @@ let _initialized = false;
 export function initPostHog() {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (typeof window !== "undefined" && key && !_initialized) {
-    posthog.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
-      person_profiles: "identified_only",
-      capture_pageview: false,
-    });
-    _initialized = true;
+    if (
+      !window.location.host.includes("127.0.0.1") &&
+      !window.location.host.includes("localhost")
+    ) {
+      posthog.init(key, {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
+        person_profiles: "identified_only",
+        capture_pageview: false,
+        capture_pageleave: true,
+      });
+      _initialized = true;
+    }
   }
 }
 

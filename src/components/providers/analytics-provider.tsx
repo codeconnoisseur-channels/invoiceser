@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { usePathname, useSearchParams } from "next/navigation";
-import { initPostHog, identifyUser, captureEvent } from "@/lib/analytics";
+import { initPostHog, identifyUser, captureEvent, resetAnalytics } from "@/lib/analytics";
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -15,14 +15,18 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      identifyUser(
-        user.id,
-        user.primaryEmailAddress?.emailAddress ?? "",
-        user.fullName ?? undefined,
-      );
+    if (isLoaded) {
+      if (user) {
+        identifyUser(
+          user.id,
+          user.primaryEmailAddress?.emailAddress ?? "",
+          user.fullName ?? undefined,
+        );
+      } else {
+        resetAnalytics();
+      }
     }
-  }, [user]);
+  }, [user, isLoaded]);
 
   useEffect(() => {
     if (pathname) {

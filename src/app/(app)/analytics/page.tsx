@@ -128,6 +128,7 @@ export default function AnalyticsPage() {
       current: totalBilled,
       prev:    prevBilled,
       sub:     rangeLabel,
+      color:   { label: "text-blue-500 dark:text-blue-400", bg: "from-blue-50 to-blue-100/50 dark:from-blue-900/10 dark:to-transparent" },
     },
     {
       label:   "Total Collected",
@@ -135,6 +136,7 @@ export default function AnalyticsPage() {
       current: totalCollected,
       prev:    prevCollected,
       sub:     rangeLabel,
+      color:   { label: "text-emerald-500 dark:text-emerald-400", bg: "from-emerald-50 to-emerald-100/50 dark:from-emerald-900/10 dark:to-transparent" },
     },
     {
       label:   "Invoices",
@@ -142,6 +144,7 @@ export default function AnalyticsPage() {
       current: invoiceCount,
       prev:    prevCount,
       sub:     rangeLabel,
+      color:   { label: "text-violet-500 dark:text-violet-400", bg: "from-violet-50 to-violet-100/50 dark:from-violet-900/10 dark:to-transparent" },
     },
     {
       label:   "Collection Rate",
@@ -149,27 +152,33 @@ export default function AnalyticsPage() {
       current: collectionPct,
       prev:    prevCollPct,
       sub:     rangeLabel,
+      color:   { label: "text-amber-500 dark:text-amber-400", bg: "from-amber-50 to-amber-100/50 dark:from-amber-900/10 dark:to-transparent" },
     },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Analytics</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Revenue breakdown and business overview</p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center ring-1 ring-emerald-200 dark:ring-emerald-800 mt-0.5 shrink-0">
+            <BarChart2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Analytics</h1>
+            <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">Revenue breakdown and business overview</p>
+          </div>
         </div>
-        <div className="flex gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-1 shadow-sm self-start">
+        <div className="flex flex-wrap gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-sm self-start">
           {(["30d", "90d", "365d", "all"] as Range[]).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
                 range === r
-                  ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                  ? "bg-primary-500 text-white shadow-sm scale-100"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 scale-95"
               }`}
             >
               {r === "all" ? "All" : r}
@@ -180,38 +189,59 @@ export default function AnalyticsPage() {
 
       {/* Summary stat cards */}
       <div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2.5 font-medium">
-          Showing: <span className="font-bold text-gray-700 dark:text-gray-300">{rangeLabel}</span>
-          {showTrend && <span className="ml-1 text-gray-400">· compared to previous {range}</span>}
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-3 uppercase tracking-wider">
+          Showing: <span className="text-gray-700 dark:text-gray-300">{rangeLabel}</span>
+          {showTrend && <span className="ml-1 text-gray-400 font-medium normal-case">· compared to previous {range}</span>}
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {statCards.map((s) => (
-            <div key={s.label} className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm p-5">
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">{s.label}</p>
-              {s.value === null ? (
-                <>
-                  <Skeleton className="h-8 w-24 mb-2" />
-                  <Skeleton className="h-3 w-20" />
-                </>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{s.value}</p>
-                  {showTrend
-                    ? <TrendBadge current={s.current} prev={s.prev} label={s.sub} />
-                    : <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{s.sub}</p>}
-                </>
-              )}
-            </div>
-          ))}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {statCards.map((s, i) => {
+            const bgColors = ["bg-blue-50/60 dark:bg-blue-950/30", "bg-emerald-50/60 dark:bg-emerald-950/30", "bg-violet-50/60 dark:bg-violet-950/30", "bg-amber-50/60 dark:bg-amber-950/30"];
+            const borderColors = ["border-l-blue-500", "border-l-emerald-500", "border-l-violet-500", "border-l-amber-500"];
+            const iconBgs = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500"];
+            const icons = [
+              <BarChart2 key="b" className="w-4.5 h-4.5 text-white" />,
+              <TrendingUp key="t" className="w-4.5 h-4.5 text-white" />,
+              <CalendarCheck key="c" className="w-4.5 h-4.5 text-white" />,
+              <Sparkles key="s" className="w-4.5 h-4.5 text-white" />,
+            ];
+            return (
+              <div key={s.label} className={`group rounded-2xl ${bgColors[i]} border border-gray-200/50 dark:border-gray-800 border-l-4 ${borderColors[i]} shadow-card dark:shadow-card-dark p-6 relative overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg`}>
+                <div className="flex items-center justify-between mb-4">
+                  <p className={`text-xs font-bold ${s.color.label} uppercase tracking-widest relative z-10`}>{s.label}</p>
+                  <div className={`w-10 h-10 rounded-xl ${iconBgs[i]} flex items-center justify-center shadow-md`}>
+                    {icons[i]}
+                  </div>
+                </div>
+                {s.value === null ? (
+                  <div className="relative z-10">
+                    <Skeleton className="h-9 w-28 mb-3" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                ) : (
+                  <div className="relative z-10">
+                    <p className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{s.value}</p>
+                    {showTrend
+                      ? <TrendBadge current={s.current} prev={s.prev} label={s.sub} />
+                      : <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">{s.sub}</p>}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Revenue chart + status donut */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 rounded-2xl shadow-sm border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-bold text-gray-900 dark:text-gray-100">Revenue Over Time</CardTitle>
-            <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 rounded-2xl shadow-card dark:shadow-card-dark border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
+          <CardHeader className="pb-4 pt-5 px-6 flex flex-row items-center justify-between border-b border-blue-100 dark:border-blue-900/30 bg-blue-50/70 dark:bg-blue-950/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center shadow-md">
+                <BarChart2 className="w-4 h-4 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-blue-800 dark:text-blue-200">Revenue Over Time</CardTitle>
+            </div>
+            <div className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 shadow-sm">
               {([
                 { type: "bar",  icon: <BarChart2  className="w-3.5 h-3.5" />, title: "Bar"  },
                 { type: "line", icon: <TrendingUp className="w-3.5 h-3.5" />, title: "Line" },
@@ -220,10 +250,10 @@ export default function AnalyticsPage() {
                   key={type}
                   onClick={() => setChartType(type)}
                   title={title}
-                  className={`p-1.5 rounded-md transition-all ${
+                  className={`p-1.5 rounded-md transition-all duration-200 ${
                     chartType === type
-                      ? "bg-white dark:bg-gray-700 shadow-sm text-gray-800 dark:text-gray-200"
-                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      ? "bg-gray-100 dark:bg-gray-800 shadow-inner text-gray-900 dark:text-gray-100"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
                   {icon}
@@ -231,53 +261,61 @@ export default function AnalyticsPage() {
               ))}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {!invoices ? (
-              <Skeleton className="h-56 w-full" />
+              <Skeleton className="h-[280px] w-full rounded-xl" />
             ) : monthlyData.length === 0 ? (
-              <div className="h-56 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">No data for this period</div>
+              <div className="h-[280px] flex flex-col items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+                <BarChart2 className="w-8 h-8 text-gray-300 dark:text-gray-600 mb-3" />
+                <p>No revenue data for this period</p>
+              </div>
             ) : (
-              <ResponsiveContainer key={chartType} width="100%" height={220}>
+              <ResponsiveContainer key={chartType} width="100%" height={280}>
                 {chartType === "bar" ? (
                   <BarChart data={monthlyData} margin={{ left: 0, right: 4 }}>
                     <XAxis dataKey="month" {...axisProps} axisLine={false} />
                     <YAxis {...axisProps} axisLine={false} tickFormatter={fmtTip} width={70} />
-                    <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} />
+                    <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} cursor={{ fill: 'rgba(0,0,0,0.03)' }} />
                     <Bar dataKey="Billed"    fill="#3B82F6" radius={[4,4,0,0]} />
-                    <Bar dataKey="Collected" fill="#22C55E" radius={[4,4,0,0]} />
+                    <Bar dataKey="Collected" fill="#10B981" radius={[4,4,0,0]} />
                   </BarChart>
                 ) : (
                   <LineChart data={monthlyData} margin={{ left: 0, right: 4 }}>
                     <XAxis dataKey="month" {...axisProps} axisLine={false} />
                     <YAxis {...axisProps} axisLine={false} tickFormatter={fmtTip} width={70} />
                     <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} />
-                    <Line type="monotone" dataKey="Billed"    stroke="#3B82F6" strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="Collected" stroke="#22C55E" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="Billed"    stroke="#3B82F6" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 5 }} />
+                    <Line type="monotone" dataKey="Collected" stroke="#10B981" strokeWidth={3} dot={{ r: 3, strokeWidth: 2 }} activeDot={{ r: 5 }} />
                   </LineChart>
                 )}
               </ResponsiveContainer>
             )}
-            <div className="flex items-center gap-4 mt-2 justify-center">
-              <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400"><span className="w-3 h-1.5 rounded-full bg-blue-500 inline-block" />Billed</span>
-              <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400"><span className="w-3 h-1.5 rounded-full bg-emerald-500 inline-block" />Collected</span>
+            <div className="flex items-center gap-6 mt-6 justify-center">
+              <span className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400"><span className="w-3 h-3 rounded bg-blue-500 inline-block shadow-sm" />Billed</span>
+              <span className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400"><span className="w-3 h-3 rounded bg-emerald-500 inline-block shadow-sm" />Collected</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-gray-900 dark:text-gray-100">Invoice Status</CardTitle>
+        <Card className="rounded-2xl shadow-card dark:shadow-card-dark border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
+          <CardHeader className="pb-4 pt-5 px-6 border-b border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/70 dark:bg-emerald-950/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-md">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Invoice Status</CardTitle>
+            </div>
           </CardHeader>
-          <CardContent>
-            {!invoices ? <Skeleton className="h-48 w-full" /> : statusData.length === 0 ? (
-              <div className="h-48 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">No data</div>
+          <CardContent className="p-6">
+            {!invoices ? <Skeleton className="h-[280px] w-full rounded-xl" /> : statusData.length === 0 ? (
+              <div className="h-[280px] flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">No data</div>
             ) : (
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
-                  <Pie data={statusData} cx="50%" cy="50%" innerRadius={52} outerRadius={75} dataKey="value" paddingAngle={2}>
-                    {statusData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  <Pie data={statusData} cx="50%" cy="50%" innerRadius={70} outerRadius={100} dataKey="value" paddingAngle={4}>
+                    {statusData.map((entry, i) => <Cell key={i} fill={entry.color} className="drop-shadow-sm hover:opacity-80 transition-opacity" />)}
                   </Pie>
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#9CA3AF" }} />
+                  <Legend iconType="circle" iconSize={10} wrapperStyle={{ fontSize: 12, fontWeight: 500, color: "#6B7280", marginTop: 20 }} />
                   <Tooltip contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} />
                 </PieChart>
               </ResponsiveContainer>
@@ -287,27 +325,32 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Top Clients */}
-      <Card className="rounded-2xl shadow-sm border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold text-gray-900 dark:text-gray-100">Top Clients by Revenue</CardTitle>
+      <Card className="rounded-2xl shadow-card dark:shadow-card-dark border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
+        <CardHeader className="pb-4 pt-5 px-6 border-b border-violet-100 dark:border-violet-900/30 bg-violet-50/70 dark:bg-violet-950/30">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center shadow-md">
+              <TrendingUp className="w-4 h-4 text-white" />
+            </div>
+            <CardTitle className="text-sm font-bold text-violet-800 dark:text-violet-200">Top Clients by Revenue</CardTitle>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {!invoices ? (
-            <div className="space-y-3">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
+            <div className="space-y-4">{[...Array(4)].map((_, i) => <Skeleton key={i} className="h-10 w-full rounded-lg" />)}</div>
           ) : topClients.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No data yet</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">No data yet</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {topClients.map((client, i) => {
                 const pct = Math.round((client.total / maxRevenue) * 100);
                 return (
-                  <div key={client.name} className="flex items-center gap-4">
-                    <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-4 shrink-0">#{i + 1}</span>
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 w-36 shrink-0 truncate">{client.name}</span>
-                    <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div className="h-2 bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                  <div key={client.name} className="flex items-center gap-4 group">
+                    <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0 bg-gray-100 dark:bg-gray-800 rounded-md py-1 text-center">#{i + 1}</span>
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200 w-40 shrink-0 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{client.name}</span>
+                    <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
+                      <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000 ease-out-expo" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-sm font-bold tabular-nums text-gray-900 dark:text-gray-100 w-28 text-right shrink-0">
+                    <span className="text-sm font-extrabold tabular-nums text-gray-900 dark:text-gray-100 w-32 text-right shrink-0">
                       {formatCurrency(client.total, currency)}
                     </span>
                   </div>
@@ -322,13 +365,13 @@ export default function AnalyticsPage() {
       {currentUser === undefined ? null : isPro ? (
         <PredictiveInsights allInvoices={allInvoices ?? []} currency={currency} />
       ) : (
-        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 p-6 flex items-center gap-5">
-          <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0 border border-gray-200 dark:border-gray-700">
-            <Sparkles className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+        <div className="rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 p-8 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-800/50">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center shrink-0 shadow-inner">
+            <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Predictive Insights</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Revenue forecasts, slow-payer alerts, and trend projections — available on Pro.</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Unlock Predictive Insights</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">Get AI-powered revenue forecasts, automated slow-payer alerts, and intelligent trend projections by upgrading to Pro.</p>
           </div>
           <UpgradeButton />
         </div>
@@ -372,64 +415,78 @@ function PredictiveInsights({ allInvoices, currency }: { allInvoices: Invoice[];
   const rateDelta = rate30 - ratePrev;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 pt-4">
       <div className="flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-blue-500" />
-        <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Predictive Insights</h2>
-        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-800">Pro</span>
+        <Sparkles className="w-5 h-5 text-blue-500 animate-pulse" />
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 tracking-tight">Predictive Insights</h2>
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-800 ml-2 shadow-sm">Pro</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Forecast */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">30-Day Forecast</p>
+        <div className="rounded-2xl border border-blue-100 dark:border-blue-900/50 bg-gradient-to-b from-blue-50/50 to-white dark:from-blue-900/10 dark:to-gray-900 shadow-card dark:shadow-card-dark p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg text-blue-600 dark:text-blue-400">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest">30-Day Forecast</p>
           </div>
-          <p className="text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">{formatCurrency(avgMonthly, currency)}</p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Based on avg of last 3 months collected</p>
+          <p className="text-3xl font-extrabold tabular-nums text-gray-900 dark:text-gray-100 tracking-tight">{formatCurrency(avgMonthly, currency)}</p>
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Based on avg of last 3 months collected</p>
           {rateDelta !== 0 && (
-            <p className={`text-xs font-semibold mt-2 flex items-center gap-0.5 ${rateDelta > 0 ? "text-emerald-600" : "text-rose-500"}`}>
-              {rateDelta > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-              Collection rate {rateDelta > 0 ? "+" : ""}{rateDelta}% vs prev 30d
-            </p>
+            <div className={`mt-4 pt-4 border-t border-blue-100/50 dark:border-blue-800/30`}>
+              <p className={`text-xs font-bold flex items-center gap-1.5 ${rateDelta > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                {rateDelta > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                Collection rate {rateDelta > 0 ? "+" : ""}{rateDelta}% vs prev 30d
+              </p>
+            </div>
           )}
         </div>
 
         {/* Best month */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CalendarCheck className="w-4 h-4 text-blue-500" />
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Peak Revenue Month</p>
+        <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+              <CalendarCheck className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Peak Revenue</p>
           </div>
           {bestMonth ? (
             <>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{bestMonth[0]}</p>
-              <p className="text-sm tabular-nums text-gray-500 dark:text-gray-400 mt-1">{formatCurrency(bestMonth[1], currency)} collected</p>
+              <p className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">{bestMonth[0]}</p>
+              <p className="text-sm font-medium tabular-nums text-gray-500 dark:text-gray-400 mt-2">{formatCurrency(bestMonth[1], currency)} collected</p>
             </>
           ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Not enough data yet</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2 font-medium">Not enough data yet</p>
           )}
         </div>
 
         {/* Slow payers */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-amber-500" />
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Slow Payers</p>
+        <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Slow Payers</p>
           </div>
           {slowPayers.length === 0 ? (
-            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">All invoices are on track</p>
+            <div className="flex flex-col items-center justify-center py-2">
+              <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mb-2">
+                <Sparkles className="w-4 h-4 text-emerald-500" />
+              </div>
+              <p className="text-sm text-emerald-600 dark:text-emerald-400 font-bold">All on track</p>
+            </div>
           ) : (
-            <ul className="space-y-1">
+            <ul className="space-y-2.5">
               {slowPayers.map(name => (
-                <li key={name} className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />{name}
+                <li key={name} className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 shadow-sm shrink-0" />
+                  <span className="truncate">{name}</span>
                 </li>
               ))}
             </ul>
           )}
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Sent invoices outstanding &gt; 30 days</p>
         </div>
       </div>
     </div>

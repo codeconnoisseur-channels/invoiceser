@@ -64,18 +64,20 @@ export function OnboardingChecklist() {
   const completedCount = steps.filter((s) => s.done).length;
   if (allDone) return null;
 
+  const progressPct = (completedCount / steps.length) * 100;
+
   return (
-    <div className="rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-900/10 overflow-hidden mb-2">
+    <div className="rounded-2xl border border-blue-100 dark:border-blue-900/40 bg-gradient-to-r from-blue-50/60 to-indigo-50/40 dark:from-blue-900/10 dark:to-indigo-900/5 overflow-hidden mb-2 shadow-card dark:shadow-card-dark">
       {/* Header */}
       <button
         onClick={() => setCollapsed((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-blue-50/60 dark:hover:bg-blue-900/20 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4.5 hover:bg-blue-50/40 dark:hover:bg-blue-900/15 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+          <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse shadow-sm shadow-blue-500/30" />
           <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Complete your setup</span>
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-full px-2.5 py-0.5 border border-gray-200 dark:border-gray-700">
-            {completedCount}/{steps.length} done
+          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-800 rounded-lg px-2.5 py-1 border border-blue-100 dark:border-blue-800/50 shadow-sm">
+            {completedCount}/{steps.length}
           </span>
         </div>
         {collapsed
@@ -84,25 +86,35 @@ export function OnboardingChecklist() {
       </button>
 
       {!collapsed && (
-        <div className="px-5 pb-4 space-y-2.5">
+        <div className="px-6 pb-5 space-y-3">
           {/* Progress bar */}
-          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
+          <div className="w-full h-2 bg-gray-200/60 dark:bg-gray-700/40 rounded-full overflow-hidden mb-4">
             <div
-              className="h-full bg-blue-500 rounded-full transition-all duration-500"
-              style={{ width: `${(completedCount / steps.length) * 100}%` }}
+              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-700 ease-out-expo shadow-sm shadow-blue-500/20"
+              style={{ width: `${progressPct}%` }}
             />
           </div>
 
-          {steps.map((step) => (
-            <div key={step.label} className="flex items-center justify-between py-1">
+          {steps.map((step, i) => (
+            <div
+              key={step.label}
+              className={`flex items-center justify-between py-2 px-3 rounded-xl transition-all duration-200 ${
+                step.done
+                  ? "opacity-60"
+                  : "bg-white/60 dark:bg-gray-800/30 border border-white dark:border-gray-800/50"
+              }`}
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
               <div className="flex items-start gap-3">
                 {step.done ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <div className="mt-0.5 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                  </div>
                 ) : (
-                  <Circle className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0 mt-0.5" />
+                  <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0 mt-0.5" />
                 )}
                 <div>
-                  <span className={`text-sm ${step.done ? "text-gray-400 dark:text-gray-600 line-through" : "text-gray-700 dark:text-gray-300 font-medium"}`}>
+                  <span className={`text-sm ${step.done ? "text-gray-400 dark:text-gray-600 line-through" : "text-gray-700 dark:text-gray-300 font-semibold"}`}>
                     {step.label}
                   </span>
                   {!step.done && step.description && (
@@ -111,7 +123,7 @@ export function OnboardingChecklist() {
                 </div>
               </div>
               {!step.done && step.href && (
-                <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0">
+                <Button asChild size="sm" variant="outline" className="h-7 text-xs shrink-0 shadow-sm">
                   <Link href={step.href}>{step.action}</Link>
                 </Button>
               )}

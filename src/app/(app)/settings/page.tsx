@@ -64,20 +64,20 @@ function Section({
   saving: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-      <div className="flex items-start gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-        <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 mt-0.5">
+    <div className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200/50 dark:border-slate-900/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
+      <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-900/30 bg-slate-50/70 dark:bg-slate-950/30">
+        <div className="w-8 h-8 rounded-lg bg-slate-500 flex items-center justify-center shrink-0 shadow-md">
           {icon}
         </div>
-        <div>
-          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-          {description && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>}
+        <div className="pt-1.5">
+          <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none">{title}</h2>
+          {description && <p className="text-xs font-medium text-slate-600/70 dark:text-slate-400/70 mt-1.5">{description}</p>}
         </div>
       </div>
-      <div className="px-6 py-5 space-y-4">{children}</div>
-      <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 flex justify-end">
-        <Button onClick={onSave} disabled={saving} size="sm" className="gap-2 h-8">
-          {saving ? "Saving…" : <><CheckCircle2 className="w-3.5 h-3.5" />Save</>}
+      <div className="px-6 py-6 space-y-6">{children}</div>
+      <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/50 flex justify-end">
+        <Button onClick={onSave} disabled={saving} size="sm" className="gap-2 h-9 font-semibold shadow-sm transition-all hover:scale-105 bg-slate-500 hover:bg-slate-600 text-white">
+          {saving ? "Saving…" : <><CheckCircle2 className="w-4 h-4" />Save Changes</>}
         </Button>
       </div>
     </div>
@@ -493,23 +493,28 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Settings</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your business profile, invoices, and payment details</p>
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-12">
+      <div className="flex items-start gap-3">
+        <div className="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-900/20 flex items-center justify-center ring-1 ring-slate-200 dark:ring-slate-800 mt-0.5 shrink-0">
+          <Building2 className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Settings</h1>
+          <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">Configure your business profile, invoices, and payment details</p>
+        </div>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 rounded-xl bg-gray-100 dark:bg-gray-800 p-0.5">
+      <div className="flex gap-1 rounded-2xl bg-slate-50/50 dark:bg-slate-900/10 p-1.5 shadow-inner overflow-x-auto hide-scrollbar border border-slate-100/50 dark:border-slate-900/20">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-1.5 flex-1 justify-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 flex-1 justify-center rounded-xl px-4 py-2.5 text-sm font-bold transition-all duration-300 min-w-[120px] ${
               activeTab === tab.id
-                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-slate-900/30 scale-100"
+                : "text-slate-600/60 dark:text-slate-500/60 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-800/30 scale-95"
             }`}
           >
             {tab.icon}
@@ -520,10 +525,10 @@ export default function SettingsPage() {
 
       {/* General Tab */}
       {activeTab === "general" && (
-        <>
+        <div className="space-y-6 animate-fade-in">
       {/* Business Profile */}
       <Section
-        icon={<Building2 className="w-5 h-5 text-gray-500" />}
+        icon={<Building2 className="w-4 h-4 text-white" />}
         title="Business Profile"
         onSave={saveBusiness}
         saving={savingBusiness}
@@ -674,7 +679,7 @@ export default function SettingsPage() {
           <div className="space-y-1">
             <FieldRow label="Website" placeholder="https://..." value={business.businessWebsite} onChange={(v) => setBusiness((p) => ({ ...p, businessWebsite: v }))} type="url" />
             {business.businessWebsite && !business.businessWebsite.startsWith("https://") && (
-              <p className="text-[11px] text-amber-600 dark:text-amber-400">URL must start with https://</p>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">URL must start with https://</p>
             )}
             <div className="flex items-center gap-2">
               <Switch
@@ -728,7 +733,7 @@ export default function SettingsPage() {
       {/* Pro Features */}
       {currentUser !== undefined && isPro ? (
         <Section
-          icon={<Lock className="w-5 h-5 text-gray-500" />}
+          icon={<Lock className="w-4 h-4 text-white" />}
           title="Pro Features"
           onSave={saveBusiness}
           saving={savingBusiness}
@@ -763,13 +768,14 @@ export default function SettingsPage() {
         </div>
       )}
 
-        </>
+        </div>
       )}
 
       {/* Tax Tab */}
       {activeTab === "tax" && (
+        <div className="space-y-6 animate-fade-in">
         <Section
-          icon={<Receipt className="w-5 h-5 text-gray-500" />}
+          icon={<Receipt className="w-4 h-4 text-white" />}
           title="Tax Configuration"
           onSave={saveTax}
           saving={savingTax}
@@ -815,48 +821,54 @@ export default function SettingsPage() {
             )}
           </div>
         </Section>
+        </div>
       )}
 
       {/* Payments Tab */}
       {activeTab === "payments" && (
-      <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-        <div className="flex items-start gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-          <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0 mt-0.5">
-            <CreditCard className="w-5 h-5 text-gray-500" />
+        <div className="space-y-6 animate-fade-in">
+      <div className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200/50 dark:border-slate-900/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
+        <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-900/30 bg-slate-50/70 dark:bg-slate-950/30">
+          <div className="w-8 h-8 rounded-lg bg-slate-500 flex items-center justify-center shrink-0 shadow-md">
+            <CreditCard className="w-4 h-4 text-white" />
           </div>
-          <div>
-            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Payment Accounts</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Save multiple accounts (NGN, USD, GBP…). Select which one appears on each invoice.</p>
+          <div className="pt-1.5">
+            <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none">Payment Accounts</h2>
+            <p className="text-xs font-medium text-slate-600/70 dark:text-slate-400/70 mt-1.5">Save multiple accounts (NGN, USD, GBP…). Select which one appears on each invoice.</p>
           </div>
         </div>
 
-        <div className="px-6 py-5 space-y-4">
+        <div className="px-6 py-6 space-y-6">
           {/* Default account (legacy flat fields) */}
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-gray-900">
             <button
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+              className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
               onClick={() => setShowDefaultAcct((v) => !v)}
             >
-              <div className="flex items-center gap-3">
-                <Landmark className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center text-gray-400 group-hover:text-primary-500 transition-colors">
+                  <Landmark className="w-4 h-4" />
+                </div>
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Default Account</p>
+                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Default Account</p>
                   {hasDefaultPayment ? (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">
                       {payment.bankName && `${payment.bankName} · `}
                       {payment.accountNumber && `···${payment.accountNumber.slice(-4)}`}
                       {!payment.bankName && !payment.accountNumber && payment.paymentLink && "Payment link set"}
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-400 dark:text-gray-500">Not configured — click to add</p>
+                    <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-0.5">Not configured — click to add</p>
                   )}
                 </div>
               </div>
-              {showDefaultAcct ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+              <div className="w-8 h-8 flex items-center justify-center rounded-full group-hover:bg-gray-100 dark:group-hover:bg-gray-800 transition-colors">
+                {showDefaultAcct ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+              </div>
             </button>
 
             {showDefaultAcct && (
-              <div className="border-t border-gray-100 dark:border-gray-800 px-4 pb-4 pt-3 space-y-3">
+              <div className="border-t border-gray-100 dark:border-gray-800 px-5 pb-5 pt-4 space-y-4 bg-gray-50/30 dark:bg-gray-800/10">
                 <FieldRow label="Bank Name" placeholder="Your bank name" value={payment.bankName} onChange={(v) => setPayment((p) => ({ ...p, bankName: v }))} optional />
                 <FieldRow label="Account Holder" placeholder="Name on account" value={payment.accountName} onChange={(v) => setPayment((p) => ({ ...p, accountName: v }))} optional />
                 <FieldRow label="Account Number" placeholder="Your account number" value={payment.accountNumber} onChange={(v) => setPayment((p) => ({ ...p, accountNumber: v }))} optional />
@@ -880,23 +892,23 @@ export default function SettingsPage() {
                   </div>
                 )}
                 {(!shownOptional.has("sortCode") || !shownOptional.has("iban") || !shownOptional.has("swiftBic")) && (
-                  <div className="flex items-center gap-2 flex-wrap pt-1">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">Add field:</span>
-                    {!shownOptional.has("sortCode") && <button onClick={() => setShownOptional((s) => new Set([...s, "sortCode"]))} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1"><Plus className="w-3 h-3" />Sort Code</button>}
-                    {!shownOptional.has("iban") && <button onClick={() => setShownOptional((s) => new Set([...s, "iban"]))} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1"><Plus className="w-3 h-3" />IBAN</button>}
-                    {!shownOptional.has("swiftBic") && <button onClick={() => setShownOptional((s) => new Set([...s, "swiftBic"]))} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1"><Plus className="w-3 h-3" />SWIFT</button>}
+                  <div className="flex items-center gap-2 flex-wrap pt-2">
+                    <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mr-1">Add field:</span>
+                    {!shownOptional.has("sortCode") && <button onClick={() => setShownOptional((s) => new Set([...s, "sortCode"]))} className="text-xs font-semibold px-3 py-1.5 rounded-full border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors flex items-center gap-1.5"><Plus className="w-3 h-3" />Sort Code</button>}
+                    {!shownOptional.has("iban") && <button onClick={() => setShownOptional((s) => new Set([...s, "iban"]))} className="text-xs font-semibold px-3 py-1.5 rounded-full border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors flex items-center gap-1.5"><Plus className="w-3 h-3" />IBAN</button>}
+                    {!shownOptional.has("swiftBic") && <button onClick={() => setShownOptional((s) => new Set([...s, "swiftBic"]))} className="text-xs font-semibold px-3 py-1.5 rounded-full border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors flex items-center gap-1.5"><Plus className="w-3 h-3" />SWIFT</button>}
                   </div>
                 )}
-                <div className="border-t border-gray-100 dark:border-gray-800 pt-3 space-y-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Link2 className="w-3.5 h-3.5 text-gray-400" />
+                <div className="border-t border-gray-100 dark:border-gray-800 pt-4 mt-2 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Link2 className="w-4 h-4 text-gray-400" />
                     <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Payment Link (optional)</span>
                   </div>
                   <FieldRow label="URL" placeholder="e.g. https://paystack.com/pay/yourname" value={payment.paymentLink} onChange={(v) => setPayment((p) => ({ ...p, paymentLink: v }))} optional type="url" />
                 </div>
-                <div className="flex justify-end pt-1">
-                  <Button size="sm" onClick={saveDefaultPayment} disabled={savingPayment} className="gap-2 h-8">
-                    {savingPayment ? "Saving…" : <><CheckCircle2 className="w-3.5 h-3.5" />Save Default</>}
+                <div className="flex justify-end pt-2">
+                  <Button size="sm" onClick={saveDefaultPayment} disabled={savingPayment} className="gap-2 h-9 font-semibold shadow-sm transition-transform hover:scale-105">
+                    {savingPayment ? "Saving…" : <><CheckCircle2 className="w-4 h-4" />Save Default</>}
                   </Button>
                 </div>
               </div>
@@ -905,9 +917,9 @@ export default function SettingsPage() {
 
           {/* Additional accounts */}
           {paymentAccounts.map((acct) => (
-            <div key={acct.id} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div key={acct.id} className="rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-gray-900">
               {editingAccountId === acct.id ? (
-                <div className="px-4 pb-4 pt-3">
+                <div className="px-5 pb-5 pt-4">
                   <AccountForm
                     account={acct}
                     onChange={(updated) => setPaymentAccounts((prev) => prev.map((a) => a.id === acct.id ? updated : a))}
@@ -916,30 +928,30 @@ export default function SettingsPage() {
                   />
                 </div>
               ) : (
-                <div className="flex items-center justify-between px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
-                      <Landmark className="w-3.5 h-3.5 text-blue-500" />
+                <div className="flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
+                      <Landmark className="w-5 h-5 text-blue-500" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{acct.label}</p>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{acct.label}</p>
                         {acct.currency && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">{acct.currency}</span>
+                          <span className="text-[10px] font-extrabold px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400 uppercase tracking-wider">{acct.currency}</span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                         {acct.bankName && `${acct.bankName} · `}
                         {acct.accountNumber ? `···${acct.accountNumber.slice(-4)}` : acct.paymentLink ? "Payment link" : "No details yet"}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => setEditingAccountId(acct.id)} className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                      <Pencil className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => setEditingAccountId(acct.id)} className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors" title="Edit account">
+                      <Pencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDeleteAccount(acct.id)} className="p-1.5 text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors">
-                      <X className="w-3.5 h-3.5" />
+                    <button onClick={() => handleDeleteAccount(acct.id)} className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors" title="Delete account">
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -949,28 +961,32 @@ export default function SettingsPage() {
 
           {/* Add new account */}
           {addingAccount ? (
-            <AccountForm
-              account={newAccount}
-              onChange={setNewAccount}
-              onSave={handleAddAccount}
-              onCancel={() => { setAddingAccount(false); setNewAccount(blankAccount()); }}
-            />
+            <div className="rounded-xl border border-blue-100 dark:border-blue-800 shadow-sm overflow-hidden bg-blue-50/30 dark:bg-blue-900/10 px-5 pb-5 pt-4">
+              <AccountForm
+                account={newAccount}
+                onChange={setNewAccount}
+                onSave={handleAddAccount}
+                onCancel={() => { setAddingAccount(false); setNewAccount(blankAccount()); }}
+              />
+            </div>
           ) : (
             <button
               onClick={() => setAddingAccount(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:border-blue-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold text-gray-500 dark:text-gray-400 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors bg-gray-50/50 hover:bg-primary-50/50 dark:bg-gray-800/30 dark:hover:bg-primary-900/10"
             >
               <Plus className="w-4 h-4" />Add another account
             </button>
           )}
         </div>
       </div>
+        </div>
       )}
 
       {/* Reminders Tab */}
       {activeTab === "reminders" && (
+        <div className="space-y-6 animate-fade-in">
       <Section
-        icon={<Bell className="w-5 h-5 text-gray-500" />}
+        icon={<Bell className="w-4 h-4 text-white" />}
         title="Automated Reminders"
         onSave={saveReminderSettings}
         saving={savingReminder}
@@ -1023,6 +1039,7 @@ export default function SettingsPage() {
           </div>
         )}
       </Section>
+        </div>
       )}
 
     </div>

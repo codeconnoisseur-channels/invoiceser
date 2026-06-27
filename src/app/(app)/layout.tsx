@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "@/components/providers/convex-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { AppShell } from "@/components/layout/app-shell";
 import { AnnouncementBanner } from "@/components/layout/announcement-banner";
@@ -16,21 +15,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       signInFallbackRedirectUrl="/dashboard"
       signUpFallbackRedirectUrl="/onboarding"
     >
-      <ThemeProvider>
-        <ConvexClientProvider>
-          <Suspense fallback={null}>
-            <AnalyticsProvider>
-              <AppShell>
-                <AnnouncementBanner />
-                <OnboardingGuard>
-                  <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">{children}</div>
-                </OnboardingGuard>
-              </AppShell>
-            </AnalyticsProvider>
-          </Suspense>
-          <Toaster position="bottom-right" richColors theme="system" />
-        </ConvexClientProvider>
-      </ThemeProvider>
+      <ConvexClientProvider>
+        <Suspense fallback={null}>
+          <AnalyticsProvider>
+            <AppShell>
+              <AnnouncementBanner />
+              <OnboardingGuard>
+                <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">{children}</div>
+              </OnboardingGuard>
+            </AppShell>
+          </AnalyticsProvider>
+        </Suspense>
+        <Toaster position="bottom-right" richColors theme="system" />
+      </ConvexClientProvider>
     </ClerkProvider>
   );
 }

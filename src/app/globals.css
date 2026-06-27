@@ -53,9 +53,62 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* ── Premium scrollbar ─────────────────────────────────────────────── */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.gray.200') transparent;
+  }
+  .dark .scrollbar-thin {
+    scrollbar-color: theme('colors.gray.800') transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme('colors.gray.200');
+    border-radius: 9999px;
+  }
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme('colors.gray.800');
+  }
+}
+
+/* ── Card hover lift effect ──────────────────────────────────────── */
+@layer utilities {
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-hover:hover {
+    @apply -translate-y-0.5 shadow-lg;
+  }
+}
+
+/* ── Accent stripe top borders for stat cards ────────────────────── */
+@layer utilities {
+  .accent-stripe-blue {
+    border-top: 3px solid theme('colors.blue.500');
+  }
+  .accent-stripe-amber {
+    border-top: 3px solid theme('colors.amber.500');
+  }
+  .accent-stripe-emerald {
+    border-top: 3px solid theme('colors.emerald.500');
+  }
+  .accent-stripe-violet {
+    border-top: 3px solid theme('colors.violet.500');
   }
 }
 

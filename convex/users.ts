@@ -149,7 +149,7 @@ export const getAiUsage = query({
   handler: async (ctx) => {
     const user = await getCurrentUserOrNull(ctx);
     if (!user) return null;
-    const FREE_MONTHLY_LIMIT = 50;
+    const FREE_MONTHLY_LIMIT = 10;
     if (user.plan === "pro") return { used: 0, limit: -1, isPro: true };
     const monthKey = new Date().toISOString().slice(0, 7);
     const sameMonth = user.aiMonthKey === monthKey;
@@ -193,7 +193,7 @@ export const checkAndIncrementAiQuery = mutation({
   args: {},
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    const FREE_MONTHLY_LIMIT = 50;
+    const FREE_MONTHLY_LIMIT = 10;
     if (user.plan === "pro") return { allowed: true, used: 0, limit: -1 };
     const monthKey = new Date().toISOString().slice(0, 7);
     const sameMonth = user.aiMonthKey === monthKey;

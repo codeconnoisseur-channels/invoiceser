@@ -194,135 +194,162 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Clients</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {active.length > 0 ? `${active.length} client${active.length !== 1 ? "s" : ""}` : "Manage your client list"}
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-11 h-11 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center ring-1 ring-violet-200 dark:ring-violet-800 mt-0.5 shrink-0">
+            <Users className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Clients</h1>
+            <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">
+              {active.length > 0 ? `${active.length} client${active.length !== 1 ? "s" : ""}` : "Manage your client list"}
+            </p>
+          </div>
         </div>
-        <Button onClick={openCreate} className="gap-2"><Plus className="w-4 h-4" />Add Client</Button>
-      </div>
-
-      {/* Search */}
-      <div className="relative max-w-xs mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-        <Input
-          placeholder="Search clients…"
-          className="pl-9 h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-500"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {/* Search */}
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <Input
+              placeholder="Search clients…"
+              className="pl-9 h-10 w-full text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus-visible:ring-primary-500 shadow-sm transition-all"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <Button onClick={openCreate} className="h-10 gap-2 shadow-md shrink-0">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Add Client</span>
+          </Button>
+        </div>
       </div>
 
       {clients === undefined ? (
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden divide-y divide-gray-100 dark:divide-gray-800">
+        <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark overflow-hidden divide-y divide-gray-50 dark:divide-gray-800/50">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center gap-4 px-5 py-4">
-              <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="h-3 w-48" />
+            <div key={i} className="flex items-center gap-4 px-6 py-5">
+              <Skeleton className="w-11 h-11 rounded-xl shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-3 w-56" />
               </div>
               <Skeleton className="h-8 w-28 rounded-lg" />
             </div>
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm py-24 text-center">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-gray-700">
-            <Users className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+        <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark p-14 text-center max-w-lg mx-auto animate-slide-up">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-blue-200/50 dark:ring-blue-700/30">
+            <Users className="w-9 h-9 text-blue-500" />
           </div>
-          <p className="text-base font-semibold text-gray-800 dark:text-gray-200">{search ? `No results for "${search}"` : "No clients yet"}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-6">{search ? "Try a different search" : "Add your first client to start invoicing"}</p>
-          {!search && <Button onClick={openCreate} className="gap-2"><Plus className="w-4 h-4" />Add a client</Button>}
+          <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
+            {search ? `No results for "${search}"` : "Add your first client"}
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-xs mx-auto leading-relaxed">
+            {search ? "Try adjusting your search terms." : "You need a client before you can send an invoice. Add their details to get started."}
+          </p>
+          {!search && (
+            <Button onClick={openCreate} className="h-11 gap-2 text-base shadow-md shadow-primary-500/20">
+              <Plus className="w-4 h-4" />Add Client
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm overflow-hidden divide-y divide-gray-100 dark:divide-gray-800">
-          {paginated.map((c) => {
-            const business = isBusiness(c);
-            const primary  = primaryName(c);
-            const contact  = contactName(c);
-            const avatarLetter = primary.charAt(0).toUpperCase();
+        <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark overflow-hidden">
+          <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+            {paginated.map((c) => {
+              const business = isBusiness(c);
+              const primary  = primaryName(c);
+              const contact  = contactName(c);
+              const avatarLetter = primary.charAt(0).toUpperCase();
 
-            return (
-              <div key={c._id} className="flex sm:grid sm:grid-cols-[auto_1fr_1fr_auto] items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors group">
-                {/* Avatar — click to see this client's invoices */}
-                <button
-                  onClick={() => router.push(`/invoices?clientId=${c._id}`)}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2 cursor-pointer hover:opacity-80 transition-opacity ${avatarColor(primary)}`}
-                  title="View invoices"
-                >
-                  {business
-                    ? <Building2 className="w-4 h-4" />
-                    : <span className="text-sm font-extrabold">{avatarLetter}</span>
-                  }
-                </button>
+              return (
+                <div key={c._id} className="flex flex-col sm:flex-row sm:items-center gap-4 px-6 py-5 hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors group relative">
+                  {/* Avatar */}
+                  <button
+                    onClick={() => router.push(`/invoices?clientId=${c._id}`)}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border-2 cursor-pointer hover:scale-105 transition-transform ${avatarColor(primary)}`}
+                    title="View invoices"
+                  >
+                    {business
+                      ? <Building2 className="w-5 h-5" />
+                      : <span className="text-base font-extrabold">{avatarLetter}</span>
+                    }
+                  </button>
 
-                {/* Primary name — click to see this client's invoices */}
-                <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="min-w-0 text-left cursor-pointer group/name">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">{primary}</p>
-                  {contact && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{contact}</p>
-                  )}
-                  {c.address && (
-                    <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
-                      <MapPin className="w-3 h-3 shrink-0" />{c.address}
-                    </p>
-                  )}
-                  {c.website && (
-                    <span className="flex items-center gap-1 text-xs text-blue-500 truncate mt-0.5">
-                      <Globe className="w-3 h-3 shrink-0" />{c.website.replace("https://", "")}
-                    </span>
-                  )}
-                </button>
+                  {/* Primary Info */}
+                  <div className="flex-1 min-w-0">
+                    <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="text-left cursor-pointer group/name block">
+                      <p className="text-base font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">
+                        {primary}
+                      </p>
+                      {contact && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">{contact}</p>
+                      )}
+                    </button>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+                      {c.address && (
+                        <p className="flex items-center gap-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 truncate">
+                          <MapPin className="w-3.5 h-3.5" />{c.address}
+                        </p>
+                      )}
+                      {c.website && (
+                        <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 truncate transition-colors">
+                          <Globe className="w-3.5 h-3.5" />{c.website.replace("https://", "")}
+                        </a>
+                      )}
+                    </div>
+                  </div>
 
-                {/* Email + Phone — hidden on smallest screens, shown on sm+ */}
-                <div className="hidden sm:block min-w-0 space-y-1">
-                  <CopyEmail email={c.email} />
-                  {c.phone && (
-                    <p className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 truncate">
-                      <Phone className="w-3 h-3 shrink-0" />{c.phone}
-                    </p>
-                  )}
+                  {/* Contact Info */}
+                  <div className="hidden md:block w-48 shrink-0 space-y-1.5 border-l border-gray-100 dark:border-gray-800 pl-4">
+                    <CopyEmail email={c.email} />
+                    {c.phone && (
+                      <p className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <Phone className="w-3.5 h-3.5" />{c.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0 transition-all duration-200">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 px-3 text-xs font-semibold gap-2 border-gray-200 dark:border-gray-700 hover:border-blue-200 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:border-blue-800 dark:hover:text-blue-300 transition-colors shadow-sm"
+                      asChild
+                    >
+                      <Link href={`/invoices/new?clientId=${c._id}`}>
+                        <FileText className="w-3.5 h-3.5" />New Invoice
+                      </Link>
+                    </Button>
+                    <div className="flex gap-1 border-l border-gray-100 dark:border-gray-800 pl-2 ml-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        onClick={() => openEdit(c._id)}
+                        title="Edit client"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-gray-400 hover:text-rose-600 dark:text-gray-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+                        onClick={() => setDeleteConfirm(c._id)}
+                        title="Delete client"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1.5 shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-xs gap-1.5 border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    asChild
-                  >
-                    <Link href={`/invoices/new?clientId=${c._id}`}>
-                      <FileText className="w-3 h-3" />New Invoice
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={() => openEdit(c._id)}
-                    title="Edit client"
-                  >
-                    <Pencil className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 dark:text-gray-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-                    onClick={() => setDeleteConfirm(c._id)}
-                    title="Delete client"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
           {hasMore && (
             <div className="px-5 py-4 text-center">
               <Button

@@ -53,12 +53,15 @@ export default function SupportPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Help & Support</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Submit a request or view your support history
-          </p>
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shadow-md">
+            <MessageSquare className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Help & Support</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Submit a request or view your support history</p>
+          </div>
         </div>
         <Button onClick={() => setFormOpen(true)}>
           <Plus className="w-4 h-4" />
@@ -66,7 +69,7 @@ export default function SupportPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="rounded-2xl border-teal-200/50 dark:border-teal-900/30 shadow-card dark:shadow-card-dark overflow-hidden">
         <CardContent className="p-0">
           {tickets === undefined ? (
             <div className="py-12 text-center text-sm text-gray-400">

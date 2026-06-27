@@ -72,15 +72,15 @@ export default function AIPage() {
     <div className="max-w-3xl mx-auto h-full flex flex-col" style={{ height: "calc(100vh - 100px)" }}>
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-4 shrink-0">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-violet-500" />
-            AI Assistant
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Ask anything about your invoices, clients, and revenue
-          </p>
+      <div className="flex items-start justify-between mb-6 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center shadow-md">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">AI Assistant</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Ask anything about your invoices, clients, and revenue</p>
+          </div>
         </div>
         {aiUsage === undefined ? (
           <div className="h-7 w-36 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse" />

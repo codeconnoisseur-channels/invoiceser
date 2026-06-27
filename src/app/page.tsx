@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   FileText,
@@ -14,8 +15,16 @@ import {
   Twitter,
   Linkedin,
   Github,
-  Instagram,
+  Receipt,
+  LayoutDashboard,
+  Users,
+  CreditCard,
+  Settings,
+  MoreHorizontal,
+  Instagram
 } from "lucide-react";
+
+import { Pricing } from "@/components/home/pricing";
 
 const features = [
   {
@@ -46,7 +55,7 @@ const features = [
     icon: BarChart2,
     title: "Revenue Analytics",
     description:
-      "See what you've earned, what's outstanding, and who owes you — all at a glance.",
+      "See what you've earned, what's outstanding, and who owes you, all at a glance.",
     bg: "bg-violet-50",
     iconClass: "text-violet-600",
   },
@@ -54,7 +63,7 @@ const features = [
     icon: Sparkles,
     title: "AI Chatbot",
     description:
-      "Ask questions about your cash flow in plain English — \"Who owes me the most?\" or \"What was my best month?\" — and get instant answers.",
+      "Ask questions about your cash flow in plain English, like \"Who owes me the most?\" or \"What was my best month?\", and get instant answers.",
     bg: "bg-pink-50",
     iconClass: "text-pink-600",
   },
@@ -80,7 +89,7 @@ const plans = [
       "Logo upload & brand colour",
       "No Invoiceser mention on invoices",
       "Custom invoice fonts (Modern, Classic, Typewriter)",
-      "AI chatbot — 50 queries/month",
+      "AI chatbot (10 queries/month)",
     ],
     cta: "Get started free",
     href: "/sign-up",
@@ -126,7 +135,7 @@ const steps = [
     icon: Send,
     title: "Send it instantly",
     description:
-      "Email the PDF directly to your client or share a secure public link — one click, done.",
+      "Email the PDF directly to your client or share a secure public link. One click, done.",
   },
   {
     number: "03",
@@ -139,38 +148,34 @@ const steps = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900 selection:bg-primary-100 selection:text-primary-900">
       {/* Nav */}
-      <header className="sticky top-0 z-20 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="text-lg font-bold tracking-tight text-gray-900">
-            Invoice<span className="text-blue-600">ser</span>
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/70 backdrop-blur-xl transition-all duration-300">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center shadow-sm shadow-primary-600/20 group-hover:scale-105 transition-transform">
+              <Receipt className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-gray-900">
+              Invoice<span className="text-primary-600">ser</span>
+            </span>
           </Link>
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
-            <a
-              href="#how-it-works"
-              className="rounded text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            >
-              How It Works
-            </a>
-            <a
-              href="#features"
-              className="rounded text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            >
-              Features
-            </a>
-            <a
-              href="#pricing"
-              className="rounded text-sm text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            >
-              Pricing
-            </a>
+            {["How It Works", "Features", "Pricing"].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                className="text-sm font-semibold text-gray-500 transition-colors hover:text-gray-900"
+              >
+                {item}
+              </a>
+            ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <SignedIn>
               <Link
                 href="/dashboard"
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+                className="rounded-full bg-gray-900 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-transform hover:scale-105 hover:bg-gray-800"
               >
                 Dashboard
               </Link>
@@ -178,146 +183,164 @@ export default function LandingPage() {
             <SignedOut>
               <Link
                 href="/sign-in"
-                className="rounded px-2 py-1 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                className="hidden text-sm font-bold text-gray-600 transition-colors hover:text-gray-900 md:block"
               >
-                Sign in
+                Log in
               </Link>
               <Link
                 href="/sign-up"
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+                className="rounded-full bg-primary-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm shadow-primary-600/20 transition-transform hover:scale-105 hover:bg-primary-700"
               >
-                Get started
+                Get Started
               </Link>
             </SignedOut>
           </div>
         </div>
       </header>
 
-      {/* Hero — split layout */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-white to-violet-50"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/4 top-0 -z-10 h-[600px] w-[700px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-100/40 to-transparent blur-3xl"
-        />
+      {/* Hero — Modern layout */}
+      <section className="relative overflow-hidden pt-8 pb-16 lg:pt-12 lg:pb-24 bg-white">
+        {/* Background glow */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 w-full h-[800px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary-100/60 via-white to-white opacity-80" />
+        </div>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 pt-20 lg:grid-cols-2 lg:gap-16 lg:pb-24 lg:pt-24">
-          {/* Left — copy */}
-          <div>
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 shadow-sm">
-              <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500" />
-              Built for freelancers &amp; small teams
-            </div>
-            <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight sm:text-6xl">
-              Invoicing that gets
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                you paid faster
-              </span>
-            </h1>
-            <p className="mb-10 max-w-lg text-lg leading-relaxed text-gray-500">
-              Create, send, and track professional invoices in minutes. Automatic
-              reminders, PDF generation, and an AI chatbot you can ask about your
-              data in plain English — all in one place.
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-7 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
-              >
-                Start for free
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <a
-                href="#pricing"
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-7 py-3 text-sm font-medium text-gray-600 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              >
-                See pricing
-              </a>
-            </div>
-            <p className="mt-5 text-xs text-gray-400">
-              Free plan available · No credit card required
-            </p>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10 text-center">
+          <h1 className="max-w-4xl mx-auto text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl xl:text-7xl mb-8 animate-fade-in [animation-delay:100ms] opacity-0 fill-mode-forwards">
+            Invoicing that gets you paid{" "}
+            <span className="relative whitespace-nowrap">
+              <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-violet-600">faster</span>
+              {/* decorative swoosh */}
+              <svg className="absolute -bottom-2 left-0 w-full h-3 text-violet-200" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
+              </svg>
+            </span>
+          </h1>
+          
+          <p className="max-w-2xl mx-auto text-lg font-medium text-gray-500 mb-10 animate-fade-in [animation-delay:200ms] opacity-0 fill-mode-forwards leading-relaxed">
+            Create, send, and track professional invoices in minutes. Automatic reminders, predictive analytics, and an AI assistant in one premium platform.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in [animation-delay:300ms] opacity-0 fill-mode-forwards">
+            <Link
+              href="/sign-up"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-gray-900/20 transition-all hover:bg-gray-800 hover:scale-105"
+            >
+              Start for free
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href="#how-it-works"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-200 transition-all hover:bg-gray-50 hover:scale-105"
+            >
+              See how it works
+            </a>
           </div>
+          <p className="mt-5 text-xs font-semibold text-gray-400 animate-fade-in [animation-delay:400ms] opacity-0 fill-mode-forwards">
+            No credit card required. Cancel anytime.
+          </p>
 
-          {/* Right — dashboard preview */}
-          <div className="w-full" aria-label="Dashboard preview">
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-2xl shadow-blue-100/50">
+          {/* Dashboard Preview Image/Mockup */}
+          <div className="mt-16 lg:mt-20 mx-auto max-w-6xl relative animate-fade-in [animation-delay:500ms] opacity-0 fill-mode-forwards">
+            <div className="relative rounded-2xl border border-gray-200/60 bg-white shadow-2xl overflow-hidden">
               {/* Browser chrome */}
-              <div className="flex items-center gap-2 border-b border-gray-200 bg-white px-4 py-3">
-                <span aria-hidden="true" className="h-3 w-3 rounded-full bg-red-400" />
-                <span aria-hidden="true" className="h-3 w-3 rounded-full bg-yellow-400" />
-                <span aria-hidden="true" className="h-3 w-3 rounded-full bg-green-400" />
-                <span className="ml-3 rounded-md bg-gray-100 px-3 py-1 font-mono text-xs text-gray-400">
-                  invoiceser.com/dashboard
-                </span>
-              </div>
-              {/* Stat cards */}
-              <div className="grid grid-cols-2 gap-2.5 p-4">
-                {[
-                  { label: "Total Revenue", value: "$24,800", trend: "+12% this year" },
-                  { label: "Outstanding", value: "$3,200", trend: "3 invoices" },
-                  { label: "Paid Invoices", value: "47", trend: "all time" },
-                  { label: "Active Clients", value: "12", trend: "+2 new" },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-gray-100 bg-white p-3.5 shadow-sm">
-                    <p className="mb-1 text-xs text-gray-400">{s.label}</p>
-                    <p className="text-xl font-bold text-gray-900">{s.value}</p>
-                    <p className="mt-0.5 text-xs font-medium text-blue-500">{s.trend}</p>
+              <div className="flex items-center gap-2 border-b border-gray-200/60 bg-white px-4 py-3">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-[#FF5F56] border border-[#E0443E]" />
+                  <div className="h-3 w-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+                  <div className="h-3 w-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+                </div>
+                <div className="ml-4 flex-1 flex justify-center">
+                  <div className="w-64 rounded-md bg-gray-100/80 px-3 py-1 font-mono text-[10px] text-gray-400 text-center">
+                    invoiceser.com
                   </div>
-                ))}
+                </div>
+                <div className="w-12" /> {/* Spacer */}
               </div>
-              {/* Invoice rows */}
-              <div className="px-4 pb-4">
-                <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-                  <div className="flex items-center justify-between border-b border-gray-50 px-4 py-2.5">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                      Recent Invoices
-                    </span>
-                    <span aria-hidden="true" className="text-xs font-medium text-blue-500">View all →</span>
+              
+              <div className="p-2 sm:p-4 bg-gray-50/50 flex gap-4 h-[440px]">
+                {/* Sidebar */}
+                <div className="hidden md:flex flex-col w-56 rounded-xl border border-gray-200/50 bg-white shadow-sm p-4 shrink-0">
+                  <div className="flex items-center gap-2 mb-8 px-2">
+                    <Receipt className="w-5 h-5 text-primary-600" />
+                    <span className="font-bold text-gray-900">Invoiceser</span>
                   </div>
-                  {[
-                    {
-                      num: "INV-047",
-                      client: "Acme Corp",
-                      amount: "$1,800",
-                      status: "paid",
-                      color: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
-                    },
-                    {
-                      num: "INV-048",
-                      client: "Studio Blue",
-                      amount: "$950",
-                      status: "sent",
-                      color: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200",
-                    },
-                    {
-                      num: "INV-049",
-                      client: "Horizon Ltd",
-                      amount: "$2,400",
-                      status: "overdue",
-                      color: "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-200",
-                    },
-                  ].map((row) => (
-                    <div
-                      key={row.num}
-                      className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50/50"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="font-mono text-xs text-gray-400">{row.num}</span>
-                        <span className="text-sm font-medium text-gray-700">{row.client}</span>
+                  <nav className="space-y-1">
+                    {[
+                      { icon: LayoutDashboard, label: "Dashboard", active: true },
+                      { icon: Users, label: "Clients", active: false },
+                      { icon: FileText, label: "Invoices", active: false },
+                      { icon: BarChart2, label: "Analytics", active: false },
+                      { icon: Sparkles, label: "AI", active: false },
+                      { icon: Settings, label: "Settings", active: false },
+                    ].map((item, idx) => (
+                      <div key={idx} className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${item.active ? 'bg-primary-50 text-primary-700' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
+                        <item.icon className={`w-4 h-4 ${item.active ? 'text-primary-600' : 'text-gray-400'}`} />
+                        {item.label}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-gray-800">{row.amount}</span>
-                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${row.color}`}>
-                          {row.status}
-                        </span>
-                      </div>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 flex flex-col gap-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <h2 className="text-xl font-extrabold text-gray-900">Overview</h2>
+                      <p className="text-xs font-medium text-gray-500 mt-0.5">Welcome back, Sarah</p>
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { label: "Total Revenue", val: "$24,800", trend: "+12%" },
+                      { label: "Outstanding", val: "$3,200", trend: "3 inv" },
+                      { label: "Paid", val: "47", trend: "+2" }
+                    ].map(s => (
+                      <div key={s.label} className="rounded-xl border border-gray-200/50 bg-white shadow-sm p-4 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                          <BarChart2 className="w-12 h-12 text-primary-600" />
+                        </div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider relative z-10">{s.label}</p>
+                        <div className="flex items-end gap-2 mt-1 relative z-10">
+                          <p className="text-2xl font-extrabold text-gray-900">{s.val}</p>
+                          <p className="text-xs font-bold text-emerald-500 mb-1">{s.trend}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="rounded-xl border border-gray-200/50 bg-white shadow-sm flex-1 p-4 flex flex-col">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-bold text-gray-900">Recent Activity</h3>
+                      <button className="text-xs font-bold text-primary-600 hover:text-primary-700">View All</button>
+                    </div>
+                    <div className="space-y-3 flex-1 overflow-hidden">
+                      {[
+                        { client: "Acme Corp", amount: "$1,800", status: "Paid", color: "text-emerald-700 bg-emerald-50 border-emerald-200/50" },
+                        { client: "Studio Blue", amount: "$950", status: "Sent", color: "text-blue-700 bg-blue-50 border-blue-200/50" },
+                        { client: "Horizon Ltd", amount: "$2,400", status: "Overdue", color: "text-rose-700 bg-rose-50 border-rose-200/50" },
+                      ].map((i, idx) => (
+                        <div key={idx} className="flex justify-between items-center p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-[10px] font-bold text-primary-700 border border-primary-200/50">
+                              {i.client.substring(0,2).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">{i.client}</p>
+                              <p className="text-xs font-medium text-gray-500">Invoice #{1047 + idx}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <p className="text-sm font-bold text-gray-900">{i.amount}</p>
+                            <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${i.color}`}>
+                              {i.status}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -327,7 +350,7 @@ export default function LandingPage() {
 
       {/* Stats ticker */}
       <section
-        className="overflow-hidden border-y border-gray-100 bg-white py-5"
+        className="overflow-hidden border-y border-gray-100 bg-gray-50/50 py-8"
         aria-label="Platform statistics"
       >
         <div
@@ -338,17 +361,16 @@ export default function LandingPage() {
           {[...stats, ...stats].map((s, i) => (
             <div
               key={i}
-              className="flex items-center gap-10 px-10"
+              className="flex items-center gap-12 px-12"
             >
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-gray-900">{s.value}</span>
-                <span className="text-sm text-gray-400">{s.label}</span>
+              <div className="flex items-baseline gap-3">
+                <span className="text-2xl font-extrabold text-gray-900 tracking-tight">{s.value}</span>
+                <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{s.label}</span>
               </div>
-              <span className="h-1 w-1 rounded-full bg-gray-300" />
+              <div className="h-1.5 w-1.5 rounded-full bg-primary-200" />
             </div>
           ))}
         </div>
-        {/* Screen-reader accessible version */}
         <dl className="sr-only">
           {stats.map((s) => (
             <div key={s.label}>
@@ -360,33 +382,35 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-16 text-center">
-            <p className="mb-3 text-sm font-semibold text-blue-600">How It Works</p>
-            <h2 className="mb-3 text-3xl font-bold text-gray-900">
+      <section id="how-it-works" className="py-16 lg:py-24 bg-gray-50/50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-20 text-center max-w-3xl mx-auto">
+            <h2 className="mb-6 text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
               From invoice to payment in minutes
             </h2>
-            <p className="mx-auto max-w-md text-gray-500">
-              Three simple steps — no accounting degree required.
-            </p>
           </div>
-          <ol className="relative grid grid-cols-1 gap-8 md:grid-cols-3" role="list">
-            {/* Connecting line on desktop */}
-            <div
-              aria-hidden="true"
-              className="absolute left-0 right-0 top-10 hidden h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent md:block"
-            />
-            {steps.map((step) => (
-              <li key={step.number} className="relative flex flex-col items-center text-center">
-                <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 ring-4 ring-white shadow-md">
-                  <step.icon className="h-8 w-8 text-blue-600" aria-hidden="true" />
-                  <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+          <ol className="relative grid grid-cols-1 gap-12 lg:grid-cols-3" role="list">
+            {steps.map((step, index) => (
+              <li key={step.number} className="relative flex flex-col items-center text-center group">
+                {/* Arrow pointing to next step */}
+                {index < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-12 left-[calc(50%+4rem)] w-[calc(100%-8rem)] pointer-events-none text-gray-200">
+                    <svg className="w-full h-4" viewBox="0 0 100 24" fill="none" preserveAspectRatio="none">
+                      <line x1="0" y1="12" x2="95" y2="12" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                      <path d="M 90 7 L 97 12 L 90 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                )}
+                
+                <div className="relative mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-white shadow-xl border-t-4 border-t-primary-500 border-x border-b border-gray-100 group-hover:-translate-y-2 transition-transform duration-300 z-10">
+                  <div className="absolute inset-0 rounded-3xl bg-primary-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <step.icon className="relative h-10 w-10 text-primary-600" aria-hidden="true" />
+                  <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-[11px] font-bold text-primary-700 shadow-sm ring-4 ring-white">
                     {step.number.slice(-1)}
                   </span>
                 </div>
-                <h3 className="mb-2 font-semibold text-gray-900">{step.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-500">{step.description}</p>
+                <h3 className="mb-3 text-xl font-bold text-gray-900 z-10">{step.title}</h3>
+                <p className="text-base font-medium leading-relaxed text-gray-500 max-w-sm z-10">{step.description}</p>
               </li>
             ))}
           </ol>
@@ -394,32 +418,32 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="border-y border-gray-100 bg-gray-50 py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-16 text-center">
-            <p className="mb-3 text-sm font-semibold text-blue-600">Features</p>
-            <h2 className="mb-3 text-3xl font-bold text-gray-900">
+      <section id="features" className="bg-slate-50 py-16 lg:py-24 relative overflow-hidden border-y border-slate-200">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50/50 via-slate-50 to-slate-50" />
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <div className="mb-20 text-center max-w-3xl mx-auto">
+            <p className="mb-4 text-sm font-bold tracking-widest text-primary-600 uppercase">Features</p>
+            <h2 className="mb-6 text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl">
               Everything you need to get paid
             </h2>
-            <p className="mx-auto max-w-md text-gray-500">
-              From first invoice to final payment — Invoiceser handles the entire
-              billing workflow so you can focus on your work.
+            <p className="text-lg leading-relaxed text-slate-500 font-medium">
+              From first invoice to final payment, Invoiceser handles the entire billing workflow so you can focus on your work.
             </p>
           </div>
-          <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" role="list">
+          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {features.map((f) => (
               <li
                 key={f.title}
-                className="rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-3xl border border-slate-200 bg-white shadow-sm p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card group"
               >
                 <div
                   aria-hidden="true"
-                  className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${f.bg}`}
+                  className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${f.bg} group-hover:scale-110 transition-transform duration-300`}
                 >
-                  <f.icon className={`h-5 w-5 ${f.iconClass}`} />
+                  <f.icon className={`h-6 w-6 ${f.iconClass} transition-colors duration-300`} />
                 </div>
-                <h3 className="mb-2 font-semibold text-gray-900">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-500">{f.description}</p>
+                <h3 className="mb-3 text-lg font-bold text-slate-900">{f.title}</h3>
+                <p className="text-sm font-medium leading-relaxed text-slate-500">{f.description}</p>
               </li>
             ))}
           </ul>
@@ -427,14 +451,13 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-white border-y border-gray-100">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-14 text-center">
-            <p className="mb-3 text-sm font-semibold text-blue-600">Customer Stories</p>
-            <h2 className="mb-3 text-3xl font-bold text-gray-900">Loved by freelancers worldwide</h2>
-            <p className="text-gray-500">Real feedback from people who invoice every day.</p>
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-16 text-center max-w-3xl mx-auto">
+            <h2 className="mb-4 text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">Trusted by freelancers worldwide</h2>
+            <p className="text-lg leading-relaxed text-gray-500 font-medium">Real feedback from people who invoice every day.</p>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {[
               {
                 name: "Adaeze Okonkwo",
@@ -448,9 +471,9 @@ export default function LandingPage() {
                 name: "James Harrington",
                 role: "Freelance Developer · London",
                 avatar: "JH",
-                color: "bg-blue-100 text-blue-700",
+                color: "bg-primary-100 text-primary-700",
                 rating: 5,
-                quote: "The AI chatbot actually surfaced a client who had been slipping on payments every quarter. I renegotiated terms — that alone paid for the Pro plan.",
+                quote: "The AI chatbot actually surfaced a client who had been slipping on payments every quarter. I renegotiated terms. That alone paid for the Pro plan.",
               },
               {
                 name: "Priya Mehta",
@@ -461,20 +484,21 @@ export default function LandingPage() {
                 quote: "Beautiful invoices, zero fuss. My international clients actually comment on how professional the emails look. Worth every penny.",
               },
             ].map((t) => (
-              <div key={t.name} className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex gap-0.5 mb-5">
+              <div key={t.name} className="relative rounded-3xl border border-gray-100 bg-white p-8 shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary-50 to-transparent rounded-bl-full opacity-60" />
+                <div className="relative z-10 flex gap-1 mb-6">
                   {[...Array(t.rating)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <svg key={i} className="w-5 h-5 text-amber-400 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                   ))}
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed mb-6">&ldquo;{t.quote}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${t.color}`}>
+                <p className="relative z-10 text-gray-700 text-base font-medium leading-relaxed mb-8">&ldquo;{t.quote}&rdquo;</p>
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${t.color}`}>
                     {t.avatar}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                    <p className="text-xs text-gray-500">{t.role}</p>
+                    <p className="text-sm font-bold text-gray-900">{t.name}</p>
+                    <p className="text-xs font-medium text-gray-500 mt-0.5">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -483,103 +507,75 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="mb-16 text-center">
-            <p className="mb-3 text-sm font-semibold text-blue-600">Pricing</p>
-            <h2 className="mb-3 text-3xl font-bold text-gray-900">Free to start. Pro when you mean business.</h2>
-            <p className="text-gray-500">No limits on invoices or clients — ever. Upgrade only for the advanced features.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-2xl border p-8 ${
-                  plan.highlighted
-                    ? "border-gray-900 bg-gray-900 text-white"
-                    : "border-gray-200 bg-white"
-                }`}
-              >
-                {plan.highlighted && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-3 py-1 text-xs font-semibold text-white">
-                    Most popular
-                  </span>
-                )}
-                <p
-                  className={`mb-2 text-sm font-medium ${
-                    plan.highlighted ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {plan.name}
-                </p>
-                <div className="mb-1 flex items-end gap-1">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.period && (
-                    <span className="mb-1.5 text-sm text-gray-400">{plan.period}</span>
-                  )}
-                </div>
-                <p
-                  className={`mb-7 text-sm ${
-                    plan.highlighted ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {plan.description}
-                </p>
-                <ul className="mb-8 space-y-3" role="list">
-                  {plan.features.map((feat) => (
-                    <li key={feat} className="flex items-center gap-2.5 text-sm">
-                      <CheckCircle2
-                        aria-hidden="true"
-                        className={`h-4 w-4 shrink-0 ${
-                          plan.highlighted ? "text-green-400" : "text-green-500"
-                        }`}
-                      />
-                      <span className={plan.highlighted ? "text-gray-300" : "text-gray-600"}>
-                        {feat}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={plan.href}
-                  className={`block rounded-xl py-3 text-center text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    plan.highlighted
-                      ? "bg-white text-gray-900 hover:bg-gray-100 focus-visible:ring-white"
-                      : "bg-gray-900 text-white hover:bg-gray-700 focus-visible:ring-gray-900"
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Pricing />
 
       {/* CTA */}
-      <section className="mx-6 mb-16 overflow-hidden rounded-3xl" aria-labelledby="cta-heading">
-        <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 py-20 text-center">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-violet-900/20"
-          />
-          <div className="relative mx-auto max-w-2xl px-6">
-            <h2 id="cta-heading" className="mb-4 text-3xl font-bold text-white">
-              Ready to get paid on time?
-            </h2>
-            <p className="mb-8 leading-relaxed text-gray-400">
-              Join freelancers and small teams who use Invoiceser to take the stress
-              out of billing.
-            </p>
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-            >
-              Create your free account
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            <p className="mt-4 text-xs text-gray-500">No credit card required</p>
+      <section className="py-12 bg-white" aria-labelledby="cta-heading">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-gray-900 py-16 lg:py-20 px-8 lg:px-16 shadow-2xl flex flex-col lg:flex-row items-center justify-between min-h-[450px]">
+            {/* Left Content */}
+            <div className="relative z-10 flex flex-col items-start text-left lg:w-[55%]">
+              <h2 id="cta-heading" className="mb-6 text-3xl font-extrabold text-white tracking-tight sm:text-4xl lg:text-5xl leading-tight">
+                Ready to get paid on time?
+              </h2>
+              <p className="mb-10 text-lg leading-relaxed text-gray-400 font-medium max-w-lg">
+                Join thousands of freelancers who use Invoiceser to take the stress
+                out of billing and get back to their real work.
+              </p>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-gray-900 shadow-xl transition-transform hover:scale-105"
+              >
+                Create your free account
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+
+            {/* Right Graphic (Orbits) */}
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-full lg:w-[45%] h-[600px] flex items-center justify-center pointer-events-none opacity-20 lg:opacity-100">
+              <div className="relative w-[600px] h-[600px] flex items-center justify-center translate-x-1/4">
+                {/* Center Icon */}
+                <div className="absolute w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 z-10">
+                  <Receipt className="w-10 h-10 text-white/80" />
+                </div>
+                
+                {/* Inner Ring */}
+                <div className="absolute w-[220px] h-[220px] rounded-full border border-white/20" />
+                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(200deg) translate(110px) rotate(-200deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(60deg) translate(110px) rotate(-60deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/men/33.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                
+                {/* Middle Ring */}
+                <div className="absolute w-[380px] h-[380px] rounded-full border border-white/20" />
+                <div className="absolute w-14 h-14 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(320deg) translate(190px) rotate(-320deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(140deg) translate(190px) rotate(-140deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/women/17.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(250deg) translate(190px) rotate(-250deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/women/64.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+
+                {/* Outer Ring */}
+                <div className="absolute w-[540px] h-[540px] rounded-full border border-white/20" />
+                <div className="absolute w-16 h-16 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(280deg) translate(270px) rotate(-280deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-12 h-12 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(110deg) translate(270px) rotate(-110deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/women/19.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-14 h-14 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(170deg) translate(270px) rotate(-170deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute w-10 h-10 rounded-full overflow-hidden border-[3px] border-gray-900" style={{ transform: 'rotate(190deg) translate(270px) rotate(-190deg)' }}>
+                  <img src="https://randomuser.me/api/portraits/women/51.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -684,12 +680,9 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-gray-100 pt-8 sm:flex-row">
+          <div className="mt-16 flex justify-center border-t border-gray-100 pt-8">
             <p className="text-xs text-gray-400">
               © {new Date().getFullYear()} Invoiceser. All rights reserved.
-            </p>
-            <p className="text-xs text-gray-400">
-              Made with care for freelancers worldwide.
             </p>
           </div>
         </div>

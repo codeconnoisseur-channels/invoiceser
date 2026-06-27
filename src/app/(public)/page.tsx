@@ -47,7 +47,7 @@ const plans = [
       "Logo upload & brand colour",
       "Hide Invoiceser branding",
       "Custom invoice fonts",
-      "AI chatbot — 50 queries/month",
+      "AI chatbot — 10 queries/month",
     ],
     cta: "Get started free",
     href: "/sign-up",

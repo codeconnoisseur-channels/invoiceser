@@ -10,19 +10,19 @@ export function ThemeToggle() {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="w-7 h-7" />;
+  if (!mounted) return <div className="w-8 h-8" />;
 
   const isDark = resolvedTheme === "dark";
 
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-1.5 rounded-md text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark
-        ? <Sun  className="w-3.5 h-3.5" />
-        : <Moon className="w-3.5 h-3.5" />}
+        ? <Sun  className="w-4 h-4" />
+        : <Moon className="w-4 h-4" />}
     </button>
   );
 }

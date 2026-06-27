@@ -1,8 +1,8 @@
 # Invoiceser
 
-**AI-powered invoicing for freelancers and small businesses.**
+**Invoiceser is an AI-powered invoicing solution for freelancers and small businesses.**
 
-Create professional invoices, manage clients, track payments in real-time, and get AI-driven insights — all in one place. Invoiceser is designed to replace fragmented spreadsheets and clunky payment tools with a sleek, single source of truth.
+It eliminates the friction of manual billing by automating invoice generation, tracking real-time payment statuses, and dispatching scheduled payment reminders. Beyond basic invoicing, it features a conversational AI engine that lets you instantly query your cash flow and client history—giving you complete visibility into your business without ever opening a spreadsheet.
 
 ---
 

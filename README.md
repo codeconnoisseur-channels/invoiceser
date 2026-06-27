@@ -8,8 +8,6 @@ Create professional invoices, manage clients, track payments in real-time, and g
 
 ## 📚 Documentation
 
-We have organized our documentation into specialized guides so you can quickly find what you're looking for:
-
 ### 🎯 [Product Overview & Requirements](./docs/PRODUCT_REQUIREMENTS.md)
 *For Product Managers, Stakeholders, and Visionaries.*
 Understand the core problems Invoiceser solves and the data-driven product strategy. View the complete feature breakdown, target audience personas, and a comprehensive, multi-phase future roadmap spanning from MVP to a full ecosystem.

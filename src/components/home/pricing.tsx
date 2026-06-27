@@ -7,7 +7,20 @@ import { CheckCircle2 } from "lucide-react";
 export function Pricing() {
   const [billing, setBilling] = useState<"quarterly" | "yearly">("yearly");
 
-  const plans = {
+  type Plan = {
+    name: string;
+    price: string;
+    period: string;
+    billingText?: string;
+    savings?: string;
+    description: string;
+    features: string[];
+    cta: string;
+    href: string;
+    highlighted: boolean;
+  };
+
+  const plans: Record<"quarterly" | "yearly", Plan[]> = {
     quarterly: [
       {
         name: "Free",

@@ -14,7 +14,7 @@ Understand the core problems Invoiceser solves and the data-driven product strat
 
 ### 🏗️ [Architecture & System Design](./docs/ARCHITECTURE.md)
 *For Technical Product Managers (TPMs) and Systems Architects.*
-Dive into the technical architecture that powers our real-time engine. This document includes deep-dive **Mermaid.js diagrams** visualizing:
+Dive into the technical architecture that powers our real-time engine. This document includes deep-dive diagrams visualizing:
 - System Architecture (including PostHog Analytics and Groq LLMs)
 - Entity Relationship Diagram (Data Schema)
 - User Flows & Payment Lifecycles

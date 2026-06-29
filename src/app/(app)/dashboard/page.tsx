@@ -16,6 +16,7 @@ import { formatCurrency, SUPPORTED_CURRENCIES } from "@/lib/currency";
 import { formatDate } from "@/lib/dates";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { ProductTour } from "@/components/dashboard/product-tour";
+import { SettingsNotice } from "@/components/dashboard/settings-notice";
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -124,6 +125,7 @@ export default function DashboardPage() {
       </div>
 
       <ProductTour hasInvoices={hasInvoices} />
+      <SettingsNotice />
 
       {!hasInvoices && stats ? (
         /* ── Empty state: guide, not zeros ── */

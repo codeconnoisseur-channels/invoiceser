@@ -126,44 +126,26 @@ export default function DashboardPage() {
 
       <ProductTour hasInvoices={hasInvoices} />
       <SettingsNotice />
+      <OnboardingChecklist />
 
       {!hasInvoices && stats ? (
         /* ── Empty state: guide, not zeros ── */
-        <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark p-14 text-center max-w-lg mx-auto animate-slide-up">
+        <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark p-14 text-center max-w-lg mx-auto animate-slide-up mt-8">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-blue-200/50 dark:ring-blue-700/30">
             <FileText className="w-9 h-9 text-blue-500" />
           </div>
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">Ready to send your first invoice?</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
-            Add a client, set your rates, and send a professional invoice in under a minute.
+            Once you&apos;ve completed your setup above, you can send a professional invoice in under a minute.
           </p>
           <Button asChild className="h-11 gap-2 text-base shadow-md shadow-primary-500/20">
             <Link href="/invoices/new">
               <FilePlus className="w-4 h-4" />Create Your First Invoice
             </Link>
           </Button>
-          <div className="mt-10 pt-8 border-t border-gray-100 dark:border-gray-800">
-            <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.08em] mb-5">Quick start guide</p>
-            <div className="grid grid-cols-3 gap-4 text-left">
-              {[
-                { num: "1", text: "Add your first client" },
-                { num: "2", text: "Create an invoice" },
-                { num: "3", text: "Send & get paid" },
-              ].map((step) => (
-                <div key={step.num} className="rounded-xl bg-gray-50 dark:bg-gray-800/50 p-4 border border-gray-200/70 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
-                  <div className="w-7 h-7 rounded-lg bg-primary-500 text-white flex items-center justify-center text-xs font-bold mb-2.5 shadow-sm shadow-primary-500/20">
-                    {step.num}
-                  </div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 leading-relaxed">{step.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       ) : (
         <>
-          <OnboardingChecklist />
-
           {/* 3 Stat cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <StatCard
@@ -315,7 +297,7 @@ export default function DashboardPage() {
             {/* Recent Invoices */}
             <div className="lg:col-span-2">
               <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark overflow-hidden">
-                <div className="flex items-center gap-3 px-6 py-4 bg-primary-50/70 dark:bg-primary-950/30 border-b border-primary-100 dark:border-primary-900/30">
+                <div className="flex items-center gap-3 px-6 py-4 bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                   <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-md">
                     <FileText className="w-4 h-4 text-white" />
                   </div>

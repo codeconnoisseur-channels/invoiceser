@@ -40,7 +40,7 @@ Invoiceser centralizes and automates the invoicing process:
 - **Scheduled Reminders**: Convex cron jobs automatically evaluate invoice due dates and send pre/post-due email reminders via Nodemailer.
 
 ### 4.5 AI Assistant
-- Conversational chat powered by Llama 3 70B (via Groq).
+- Conversational chat powered by GPT OSS 120B (via Groq).
 - Capable of deeply querying the user's invoice history and providing strategic business insights.
 
 ### 4.6 Product Analytics & Data-Driven Insights

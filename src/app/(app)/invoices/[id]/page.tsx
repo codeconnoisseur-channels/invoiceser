@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { useAnalytics } from "@/lib/use-analytics";
+import { APP_URL } from "@/lib/env";
 import {
   Send, Download, Ban, CreditCard, Copy, RefreshCw,
   AlertTriangle, Pencil, AlertCircle,
@@ -62,8 +63,7 @@ export default function InvoiceDetailPage() {
 
   const totalPaid  = payments?.reduce((s, p) => s + p.amount, 0) ?? 0;
   const outstanding = invoice.total - totalPaid;
-  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
-  const publicUrl  = `${appUrl}/invoice/${invoice.publicToken}`;
+  const publicUrl  = `${APP_URL}/invoice/${invoice.publicToken}`;
 
   async function handleSend() {
     try {

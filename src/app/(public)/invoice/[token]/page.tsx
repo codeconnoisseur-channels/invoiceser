@@ -8,10 +8,7 @@ import { FileText, ArrowDown, ExternalLink, Download } from "lucide-react";
 import { InvoicePreview } from "@/components/invoices/invoice-preview";
 import { formatCurrency } from "@/lib/currency";
 
-function extractUrls(text: string): string[] {
-  const urlRegex = /https?:\/\/[^\s,;)]+/g;
-  return text.match(urlRegex) || [];
-}
+import { Button } from "@/components/ui/button";
 
 export default function PublicInvoicePage() {
   const params = useParams();
@@ -30,15 +27,7 @@ export default function PublicInvoicePage() {
     }
   }, [invoice?._id, invoice?.status, markViewed, token]);
 
-  const paymentUrls = useMemo(() => {
-    if (!invoice?.paymentInstructions) return [];
-    return extractUrls(invoice.paymentInstructions);
-  }, [invoice?.paymentInstructions]);
 
-  const scrollToPayment = () => {
-    const el = document.getElementById("payment-details");
-    el?.scrollIntoView({ behavior: "smooth" });
-  };
 
   if (invoice === undefined) {
     return (
@@ -64,6 +53,12 @@ export default function PublicInvoicePage() {
     <div className="min-h-screen bg-slate-100 pb-10">
       <div className="py-10 px-4">
         <div className="max-w-[600px] mx-auto">
+          <div className="flex justify-end mb-4">
+            <Button variant="outline" size="sm" className="shadow-sm" onClick={() => window.open(`/api/pdf/public/${token}`, "_blank")}>
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+          </div>
           <InvoicePreview
             companyName={invoice.fromName || biz?.companyName || ""}
             logoUrl={logoUrl}

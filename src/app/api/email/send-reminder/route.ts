@@ -10,6 +10,9 @@ import { renderAsync } from "@react-email/components";
 import React from "react";
 import { parseISO } from "date-fns";
 import { sendEmail } from "@/lib/email";
+import { APP_URL, SMTP_USER } from "@/lib/env";
+
+const rateLimit = new Map<string, number>();
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,6 +21,13 @@ export async function POST(req: NextRequest) {
 
     const token = await getToken({ template: "convex" });
     if (!token) return NextResponse.json({ error: "Auth token unavailable" }, { status: 401 });
+
+    const now = Date.now();
+    const lastReq = rateLimit.get(userId) || 0;
+    if (now - lastReq < 10000) {
+      return NextResponse.json({ error: "Please wait 10 seconds between sending reminders" }, { status: 429 });
+    }
+    rateLimit.set(userId, now);
 
     const body = await req.json().catch(() => null) as { invoiceId?: string } | null;
     if (!body || typeof body.invoiceId !== "string" || !body.invoiceId.trim()) {
@@ -34,8 +44,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-    const publicUrl = `${appUrl}/invoice/${invoice.publicToken}`;
+    const publicUrl = `${APP_URL}/invoice/${invoice.publicToken}`;
 
     let logoUrl: string | undefined;
     if (settings.logoStorageId) {
@@ -81,7 +90,7 @@ export async function POST(req: NextRequest) {
     );
 
     const fromName = settings.companyName || "Invoiceser";
-    const fromEmail = process.env.SMTP_USER || "noreply@invoiceser.app";
+    const fromEmail = SMTP_USER;
     const replyTo = settings.businessEmail || undefined;
 
     try {

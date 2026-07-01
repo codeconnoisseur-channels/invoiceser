@@ -130,7 +130,7 @@ export default function AIPage() {
               </div>
             </div>
           ) : chatMessages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center">
+            <div className="py-20 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 flex items-center justify-center mb-4">
                 <MessageSquare className="w-8 h-8 text-violet-400" />
               </div>

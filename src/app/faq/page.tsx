@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Receipt, Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { CTA } from "@/components/home/cta";
 import { Footer } from "@/components/home/footer";
+import { Logo } from "@/components/ui/logo";
 
 const faqs = [
   {
@@ -37,30 +38,23 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-950 text-white selection:bg-primary-900 selection:text-primary-100">
       {/* Header Bar */}
-      <header className="border-b border-gray-100 bg-white py-6">
+      <header className="border-b border-gray-800 bg-gray-950 py-6">
         <div className="mx-auto max-w-5xl px-6 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <Receipt className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-gray-900">
-              Invoice<span className="text-primary-600">ser</span>
-            </span>
-          </Link>
+          <Logo />
           <div className="flex gap-4 items-center">
-            <Link href="/sign-up" className="text-sm font-bold text-primary-600 hover:text-primary-700">Login</Link>
-            <Link href="/sign-up" className="px-5 py-2.5 rounded-lg bg-primary-700 text-white text-sm font-bold shadow-sm hover:bg-primary-800 transition-colors">Get Started</Link>
+            <Link href="/sign-in" className="text-sm font-bold text-gray-400 hover:text-white">Login</Link>
+            <Link href="/sign-up" className="px-5 py-2.5 rounded-lg bg-primary-600 text-white text-sm font-bold shadow-sm hover:bg-primary-500 transition-colors">Get Started</Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="bg-primary-50/50 py-24">
+      <section className="bg-gray-900/50 py-24 border-b border-gray-800">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">Frequently asked questions</h1>
-          <p className="text-lg text-gray-600 font-medium">Everything you need to know about billing, features, and managing your freelance business with Invoiceser.</p>
+          <h1 className="text-5xl font-extrabold text-white mb-6 tracking-tight">Frequently asked questions</h1>
+          <p className="text-lg text-gray-400 font-medium">Everything you need to know about billing, features, and managing your freelance business with Invoiceser.</p>
         </div>
       </section>
       
@@ -70,22 +64,22 @@ export default function FAQPage() {
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={index} className="border-b border-gray-200 last:border-0">
+              <div key={index} className="border-b border-gray-800 last:border-0">
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="w-full flex justify-between items-center py-6 text-left focus:outline-none group"
                 >
-                  <span className="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{faq.question}</span>
+                  <span className="text-lg font-bold text-white group-hover:text-primary-400 transition-colors">{faq.question}</span>
                   {isOpen ? (
-                    <Minus className="w-5 h-5 text-gray-400 group-hover:text-primary-600 shrink-0" />
+                    <Minus className="w-5 h-5 text-gray-500 group-hover:text-primary-400 shrink-0" />
                   ) : (
-                    <Plus className="w-5 h-5 text-gray-400 group-hover:text-primary-600 shrink-0" />
+                    <Plus className="w-5 h-5 text-gray-500 group-hover:text-primary-400 shrink-0" />
                   )}
                 </button>
                 <div 
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-40 opacity-100 pb-6" : "max-h-0 opacity-0"}`}
                 >
-                  <p className="text-gray-600 leading-relaxed text-base">{faq.answer}</p>
+                  <p className="text-gray-400 leading-relaxed text-base">{faq.answer}</p>
                 </div>
               </div>
             );

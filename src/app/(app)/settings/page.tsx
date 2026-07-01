@@ -257,14 +257,8 @@ export default function SettingsPage() {
     const t = setTimeout(() => {
       prevBusiness.current = business;
       saveBusiness();
-    }, 3000);
-    return () => {
-      clearTimeout(t);
-      if (JSON.stringify(business) !== JSON.stringify(prevBusiness.current)) {
-        prevBusiness.current = business;
-        saveBusiness();
-      }
-    };
+    }, 1500);
+    return () => clearTimeout(t);
   }, [business, settings]);
 
   useEffect(() => {
@@ -274,14 +268,8 @@ export default function SettingsPage() {
     const t = setTimeout(() => {
       prevTax.current = tax;
       saveTax();
-    }, 3000);
-    return () => {
-      clearTimeout(t);
-      if (JSON.stringify(tax) !== JSON.stringify(prevTax.current)) {
-        prevTax.current = tax;
-        saveTax();
-      }
-    };
+    }, 1500);
+    return () => clearTimeout(t);
   }, [tax, settings]);
 
   useEffect(() => {
@@ -291,14 +279,8 @@ export default function SettingsPage() {
     const t = setTimeout(() => {
       prevPayment.current = payment;
       saveDefaultPayment();
-    }, 3000);
-    return () => {
-      clearTimeout(t);
-      if (JSON.stringify(payment) !== JSON.stringify(prevPayment.current)) {
-        prevPayment.current = payment;
-        saveDefaultPayment();
-      }
-    };
+    }, 1500);
+    return () => clearTimeout(t);
   }, [payment, settings]);
 
   useEffect(() => {
@@ -308,14 +290,8 @@ export default function SettingsPage() {
     const t = setTimeout(() => {
       prevReminder.current = reminder;
       saveReminderSettings();
-    }, 3000);
-    return () => {
-      clearTimeout(t);
-      if (JSON.stringify(reminder) !== JSON.stringify(prevReminder.current)) {
-        prevReminder.current = reminder;
-        saveReminderSettings();
-      }
-    };
+    }, 1500);
+    return () => clearTimeout(t);
   }, [reminder, settings]);
 
   const [uploading,       setUploading]       = useState(false);
@@ -472,7 +448,7 @@ export default function SettingsPage() {
         customEmailDomain:   business.customEmailDomain || undefined,
         emailTemplate:       business.emailTemplate || undefined,
       });
-      toast.success("Changes saved");
+      // toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
   }
 
@@ -486,7 +462,7 @@ export default function SettingsPage() {
         vatRate:        tax.vatRate      ? Number(tax.vatRate)      : undefined,
         vatActive:      tax.vatActive,
       });
-      toast.success("Changes saved");
+      // toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
   }
 
@@ -501,7 +477,7 @@ export default function SettingsPage() {
         paymentSwiftBic:      payment.swiftBic      || undefined,
         paymentLink:          payment.paymentLink    || undefined,
       });
-      toast.success("Changes saved");
+      // toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
   }
 
@@ -528,7 +504,7 @@ export default function SettingsPage() {
         autoReminderDaysBefore: reminder.autoReminderEnabled ? reminder.autoReminderDaysBefore : undefined,
         autoReminderDaysAfter:  reminder.autoReminderEnabled ? reminder.autoReminderDaysAfter  : undefined,
       });
-      toast.success("Changes saved");
+      // toast.success("Changes saved");
     } catch { toast.error("Failed to save"); }
   }
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X, FileText } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { CommandPalette } from "./command-palette";
 import { cn } from "@/lib/utils";
 import {
@@ -107,17 +108,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#F1F5F9] dark:bg-[#0A0A0A]">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white">
       {/* ── Desktop sidebar ─────────────────────────── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-[250px] bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800/80 flex-col z-40">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-[250px] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-col z-40">
         {/* Logo */}
         <div className="px-5 py-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center shadow-sm shadow-primary-500/20">
-              <Receipt className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-gray-900 dark:text-white text-md tracking-tight">Invoiceser</span>
-          </Link>
+          <Logo />
         </div>
         <NavLinks />
         <SidebarUserBlock />
@@ -134,20 +130,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Mobile drawer sidebar ─────────────────────── */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800/80 flex flex-col z-50 transition-transform duration-300 ease-spring lg:hidden",
+          "fixed left-0 top-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col z-50 transition-transform duration-300 ease-spring lg:hidden",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="px-5 py-6 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center shadow-sm shadow-primary-500/20">
-              <Receipt className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-gray-900 dark:text-white text-md tracking-tight">Invoiceser</span>
-          </Link>
+          <Logo />
           <button
             onClick={() => setOpen(false)}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -159,7 +150,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Main content ──────────────────────────────── */}
       <main className="flex-1 lg:ml-[250px] min-h-screen flex flex-col">
         {/* Desktop top bar */}
-        <div className="hidden lg:flex sticky top-0 z-30 items-center justify-end px-8 py-3 bg-[#F1F5F9]/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
+        <div className="hidden lg:flex sticky top-0 z-30 items-center justify-end px-8 py-3 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
           <TopBarUserMenu />
         </div>
 
@@ -167,16 +158,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
           <button
             onClick={() => setOpen(true)}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
-              <Receipt className="w-3.5 h-3.5 text-white" />
-            </div>
-            <span className="font-bold text-gray-900 dark:text-white text-sm">Invoiceser</span>
-          </Link>
+          <Logo textClassName="text-sm" />
           <div className="ml-auto">
             <TopBarUserMenu />
           </div>

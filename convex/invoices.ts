@@ -163,6 +163,9 @@ export const createInvoice = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
+    if (args.lineItems.length === 0) {
+      throw new ConvexError("An invoice must have at least one item.");
+    }
 
     // Get & atomically increment counter
     const settings = await ctx.db
@@ -280,6 +283,9 @@ export const updateDraftInvoice = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
+    if (args.lineItems.length === 0) {
+      throw new ConvexError("An invoice must have at least one item.");
+    }
     const { invoiceId, ...fields } = args;
     const invoice = await ctx.db.get(invoiceId);
     if (!invoice || invoice.userId !== user._id) throw new Error("Not found");
@@ -411,7 +417,23 @@ export const bulkUpdateStatus = mutation({
       (inv): inv is NonNullable<typeof inv> =>
         inv !== null && inv.userId === user._id && inv.status !== "paid" && inv.status !== "voided"
     );
+    let deltaCollected = 0;
+    let deltaPendingAmount = 0;
+    let deltaPendingCount = 0;
+    let deltaOverdueCount = 0;
+
     for (const inv of valid) {
+      if (args.status === "paid") {
+        deltaCollected += inv.total;
+        deltaPendingAmount -= inv.total;
+        deltaPendingCount -= 1;
+        if (inv.status === "overdue") deltaOverdueCount -= 1;
+      } else if (args.status === "overdue") {
+        if (inv.status === "sent") {
+          deltaOverdueCount += 1;
+        }
+      }
+
       await ctx.db.patch(inv._id, {
         status: args.status,
         ...(args.status === "paid" ? { paidAt: Date.now() } : {}),
@@ -426,7 +448,12 @@ export const bulkUpdateStatus = mutation({
       });
     }
     // Recalculate stats
-    await ctx.runMutation(api.users.updateInvoiceStats, {});
+    await ctx.runMutation(api.users.updateInvoiceStats, {
+      collectedAmount: deltaCollected || undefined,
+      pendingAmount: deltaPendingAmount || undefined,
+      pendingCount: deltaPendingCount || undefined,
+      overdueCount: deltaOverdueCount || undefined,
+    });
   },
 });
 
@@ -439,6 +466,12 @@ export const bulkDeleteInvoices = mutation({
       (inv): inv is NonNullable<typeof inv> =>
         inv !== null && inv.userId === user._id
     );
+    let deltaTotal = 0;
+    let deltaPending = 0;
+    let deltaPendingAmount = 0;
+    let deltaCollected = 0;
+    let deltaOverdue = 0;
+
     for (const inv of valid) {
       await ctx.db.delete(inv._id);
       await ctx.db.insert("activityLog", {
@@ -448,8 +481,25 @@ export const bulkDeleteInvoices = mutation({
         metadata: "Bulk delete",
         createdAt: Date.now(),
       });
+
+      if (inv.status !== "draft" && inv.status !== "voided") {
+        deltaTotal -= 1;
+        if (inv.status === "paid") {
+          deltaCollected -= inv.total;
+        } else {
+          deltaPending -= 1;
+          deltaPendingAmount -= inv.total;
+          if (inv.status === "overdue") deltaOverdue -= 1;
+        }
+      }
     }
-    await ctx.runMutation(api.users.updateInvoiceStats, {});
+    await ctx.runMutation(api.users.updateInvoiceStats, {
+      totalCount: deltaTotal || undefined,
+      pendingCount: deltaPending || undefined,
+      pendingAmount: deltaPendingAmount || undefined,
+      collectedAmount: deltaCollected || undefined,
+      overdueCount: deltaOverdue || undefined,
+    });
   },
 });
 

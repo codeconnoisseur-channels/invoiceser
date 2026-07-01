@@ -84,9 +84,10 @@ function InvoicesContent() {
   const bulkMarkOverdue = useMutation(api.invoices.bulkUpdateStatus);
   const bulkDelete = useMutation(api.invoices.bulkDeleteInvoices);
 
-  const invoices = useQuery(api.invoices.listInvoices, { status: statusFilter });
+  const allInvoices = useQuery(api.invoices.listInvoices, {});
 
-  const filtered = invoices?.filter((inv) => {
+  const filtered = allInvoices?.filter((inv) => {
+    if (statusFilter && inv.status !== statusFilter) return false;
     if (clientIdFilter && (inv.clientId as string | undefined) !== clientIdFilter) return false;
     if (!search) return true;
     const q = search.toLowerCase();
@@ -96,6 +97,14 @@ function InvoicesContent() {
       (inv.clientSnapshot.companyName ?? "").toLowerCase().includes(q)
     );
   });
+
+  const counts = allInvoices?.reduce((acc, inv) => {
+    acc.all++;
+    if (inv.status in acc) {
+      acc[inv.status as "draft" | "sent" | "paid" | "overdue"]++;
+    }
+    return acc;
+  }, { all: 0, draft: 0, sent: 0, paid: 0, overdue: 0 });
 
   const clientName = clientIdFilter
     ? (filtered?.[0]?.clientSnapshot.fullName ?? filtered?.[0]?.clientSnapshot.companyName)
@@ -116,13 +125,13 @@ function InvoicesContent() {
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Invoices</h1>
             <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">
-              {invoices ? `${invoices.length} invoice${invoices.length !== 1 ? "s" : ""}` : "Manage and track all your invoices"}
+              {allInvoices ? `${allInvoices.length} invoice${allInvoices.length !== 1 ? "s" : ""}` : "Manage and track all your invoices"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {invoices && invoices.length > 0 && (
-            <Button variant="outline" size="sm" className="h-10 gap-2 shadow-sm" onClick={() => exportCSV(invoices)}>
+          {allInvoices && allInvoices.length > 0 && (
+            <Button variant="outline" size="sm" className="h-10 gap-2 shadow-sm" onClick={() => exportCSV(allInvoices)}>
               <Download className="w-4 h-4" />Export CSV
             </Button>
           )}
@@ -154,19 +163,25 @@ function InvoicesContent() {
             />
           </div>
           <div className="flex flex-wrap gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 shadow-sm">
-            {STATUS_FILTERS.map((f) => (
-              <button
-                key={String(f.value)}
-                onClick={() => setStatusFilter(f.value)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                  statusFilter === f.value
-                    ? "bg-primary-500 text-white shadow-sm scale-100"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 scale-95"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+            {STATUS_FILTERS.map((f) => {
+              const count = counts ? counts[f.value ?? "all"] : 0;
+              return (
+                <button
+                  key={String(f.value)}
+                  onClick={() => setStatusFilter(f.value)}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 ${
+                    statusFilter === f.value
+                      ? "bg-primary-500 text-white shadow-sm scale-100"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 scale-95"
+                  }`}
+                >
+                  {f.label}
+                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${statusFilter === f.value ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -176,7 +191,7 @@ function InvoicesContent() {
             <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 mr-2 shrink-0">{selected.size} selected</span>
             <button
               onClick={() => {
-                const selectedInvs = invoices?.filter((i) => selected.has(i._id)) ?? [];
+                const selectedInvs = allInvoices?.filter((i) => selected.has(i._id)) ?? [];
                 exportCSV(selectedInvs);
               }}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ml-auto"
@@ -246,6 +261,22 @@ function InvoicesContent() {
                     </div>
                     <div className="flex items-center gap-1">
                       <InvoiceStatusBadge status={inv.status} />
+                      
+                      {(inv.status === "sent" || inv.status === "overdue") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1 ml-1 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            bulkMarkPaid({ invoiceIds: [inv._id as Id<"invoices">], status: "paid" });
+                            toast.success("Marked as paid");
+                          }}
+                        >
+                          <CheckCheck className="w-3.5 h-3.5" /> Mark Paid
+                        </Button>
+                      )}
+
                       <div onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -382,7 +413,21 @@ function InvoicesContent() {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-2">
                         <InvoiceStatusBadge status={inv.status} />
-                        <div onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                          {(inv.status === "sent" || inv.status === "overdue") && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-2.5 text-xs gap-1.5 text-emerald-600 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                bulkMarkPaid({ invoiceIds: [inv._id as Id<"invoices">], status: "paid" });
+                                toast.success("Marked as paid");
+                              }}
+                            >
+                              <CheckCheck className="w-3.5 h-3.5" /> Mark Paid
+                            </Button>
+                          )}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">

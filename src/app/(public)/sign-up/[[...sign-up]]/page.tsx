@@ -1,5 +1,6 @@
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 
 export default function SignUpPage() {
   return (
@@ -7,9 +8,7 @@ export default function SignUpPage() {
       {/* Brand side */}
       <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-blue-600 to-violet-700 p-12 text-white">
         <div>
-          <Link href="/" className="text-xl font-bold tracking-tight text-white">
-            Invoice<span className="text-blue-200">ser</span>
-          </Link>
+          <Logo textClassName="text-white" />
         </div>
         <div className="space-y-6">
           <h1 className="text-3xl font-bold leading-tight">
@@ -42,9 +41,7 @@ export default function SignUpPage() {
       <div className="flex items-start lg:items-center justify-center px-6 py-8 sm:py-12 overflow-y-auto min-h-0">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
-            <Link href="/" className="text-xl font-bold tracking-tight text-gray-900">
-              Invoice<span className="text-blue-600">ser</span>
-            </Link>
+            <Logo textClassName="text-gray-900" />
           </div>
           <SignUp
             appearance={{

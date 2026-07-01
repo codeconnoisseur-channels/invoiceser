@@ -41,14 +41,7 @@ export default function OnboardingPage() {
   }
 
   function finish() {
-    if (typeof window !== "undefined") localStorage.setItem("onboarding_dismissed", "1");
     track("onboarding_completed", {});
-    router.push("/invoices/new");
-  }
-
-  function skipToDashboard() {
-    if (typeof window !== "undefined") localStorage.setItem("onboarding_dismissed", "1");
-    track("onboarding_completed", { skipped_create_invoice: true });
     router.push("/dashboard");
   }
 
@@ -133,19 +126,16 @@ export default function OnboardingPage() {
             <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-full flex items-center justify-center mx-auto mb-5">
               <Sparkles className="w-8 h-8 text-blue-500" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">You&apos;re ready to invoice</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">You&apos;re ready to get started</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 max-w-sm mx-auto">
-              Your business is set up. Now let&apos;s create your first invoice — it takes less than a minute.
+              Your business name is set. Now let&apos;s head to the dashboard to finish setting up your account.
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-8 max-w-sm mx-auto">
-              Add payment details, clients, and branding later in Settings.
+              You&apos;ll need to add payment details and a client before you can get paid.
             </p>
             <div className="flex flex-col gap-3">
               <Button className="w-full h-11 gap-2 text-base" onClick={finish}>
-                <Sparkles className="w-4 h-4" />Create Your First Invoice
-              </Button>
-              <Button variant="outline" className="w-full h-11" onClick={skipToDashboard}>
-                Go to Dashboard
+                <ArrowRight className="w-4 h-4" /> Go to Dashboard
               </Button>
               <button onClick={() => setStep(1)} className="w-full text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2">
                 Back to business name

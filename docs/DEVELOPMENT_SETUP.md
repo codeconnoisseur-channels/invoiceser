@@ -13,7 +13,7 @@ Welcome to the Invoiceser development guide! This document covers the technology
 | **Authentication**| Clerk |
 | **Email** | Nodemailer + React Email (SMTP) |
 | **Analytics** | PostHog |
-| **AI** | Groq (Llama 3 70B) |
+| **AI** | Groq (GPT OSS 120B) |
 | **Payments** | KoraPay |
 | **PDF** | `@react-pdf/renderer` |
 | **UI** | Tailwind CSS + shadcn/ui + Radix UI |
@@ -44,7 +44,7 @@ To run the project locally, you must configure the following variables in a `.en
 | `NEXT_PUBLIC_POSTHOG_KEY` | PostHog project API key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host URL (e.g., https://app.posthog.com) |
 | `GROQ_API_KEY` | Groq API key for AI features |
-| `GROQ_MODEL_NAME` | Groq model (default: `llama3-70b-8192`) |
+| `GROQ_MODEL_NAME` | Groq model (default: `gpt-oss-120b`) |
 | `NEXT_PUBLIC_APP_URL` | Full public URL of the app (e.g. `http://localhost:3000`) |
 | `KORAPAY_SECRET_KEY` | KoraPay secret key |
 | `KORAPAY_ENCRYPTION_KEY` | KoraPay encryption key (for webhook HMAC verification) |

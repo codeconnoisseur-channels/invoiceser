@@ -13,7 +13,7 @@ graph TD
     Convex[(Convex Backend DB & Functions)]
     Clerk[Clerk Auth]
     SMTP[SMTP / Nodemailer]
-    Groq[Groq AI / Llama 3]
+    Groq[Groq AI / GPT OSS 120B]
     KoraPay[KoraPay Payments]
     PostHog[PostHog Analytics]
     

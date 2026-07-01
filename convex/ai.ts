@@ -156,7 +156,7 @@ export const generateInsights = action({
     };
 
     const groqKey = process.env.GROQ_API_KEY;
-    const groqModel = process.env.GROQ_MODEL_NAME ?? "llama-3.3-70b-versatile";
+    const groqModel = process.env.GROQ_MODEL_NAME ?? "gpt-oss-120b";
     if (!groqKey) throw new Error("GROQ_API_KEY not set");
 
     const response = await fetch(
@@ -243,7 +243,7 @@ export const askQuestion = action({
     };
 
     const groqKey   = process.env.GROQ_API_KEY;
-    const groqModel = process.env.GROQ_MODEL_NAME ?? "llama-3.3-70b-versatile";
+    const groqModel = process.env.GROQ_MODEL_NAME ?? "gpt-oss-120b";
     if (!groqKey) throw new Error("GROQ_API_KEY not set");
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {

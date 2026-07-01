@@ -11,7 +11,9 @@ import {
   Building2,
   Settings,
   HelpCircle,
+  FilePlus,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
@@ -51,6 +53,15 @@ export function Sidebar() {
 
       {/* Main nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        <div className="mb-4 px-1">
+          <Button asChild className="w-full justify-start gap-2 h-10 shadow-md">
+            <Link href="/invoices/new">
+              <FilePlus className="w-4 h-4" />
+              New Invoice
+            </Link>
+          </Button>
+        </div>
+        
         {navItems.map((item) => {
           const active =
             pathname === item.href || pathname.startsWith(item.href + "/");

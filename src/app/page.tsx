@@ -95,7 +95,7 @@ export default function LandingPage() {
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-xl transition-all duration-300">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Logo />
+          <Logo textClassName="text-white" />
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
             {["How It Works", "Features", "Pricing"].map((item) => (
               <a

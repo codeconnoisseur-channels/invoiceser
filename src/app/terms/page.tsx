@@ -9,7 +9,7 @@ export default function TermsPage() {
       {/* Header Bar */}
       <header className="border-b border-gray-800 bg-gray-950 py-6">
         <div className="mx-auto max-w-5xl px-6 flex justify-between items-center">
-          <Logo />
+          <Logo textClassName="text-white" />
           <div className="flex gap-4 items-center">
             <Link href="/sign-in" className="text-sm font-bold text-gray-400 hover:text-white">Login</Link>
             <Link href="/sign-up" className="px-5 py-2.5 rounded-lg bg-primary-600 text-white text-sm font-bold shadow-sm hover:bg-primary-500 transition-colors">Get Started</Link>

@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand + social */}
           <div className="lg:col-span-1">
-            <Logo />
+            <Logo textClassName="text-white" />
             <p className="mt-3 text-sm font-medium leading-relaxed text-gray-400">
               Professional invoicing for freelancers and small teams who want to get paid faster.
             </p>

@@ -10,12 +10,12 @@ interface LogoProps {
 
 export function Logo({ className, href = "/", textClassName }: LogoProps) {
   return (
-    <Link href={href} className={cn("flex items-center gap-2.5 group", className)}>
-      <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center shadow-sm shadow-primary-500/20 group-hover:shadow-primary-500/40 transition-shadow duration-300 shrink-0">
-        <Receipt className="w-4 h-4 text-white" />
+    <Link href={href} className={cn("group flex min-h-11 items-center gap-2.5", className)}>
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground transition-colors group-hover:bg-primary/90">
+        <Receipt className="size-4" aria-hidden="true" />
       </div>
-      <span className={cn("font-bold text-gray-900 dark:text-white text-xl tracking-tight", textClassName)}>
-        Invoice<span className="text-primary-500">ser</span>
+      <span className={cn("text-xl font-semibold tracking-[-0.03em] text-foreground", textClassName)}>
+        Invoice<span className="text-primary">ser</span>
       </span>
     </Link>
   );

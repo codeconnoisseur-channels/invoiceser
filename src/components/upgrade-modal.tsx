@@ -42,8 +42,8 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
             <DialogTitle className="text-lg font-extrabold">Upgrade to Pro</DialogTitle>
           </div>
@@ -57,7 +57,7 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
           <ul className="space-y-3">
             {PRO_FEATURES.map((f, i) => (
               <li key={i} className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-md bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-400 mt-0.5">
+                <div className="w-7 h-7 rounded-md bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center shrink-0 text-amber-600 dark:text-amber-400 mt-0.5">
                   {f.icon}
                 </div>
                 <span className="text-sm text-gray-700 dark:text-gray-300">{f.text}</span>
@@ -73,7 +73,7 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
           </div>
 
           <Button
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white gap-2"
+            className="w-full bg-amber-600 hover:bg-amber-700 text-white gap-2"
             onClick={handleUpgrade}
             disabled={loading}
           >
@@ -92,7 +92,7 @@ export function UpgradeButton({ label = "Upgrade to Pro", className }: { label?:
     <>
       <button
         onClick={() => setOpen(true)}
-        className={className ?? "shrink-0 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold transition-colors gap-1.5 flex items-center"}
+        className={className ?? "shrink-0 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors gap-1.5 flex items-center"}
       >
         <Sparkles className="w-3 h-3" />
         {label}

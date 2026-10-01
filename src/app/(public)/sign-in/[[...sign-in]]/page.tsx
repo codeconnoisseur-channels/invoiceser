@@ -1,57 +1,22 @@
 import { SignIn } from "@clerk/nextjs";
-import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import styles from "../../landing.module.css";
+
+const appearance = {
+  variables: { colorPrimary: "#f26722", colorForeground: "#171714", colorMutedForeground: "#68635d", colorBackground: "#ffffff", colorInputBackground: "#ffffff", colorInputText: "#171714", borderRadius: "0.75rem" },
+  elements: {
+    rootBox: "w-full", cardBox: "w-full shadow-none", card: "w-full shadow-none border border-[#e9e3dc] rounded-2xl",
+    headerTitle: "text-2xl font-semibold tracking-tight", headerSubtitle: "text-sm",
+    socialButtonsBlockButton: "min-h-11 border border-[#e9e3dc] rounded-xl hover:bg-[#f7f1e9] transition-colors",
+    formFieldInput: "min-h-11 rounded-xl border border-[#e9e3dc] focus:border-[#f26722] focus:ring-2 focus:ring-[#f26722]/20",
+    formButtonPrimary: "min-h-11 rounded-xl bg-[#f26722] hover:bg-[#d94d0c] shadow-none",
+    footerActionLink: "text-[#d94d0c] hover:text-[#b83f08]", identityPreviewEditButton: "text-[#d94d0c]",
+    dividerLine: "bg-[#e9e3dc]", dividerText: "text-[#8a837c]",
+  },
+};
+
+function Brand() { return <Logo className={styles.brand} textClassName={styles.brandText} />; }
 
 export default function SignInPage() {
-  return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Brand side */}
-      <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-blue-600 to-violet-700 p-12 text-white">
-        <div>
-          <Logo textClassName="text-white" />
-        </div>
-        <div>
-          <blockquote className="text-lg font-medium leading-relaxed">
-            &ldquo;Invoiceser saved me hours every month. My clients pay faster, and I
-            never have to chase invoices manually.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-sm text-blue-200">— Alex, Freelance Designer</p>
-        </div>
-        <p className="text-sm text-blue-200">
-          © {new Date().getFullYear()} Invoiceser. All rights reserved.
-        </p>
-      </div>
-      {/* Form side */}
-      <div className="flex items-start lg:items-center justify-center px-6 py-8 sm:py-12 overflow-y-auto min-h-0">
-        <div className="w-full max-w-md">
-          <div className="mb-8 lg:hidden">
-            <Logo textClassName="text-gray-900" />
-          </div>
-          <SignIn
-            appearance={{
-              elements: {
-                rootBox: "w-full",
-                card: "shadow-none",
-                headerTitle: "text-2xl font-bold text-gray-900",
-                headerSubtitle: "text-sm text-gray-500 mt-1",
-                socialButtonsBlockButton:
-                  "border border-gray-200 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors",
-                formFieldLabel: "text-sm font-medium text-gray-700",
-                formFieldInput:
-                  "rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all",
-                formButtonPrimary:
-                  "rounded-lg bg-gray-900 py-2.5 text-sm font-semibold text-white hover:bg-gray-700 transition-colors",
-                footerActionLink:
-                  "text-sm font-medium text-blue-600 hover:text-blue-700",
-                identityPreviewText: "text-sm text-gray-600",
-                identityPreviewEditButton: "text-sm text-blue-600 hover:text-blue-700",
-                dividerLine: "bg-gray-200",
-                dividerText: "text-xs text-gray-400",
-              },
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
+  return <div className={styles.authPage}><aside className={styles.authBrandPanel}><Brand /><div className={styles.authLogoArt} aria-hidden="true" /></aside><main className={styles.authFormPanel}><div className={styles.authFormWrap}><div className={styles.authMobileBrand}><Brand /></div><SignIn appearance={appearance} /></div></main></div>;
 }

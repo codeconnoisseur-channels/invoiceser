@@ -17,8 +17,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     >
       <ConvexClientProvider>
         <ClerkLoading>
-          <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-gray-950">
-            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <div className="min-h-screen flex items-center justify-center bg-[#faf7f3]">
+            <div className="size-8 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin"></div>
           </div>
         </ClerkLoading>
         <ClerkLoaded>
@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <AppShell>
                 <AnnouncementBanner />
                 <OnboardingGuard>
-                  <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">{children}</div>
+                  <div className="app-page px-4 py-5 sm:px-6 lg:px-8 lg:py-7">{children}</div>
                 </OnboardingGuard>
               </AppShell>
             </AnalyticsProvider>

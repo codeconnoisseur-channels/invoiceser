@@ -643,7 +643,7 @@ export function InvoiceForm({
           ))}
 
           <button
-            className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium mt-1"
+            className="flex items-center gap-1.5 text-xs text-orange-600 hover:text-orange-700 font-medium mt-1"
             onClick={() => setLineItems((p) => [...p, defaultLineItem()])}
           >
             <Plus className="w-3.5 h-3.5" />Add item
@@ -764,7 +764,7 @@ export function InvoiceForm({
         <InvoicePreview
           companyName={settings?.companyName ?? ""}
           logoUrl={logoUrl}
-          brandColor={settings?.brandColor ?? "#2563EB"}
+          brandColor={settings?.brandColor ?? "#D94D0C"}
           hideBranding={false}
           invoiceFont={settings?.invoiceFont}
           businessAddress={settings?.businessAddress ?? ""}
@@ -830,7 +830,7 @@ export function InvoiceForm({
 
             {emailPreviewTab === "summary" ? (
               <div className="space-y-4">
-                <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 space-y-2 text-sm">
+                <div className="rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 p-4 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-500">Recipient</span>
                     <span className="font-medium text-gray-800 dark:text-gray-200">{recipientName}</span>

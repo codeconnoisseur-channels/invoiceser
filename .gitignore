@@ -6,9 +6,11 @@
 
 # testing
 /coverage
+/.visual-dashboard-qa/
 
 # next.js
 /.next/
+/.next-stale-*/
 /out/
 
 # production
@@ -45,6 +47,7 @@ next-env.d.ts
 !public/**/*.jpg
 !public/**/*.jpeg
 !public/**/*.png
+!src/app/icon.png
 
 # internal planning & spec docs
 invoice-app-PRD.md

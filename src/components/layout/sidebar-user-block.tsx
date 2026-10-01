@@ -20,18 +20,18 @@ export function SidebarUserBlock() {
   const showUpgrade = plan === "free";
 
   return (
-    <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800/80 space-y-3">
+    <div className="flex flex-col gap-3 border-t border-[#eee6de] px-3 py-4">
       {showUpgrade && (
         <button
           onClick={() => setUpgradeOpen(true)}
-          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-100 dark:border-violet-800/50 hover:from-violet-100 hover:to-purple-100 dark:hover:from-violet-900/30 dark:hover:to-purple-900/30 transition-all duration-200 group"
+          className="group flex w-full items-center gap-3 rounded-xl border border-primary-100 bg-primary-50 px-3.5 py-3 transition-all duration-200 hover:border-primary-200 hover:bg-orange-100"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm shadow-violet-500/20 group-hover:shadow-md group-hover:shadow-violet-500/25 transition-shadow">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-500 shadow-sm transition-shadow group-hover:shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="flex-1 min-w-0 text-left">
-            <p className="text-xs font-bold text-violet-700 dark:text-violet-300">Upgrade to Pro</p>
-            <p className="text-[10px] text-violet-500 dark:text-violet-400 truncate">Unlock all features</p>
+            <p className="text-xs font-bold text-primary-700">Upgrade to Pro</p>
+            <p className="truncate text-[10px] text-primary-600">Unlock all features</p>
           </div>
         </button>
       )}
@@ -39,7 +39,7 @@ export function SidebarUserBlock() {
 
       {/* Notifications */}
       <div className="flex items-center justify-between px-2 py-1">
-        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.08em]">Notifications</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9a9188]">Notifications</span>
         <NotificationBell />
       </div>
     </div>

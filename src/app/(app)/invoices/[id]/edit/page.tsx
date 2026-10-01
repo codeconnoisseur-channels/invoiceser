@@ -27,7 +27,7 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
     return (
       <div className="max-w-4xl mx-auto text-center py-20">
         <p className="text-gray-500">This invoice cannot be edited.</p>
-        <Link href="/invoices" className="text-blue-600 hover:underline text-sm mt-2 inline-block">← Back to invoices</Link>
+        <Link href="/invoices" className="text-orange-600 hover:underline text-sm mt-2 inline-block">← Back to invoices</Link>
       </div>
     );
   }

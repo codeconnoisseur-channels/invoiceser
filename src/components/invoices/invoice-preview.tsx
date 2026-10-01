@@ -80,7 +80,7 @@ export function InvoicePreview({
   notes,
   taxLines,
 }: InvoicePreviewProps) {
-  const accent = brandColor || "#2563EB";
+  const accent = brandColor || "#D94D0C";
   const fontClass = FONT_CLASS[invoiceFont ?? "default"] ?? "font-sans";
   const visibleItems = lineItems.filter((i) => i.description || i.amount > 0);
   const displayAddress = showBusinessAddress !== false && businessAddress;

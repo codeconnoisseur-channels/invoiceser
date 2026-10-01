@@ -60,8 +60,8 @@ export function SettingsNotice() {
     }}>
       <DialogContent className="sm:max-w-md border-gray-200 dark:border-gray-800">
         <DialogHeader>
-          <div className="mx-auto w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4 ring-8 ring-blue-50 dark:ring-blue-950">
-            <Wallet className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div className="mx-auto w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4 ring-8 ring-orange-50 dark:ring-orange-950">
+            <Wallet className="w-6 h-6 text-orange-600 dark:text-orange-400" />
           </div>
           <DialogTitle className="text-center text-xl font-bold">How do you want to get paid?</DialogTitle>
           <DialogDescription className="text-center text-base pt-2">

@@ -10,14 +10,15 @@ export function ThemeToggle() {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="w-8 h-8" />;
+  if (!mounted) return <div className="size-9" />;
 
   const isDark = resolvedTheme === "dark";
 
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-2 rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex size-10 items-center justify-center rounded-xl text-[#9a9188] transition-all duration-200 hover:bg-white hover:text-[#4f4943] active:scale-95"
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark

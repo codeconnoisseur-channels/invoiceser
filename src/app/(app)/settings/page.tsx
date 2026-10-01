@@ -64,7 +64,7 @@ function Section({
   return (
     <div className="rounded-2xl bg-white dark:bg-gray-800/80 border border-slate-200/50 dark:border-slate-800/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
       <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-800/30 bg-slate-50/70 dark:bg-slate-900/50">
-        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center shrink-0 shadow-sm">
+        <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800/50 flex items-center justify-center shrink-0 shadow-sm">
           {icon}
         </div>
         <div className="pt-1.5">
@@ -122,7 +122,7 @@ function AccountForm({
   const { shownOptional } = account;
 
   return (
-    <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/40 dark:bg-blue-900/10 p-4 space-y-3 mt-2">
+    <div className="rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50/40 dark:bg-orange-900/10 p-4 space-y-3 mt-2">
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Account Label <span className="font-normal text-gray-400 normal-case">(optional)</span></Label>
@@ -168,24 +168,24 @@ function AccountForm({
         <div className="flex items-center gap-2 flex-wrap pt-1">
           <span className="text-xs text-gray-400 dark:text-gray-500">Add field:</span>
           {!shownOptional.has("sortCode") && (
-            <button onClick={() => toggleOptional("sortCode", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1">
+            <button onClick={() => toggleOptional("sortCode", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-orange-400 hover:text-orange-600 flex items-center gap-1">
               <Plus className="w-3 h-3" />Sort Code / Routing
             </button>
           )}
           {!shownOptional.has("iban") && (
-            <button onClick={() => toggleOptional("iban", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1">
+            <button onClick={() => toggleOptional("iban", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-orange-400 hover:text-orange-600 flex items-center gap-1">
               <Plus className="w-3 h-3" />IBAN
             </button>
           )}
           {!shownOptional.has("swift") && (
-            <button onClick={() => toggleOptional("swift", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-600 flex items-center gap-1">
+            <button onClick={() => toggleOptional("swift", true)} className="text-xs px-2.5 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 hover:border-orange-400 hover:text-orange-600 flex items-center gap-1">
               <Plus className="w-3 h-3" />SWIFT / BIC
             </button>
           )}
         </div>
       )}
 
-      <div className="border-t border-blue-200 dark:border-blue-800 pt-3 space-y-3">
+      <div className="border-t border-orange-200 dark:border-orange-800 pt-3 space-y-3">
         <div className="flex items-center gap-2 mb-1">
           <Link2 className="w-3.5 h-3.5 text-gray-400" />
           <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Payment Link (optional)</span>
@@ -655,13 +655,13 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3 mt-1.5">
             <input
               type="color"
-              value={business.brandColor || "#2563EB"}
+              value={business.brandColor || "#D94D0C"}
               onChange={(e) => setBusiness((p) => ({ ...p, brandColor: e.target.value }))}
               className="w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer p-0.5 bg-white dark:bg-gray-800"
             />
             <Input
               className="w-32 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 font-mono text-sm"
-              placeholder="#2563EB"
+              placeholder="#D94D0C"
               value={business.brandColor}
               onChange={(e) => setBusiness((p) => ({ ...p, brandColor: e.target.value }))}
             />
@@ -778,7 +778,7 @@ export default function SettingsPage() {
                   onClick={() => setBusiness((p) => ({ ...p, invoiceFont: f.value }))}
                   className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all text-xs ${
                     business.invoiceFont === f.value
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400"
                       : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
                   }`}
                 >
@@ -896,7 +896,7 @@ export default function SettingsPage() {
         <div className="space-y-6 animate-fade-in">
       <div className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200/50 dark:border-slate-900/30 shadow-card dark:shadow-card-dark overflow-hidden transition-all duration-300">
         <div className="flex items-start gap-3 px-6 py-4 border-b border-slate-100 dark:border-slate-900/30 bg-slate-50/70 dark:bg-slate-950/30">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800/50 flex items-center justify-center shrink-0 shadow-sm">
             <CreditCard className="w-4 h-4" />
           </div>
           <div className="pt-1.5">
@@ -993,8 +993,8 @@ export default function SettingsPage() {
               ) : (
                 <div className="flex items-center justify-between px-5 py-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 flex items-center justify-center">
-                      <Landmark className="w-5 h-5 text-blue-500" />
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 flex items-center justify-center">
+                      <Landmark className="w-5 h-5 text-orange-500" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-0.5">
@@ -1024,7 +1024,7 @@ export default function SettingsPage() {
 
           {/* Add new account */}
           {addingAccount ? (
-            <div className="rounded-xl border border-blue-100 dark:border-blue-800 shadow-sm overflow-hidden bg-blue-50/30 dark:bg-blue-900/10 px-5 pb-5 pt-4">
+            <div className="rounded-xl border border-orange-100 dark:border-orange-800 shadow-sm overflow-hidden bg-orange-50/30 dark:bg-orange-900/10 px-5 pb-5 pt-4">
               <AccountForm
                 account={newAccount}
                 onChange={setNewAccount}

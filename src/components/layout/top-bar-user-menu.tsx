@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useUser, SignOutButton } from "@clerk/nextjs";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "./theme-toggle";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { LogOut, ChevronDown } from "lucide-react";
@@ -42,31 +41,25 @@ export function TopBarUserMenu() {
 
   return (
     <div className="flex items-center gap-1.5">
-      {/* Theme toggle */}
-      <ThemeToggle />
-
-      {/* Divider */}
-      <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
-
       {/* User menu */}
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm"
+          className="group flex min-h-11 items-center gap-2.5 rounded-xl border border-transparent py-1.5 pl-2 pr-3 transition-all duration-200 hover:border-[#e4dacf] hover:bg-white hover:shadow-sm"
         >
           {/* Avatar */}
           {user?.imageUrl ? (
             <img
               src={user.imageUrl}
               alt={displayName}
-              className="w-8 h-8 rounded-lg ring-2 ring-gray-100 dark:ring-gray-800 object-cover"
+              className="size-8 rounded-lg object-cover ring-2 ring-[#f0e9e1]"
             />
           ) : (
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary-500 text-xs font-bold text-white shadow-sm">
               {initials}
             </div>
           )}
-          <span className="hidden sm:block text-sm font-semibold text-gray-700 dark:text-gray-200 max-w-[130px] truncate">
+          <span className="hidden max-w-[130px] truncate text-sm font-semibold text-[#4f4943] sm:block">
             {displayName}
           </span>
           {plan && (
@@ -75,7 +68,7 @@ export function TopBarUserMenu() {
             </Badge>
           )}
           <ChevronDown
-            className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+            className={`size-3.5 text-[#9a9188] transition-transform duration-200 ${
               dropdownOpen ? "rotate-180" : ""
             }`}
           />
@@ -83,13 +76,13 @@ export function TopBarUserMenu() {
 
         {/* Dropdown */}
         {dropdownOpen && (
-          <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl shadow-gray-200/40 dark:shadow-black/40 py-1 z-50 animate-scale-in origin-top-right">
+          <div className="absolute right-0 z-50 mt-2 w-60 origin-top-right animate-scale-in rounded-2xl border border-[#e4dacf] bg-white py-1 shadow-xl shadow-[#5b4631]/10">
             {/* User info header */}
-            <div className="px-4 py-3.5 border-b border-gray-100 dark:border-gray-800">
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+            <div className="border-b border-[#eee6de] px-4 py-3.5">
+              <p className="truncate text-sm font-bold text-[#24211e]">
                 {displayName}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+              <p className="mt-0.5 truncate text-xs text-[#817970]">
                 {user?.emailAddresses[0]?.emailAddress}
               </p>
               {plan && (

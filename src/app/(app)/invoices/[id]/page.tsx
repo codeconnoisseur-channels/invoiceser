@@ -207,7 +207,7 @@ export default function InvoiceDetailPage() {
             <InvoicePreview
               companyName={settings?.companyName ?? ""}
               logoUrl={logoUrl}
-              brandColor={settings?.brandColor ?? "#2563EB"}
+              brandColor={settings?.brandColor ?? "#D94D0C"}
               hideBranding={settings?.hideBranding}
               invoiceFont={(settings as { invoiceFont?: string } | null)?.invoiceFont}
               businessAddress={settings?.businessAddress ?? ""}
@@ -259,7 +259,7 @@ export default function InvoiceDetailPage() {
               )}
               {["sent", "overdue"].includes(invoice.status) && (
                 <Button variant="outline" className="w-full justify-start gap-3 h-11 text-sm shadow-sm" onClick={handleSendReminder} disabled={loading}>
-                  <Send className="w-4 h-4 text-blue-500" />Send Reminder
+                  <Send className="w-4 h-4 text-orange-500" />Send Reminder
                 </Button>
               )}
               {["sent", "overdue"].includes(invoice.status) && (
@@ -337,7 +337,7 @@ export default function InvoiceDetailPage() {
               <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[5px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 dark:before:via-gray-800 before:to-transparent">
                 {activity.map((event) => (
                   <div key={event._id} className="relative flex items-start gap-4">
-                    <div className="w-3 h-3 rounded-full bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 shrink-0 mt-1 z-10 shadow-sm" />
+                    <div className="w-3 h-3 rounded-full bg-white dark:bg-gray-900 border-2 border-orange-500 dark:border-orange-400 shrink-0 mt-1 z-10 shadow-sm" />
                     <div className="flex-1 min-w-0 bg-gray-50/50 dark:bg-gray-800/30 rounded-lg p-2 border border-gray-100/50 dark:border-gray-800/50">
                       <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{activityLabels[event.eventType] ?? event.eventType}</p>
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">{timeAgo(event.createdAt)}</p>
@@ -355,7 +355,7 @@ export default function InvoiceDetailPage() {
         <DialogContent>
           <DialogHeader><DialogTitle>Send this invoice?</DialogTitle></DialogHeader>
           <div className="px-6 py-4 space-y-4">
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 space-y-2 text-sm">
+            <div className="rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Recipient</span>
                 <span className="font-medium text-gray-800 dark:text-gray-200">{invoice.clientSnapshot.fullName}</span>

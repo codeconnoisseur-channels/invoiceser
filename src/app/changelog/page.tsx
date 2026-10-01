@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { FileText } from "lucide-react";
-import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 
 export const metadata: Metadata = {
   title: "Changelog | Invoiceser",
@@ -64,16 +63,7 @@ export default function ChangelogPage() {
   return (
     <div className="min-h-screen bg-white px-4 py-24">
       <div className="mx-auto max-w-2xl">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
-            <FileText className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <Link href="/" className="text-lg font-bold tracking-tight text-gray-900">
-              Invoice<span className="text-blue-600">ser</span>
-            </Link>
-          </div>
-        </div>
+        <Logo className="mb-2" />
         <h1 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">Changelog</h1>
         <p className="mt-1 text-sm text-gray-500">Updates and improvements to Invoiceser.</p>
 

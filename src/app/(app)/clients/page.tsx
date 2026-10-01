@@ -34,9 +34,9 @@ interface ClientFormState {
 }
 
 const AVATAR_COLORS = [
-  "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+  "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800",
   "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
-  "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-800",
+  "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
   "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
   "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800",
   "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800",
@@ -198,8 +198,8 @@ export default function ClientsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center ring-1 ring-violet-200 dark:ring-violet-800 mt-0.5 shrink-0">
-            <Users className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+          <div className="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center ring-1 ring-amber-200 dark:ring-amber-800 mt-0.5 shrink-0">
+            <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Clients</h1>
@@ -241,8 +241,8 @@ export default function ClientsPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark p-14 text-center max-w-lg mx-auto animate-slide-up">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-blue-200/50 dark:ring-blue-700/30">
-            <Users className="w-9 h-9 text-blue-500" />
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-orange-200/50 dark:ring-orange-700/30">
+            <Users className="w-9 h-9 text-orange-500" />
           </div>
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
             {search ? `No results for "${search}"` : "Add your first client"}
@@ -303,7 +303,7 @@ export default function ClientsPage() {
                     
                     <div className="mb-6">
                       <button onClick={() => router.push(`/invoices?clientId=${c._id}`)} className="text-left cursor-pointer group/name block w-full">
-                        <p className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors">
+                        <p className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate group-hover/name:text-orange-600 dark:group-hover/name:text-orange-400 transition-colors">
                           {primary}
                         </p>
                         {contact && (
@@ -316,7 +316,7 @@ export default function ClientsPage() {
                       <div className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/40 p-3.5 space-y-3">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center shrink-0">
-                            <Mail className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                            <Mail className="w-4 h-4 text-orange-500 dark:text-orange-400" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email</p>
@@ -345,7 +345,7 @@ export default function ClientsPage() {
                             </p>
                           )}
                           {c.website && (
-                            <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-medium text-blue-500 hover:text-blue-600 truncate transition-colors">
+                            <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-medium text-orange-500 hover:text-orange-600 truncate transition-colors">
                               <Globe className="w-3.5 h-3.5 shrink-0" />{c.website.replace("https://", "")}
                             </a>
                           )}

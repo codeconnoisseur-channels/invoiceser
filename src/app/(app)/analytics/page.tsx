@@ -19,7 +19,7 @@ type ChartType = "bar" | "area";
 
 const STATUS_COLORS: Record<string, string> = {
   draft:   "#D1D5DB",
-  sent:    "#3B82F6",
+  sent:    "#F26722",
   paid:    "#22C55E",
   overdue: "#F59E0B",
 };
@@ -128,7 +128,7 @@ export default function AnalyticsPage() {
       current: totalBilled,
       prev:    prevBilled,
       sub:     rangeLabel,
-      color:   { label: "text-blue-500 dark:text-blue-400", bg: "from-blue-50 to-blue-100/50 dark:from-blue-900/10 dark:to-transparent" },
+      color:   { label: "text-orange-500 dark:text-orange-400", bg: "from-orange-50 to-orange-100/50 dark:from-orange-900/10 dark:to-transparent" },
     },
     {
       label:   "Total Collected",
@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
       current: invoiceCount,
       prev:    prevCount,
       sub:     rangeLabel,
-      color:   { label: "text-violet-500 dark:text-violet-400", bg: "from-violet-50 to-violet-100/50 dark:from-violet-900/10 dark:to-transparent" },
+      color:   { label: "text-amber-500 dark:text-amber-400", bg: "from-amber-50 to-amber-100/50 dark:from-amber-900/10 dark:to-transparent" },
     },
     {
       label:   "Collection Rate",
@@ -195,9 +195,9 @@ export default function AnalyticsPage() {
         </p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {statCards.map((s, i) => {
-            const bgColors = ["bg-blue-50/60 dark:bg-blue-950/30", "bg-emerald-50/60 dark:bg-emerald-950/30", "bg-violet-50/60 dark:bg-violet-950/30", "bg-amber-50/60 dark:bg-amber-950/30"];
-            const borderColors = ["border-l-blue-500", "border-l-emerald-500", "border-l-violet-500", "border-l-amber-500"];
-            const iconBgs = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500"];
+            const bgColors = ["bg-orange-50/60 dark:bg-orange-950/30", "bg-emerald-50/60 dark:bg-emerald-950/30", "bg-amber-50/60 dark:bg-amber-950/30", "bg-amber-50/60 dark:bg-amber-950/30"];
+            const borderColors = ["border-l-orange-500", "border-l-emerald-500", "border-l-amber-500", "border-l-amber-500"];
+            const iconBgs = ["bg-orange-500", "bg-emerald-500", "bg-amber-500", "bg-amber-500"];
             const icons = [
               <BarChart2 key="b" className="w-4.5 h-4.5 text-white" />,
               <TrendingUp key="t" className="w-4.5 h-4.5 text-white" />,
@@ -234,12 +234,12 @@ export default function AnalyticsPage() {
       {/* Revenue chart + status donut */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 rounded-2xl shadow-card dark:shadow-card-dark border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
-          <CardHeader className="pb-4 pt-5 px-6 flex flex-row items-center justify-between border-b border-blue-100 dark:border-blue-900/30 bg-blue-50/70 dark:bg-blue-950/30">
+          <CardHeader className="pb-4 pt-5 px-6 flex flex-row items-center justify-between border-b border-orange-100 dark:border-orange-900/30 bg-orange-50/70 dark:bg-orange-950/30">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center shadow-md">
+              <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center shadow-md">
                 <BarChart2 className="w-4 h-4 text-white" />
               </div>
-              <CardTitle className="text-sm font-bold text-blue-800 dark:text-blue-200">Revenue Over Time</CardTitle>
+              <CardTitle className="text-sm font-bold text-orange-800 dark:text-orange-200">Revenue Over Time</CardTitle>
             </div>
             <div className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 shadow-sm">
               {([
@@ -276,15 +276,15 @@ export default function AnalyticsPage() {
                     <XAxis dataKey="month" {...axisProps} axisLine={false} />
                     <YAxis {...axisProps} axisLine={false} tickFormatter={fmtTip} width={70} />
                     <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} cursor={{ fill: 'rgba(0,0,0,0.03)' }} />
-                    <Bar dataKey="Billed"    fill="#3B82F6" radius={[4,4,0,0]} />
+                    <Bar dataKey="Billed"    fill="#F26722" radius={[4,4,0,0]} />
                     <Bar dataKey="Collected" fill="#10B981" radius={[4,4,0,0]} />
                   </BarChart>
                 ) : (
                   <AreaChart data={monthlyData} margin={{ left: 0, right: 4 }}>
                     <defs>
                       <linearGradient id="colorBilled" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#F26722" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#F26722" stopOpacity={0}/>
                       </linearGradient>
                       <linearGradient id="colorCollected" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
@@ -294,14 +294,14 @@ export default function AnalyticsPage() {
                     <XAxis dataKey="month" {...axisProps} axisLine={false} />
                     <YAxis {...axisProps} axisLine={false} tickFormatter={fmtTip} width={70} />
                     <Tooltip formatter={fmtTip} contentStyle={tooltipStyle} itemStyle={itemStyle} labelStyle={labelStyle} />
-                    <Area type="monotone" dataKey="Billed"    stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorBilled)" />
+                    <Area type="monotone" dataKey="Billed"    stroke="#F26722" strokeWidth={3} fillOpacity={1} fill="url(#colorBilled)" />
                     <Area type="monotone" dataKey="Collected" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorCollected)" />
                   </AreaChart>
                 )}
               </ResponsiveContainer>
             )}
             <div className="flex items-center gap-6 mt-6 justify-center">
-              <span className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400"><span className="w-3 h-3 rounded bg-blue-500 inline-block shadow-sm" />Billed</span>
+              <span className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400"><span className="w-3 h-3 rounded bg-orange-500 inline-block shadow-sm" />Billed</span>
               <span className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400"><span className="w-3 h-3 rounded bg-emerald-500 inline-block shadow-sm" />Collected</span>
             </div>
           </CardContent>
@@ -336,12 +336,12 @@ export default function AnalyticsPage() {
 
       {/* Top Clients */}
       <Card className="rounded-2xl shadow-card dark:shadow-card-dark border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
-        <CardHeader className="pb-4 pt-5 px-6 border-b border-violet-100 dark:border-violet-900/30 bg-violet-50/70 dark:bg-violet-950/30">
+        <CardHeader className="pb-4 pt-5 px-6 border-b border-amber-100 dark:border-amber-900/30 bg-amber-50/70 dark:bg-amber-950/30">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center shadow-md">
+            <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center shadow-md">
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <CardTitle className="text-sm font-bold text-violet-800 dark:text-violet-200">Top Clients by Revenue</CardTitle>
+            <CardTitle className="text-sm font-bold text-amber-800 dark:text-amber-200">Top Clients by Revenue</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="p-6">
@@ -358,7 +358,7 @@ export default function AnalyticsPage() {
                     <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-5 shrink-0 bg-gray-100 dark:bg-gray-800 rounded-md py-1 text-center">#{i + 1}</span>
                     <span className="text-sm font-bold text-gray-800 dark:text-gray-200 w-40 shrink-0 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{client.name}</span>
                     <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-1000 ease-out-expo" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full transition-all duration-1000 ease-out-expo" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="text-sm font-extrabold tabular-nums text-gray-900 dark:text-gray-100 w-32 text-right shrink-0">
                       {formatCurrency(client.total, currency)}
@@ -427,17 +427,17 @@ function PredictiveInsights({ allInvoices, currency }: { allInvoices: Invoice[];
   return (
     <div className="space-y-6 pt-4">
       <div className="flex items-center gap-2">
-        <Sparkles className="w-5 h-5 text-blue-500 animate-pulse" />
+        <Sparkles className="w-5 h-5 text-orange-500 animate-pulse" />
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 tracking-tight">Predictive Insights</h2>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-800 ml-2 shadow-sm">Pro</span>
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-bold uppercase tracking-wider border border-orange-100 dark:border-orange-800 ml-2 shadow-sm">Pro</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Forecast */}
-        <div className="rounded-2xl border border-blue-100 dark:border-blue-900/50 bg-gradient-to-b from-blue-50/50 to-white dark:from-blue-900/10 dark:to-gray-900 shadow-card dark:shadow-card-dark p-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
+        <div className="rounded-2xl border border-orange-100 dark:border-orange-900/50 bg-gradient-to-b from-orange-50/50 to-white dark:from-orange-900/10 dark:to-gray-900 shadow-card dark:shadow-card-dark p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg text-blue-600 dark:text-blue-400">
+            <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg text-orange-600 dark:text-orange-400">
               <TrendingUp className="w-4 h-4" />
             </div>
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest">30-Day Forecast</p>
@@ -445,7 +445,7 @@ function PredictiveInsights({ allInvoices, currency }: { allInvoices: Invoice[];
           <p className="text-3xl font-extrabold tabular-nums text-gray-900 dark:text-gray-100 tracking-tight">{formatCurrency(avgMonthly, currency)}</p>
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">Based on avg of last 3 months collected</p>
           {rateDelta !== 0 && (
-            <div className={`mt-4 pt-4 border-t border-blue-100/50 dark:border-blue-800/30`}>
+            <div className={`mt-4 pt-4 border-t border-orange-100/50 dark:border-orange-800/30`}>
               <p className={`text-xs font-bold flex items-center gap-1.5 ${rateDelta > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                 {rateDelta > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                 Collection rate {rateDelta > 0 ? "+" : ""}{rateDelta}% vs prev 30d
@@ -457,7 +457,7 @@ function PredictiveInsights({ allInvoices, currency }: { allInvoices: Invoice[];
         {/* Best month */}
         <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-card dark:shadow-card-dark p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
               <CalendarCheck className="w-4 h-4" />
             </div>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Peak Revenue</p>

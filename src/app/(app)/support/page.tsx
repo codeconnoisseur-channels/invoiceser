@@ -40,8 +40,8 @@ export default function SupportPage() {
   return (
     <div className="max-w-2xl mx-auto animate-fade-in pb-12">
       <div className="flex items-start gap-3 mb-8">
-        <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center ring-1 ring-teal-200 dark:ring-teal-800 mt-0.5 shrink-0 shadow-sm">
-          <MessageSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+        <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center ring-1 ring-orange-200 dark:ring-orange-800 mt-0.5 shrink-0 shadow-sm">
+          <MessageSquare className="w-5 h-5 text-orange-600 dark:text-orange-400" />
         </div>
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Contact Support</h1>
@@ -58,7 +58,7 @@ export default function SupportPage() {
               Subject
             </Label>
             <Input
-              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 text-base focus-visible:ring-teal-500"
+              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 h-11 text-base focus-visible:ring-orange-500"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Brief description of your issue"
@@ -69,7 +69,7 @@ export default function SupportPage() {
               Message
             </Label>
             <Textarea
-              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 min-h-[160px] text-base p-3 resize-y focus-visible:ring-teal-500"
+              className="bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 min-h-[160px] text-base p-3 resize-y focus-visible:ring-orange-500"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe how we can help you..."
@@ -80,7 +80,7 @@ export default function SupportPage() {
             <Button 
               onClick={handleCreate} 
               disabled={saving}
-              className="h-11 px-8 bg-teal-600 hover:bg-teal-700 text-white font-bold gap-2 shadow-sm shadow-teal-500/20"
+              className="h-11 px-8 bg-orange-600 hover:bg-orange-700 text-white font-bold gap-2 shadow-sm shadow-orange-500/20"
             >
               {saving ? "Sending..." : <><Send className="w-4 h-4" /> Send Message</>}
             </Button>

@@ -67,16 +67,16 @@ export function OnboardingChecklist() {
   const progressPct = (completedCount / steps.length) * 100;
 
   return (
-    <div className="rounded-2xl border border-blue-100 dark:border-blue-900/40 bg-gradient-to-r from-blue-50/60 to-indigo-50/40 dark:from-blue-900/10 dark:to-indigo-900/5 overflow-hidden mb-2 shadow-card dark:shadow-card-dark">
+    <div className="rounded-2xl border border-orange-100 dark:border-orange-900/40 bg-gradient-to-r from-orange-50/60 to-indigo-50/40 dark:from-orange-900/10 dark:to-indigo-900/5 overflow-hidden mb-2 shadow-card dark:shadow-card-dark">
       {/* Header */}
       <button
         onClick={() => setCollapsed((v) => !v)}
-        className="w-full flex items-center justify-between px-6 py-4.5 hover:bg-blue-50/40 dark:hover:bg-blue-900/15 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4.5 hover:bg-orange-50/40 dark:hover:bg-orange-900/15 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse shadow-sm shadow-blue-500/30" />
+          <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-orange-500 to-indigo-500 animate-pulse shadow-sm shadow-orange-500/30" />
           <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Complete your setup</span>
-          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-800 rounded-lg px-2.5 py-1 border border-blue-100 dark:border-blue-800/50 shadow-sm">
+          <span className="text-[11px] font-bold text-orange-600 dark:text-orange-400 bg-white dark:bg-gray-800 rounded-lg px-2.5 py-1 border border-orange-100 dark:border-orange-800/50 shadow-sm">
             {completedCount}/{steps.length}
           </span>
         </div>
@@ -90,7 +90,7 @@ export function OnboardingChecklist() {
           {/* Progress bar */}
           <div className="w-full h-2 bg-gray-200/60 dark:bg-gray-700/40 rounded-full overflow-hidden mb-4">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-700 ease-out-expo shadow-sm shadow-blue-500/20"
+              className="h-full bg-gradient-to-r from-orange-500 to-indigo-500 rounded-full transition-all duration-700 ease-out-expo shadow-sm shadow-orange-500/20"
               style={{ width: `${progressPct}%` }}
             />
           </div>

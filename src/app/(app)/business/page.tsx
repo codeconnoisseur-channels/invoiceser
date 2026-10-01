@@ -206,13 +206,13 @@ export default function BusinessProfilePage() {
             <div className="flex items-center gap-3 mt-1.5">
               <input
                 type="color"
-                value={business.brandColor || "#2563EB"}
+                value={business.brandColor || "#D94D0C"}
                 onChange={(e) => setBusiness((p) => ({ ...p, brandColor: e.target.value }))}
                 className="w-10 h-10 rounded-lg border border-border cursor-pointer p-0.5 bg-white dark:bg-gray-800"
               />
               <Input
                 className="w-32 bg-white dark:bg-gray-800 border-border font-mono text-sm"
-                placeholder="#2563EB"
+                placeholder="#D94D0C"
                 value={business.brandColor}
                 onChange={(e) => setBusiness((p) => ({ ...p, brandColor: e.target.value }))}
               />
@@ -342,7 +342,7 @@ export default function BusinessProfilePage() {
                   onClick={() => setBusiness((p) => ({ ...p, invoiceFont: f.value }))}
                   className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all text-xs ${
                     business.invoiceFont === f.value
-                      ? "border-blue-500 bg-primary/10 text-blue-700 dark:text-blue-400"
+                      ? "border-orange-500 bg-primary/10 text-orange-700 dark:text-orange-400"
                       : "border-border text-muted-foreground hover:border-gray-300"
                   }`}
                 >

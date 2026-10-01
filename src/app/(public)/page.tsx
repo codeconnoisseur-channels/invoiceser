@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight, CheckCircle2, BarChart3, Bell, Brain, Globe, Lock, Receipt, Send, Sparkles, Twitter, Linkedin, Github, Instagram } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 const features = [
   {
@@ -146,14 +147,7 @@ export default function LandingPage() {
       {/* ── Nav ───────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <Receipt className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="font-semibold tracking-tight">
-              Invoice<span className="text-primary">ser</span>
-            </span>
-          </Link>
+          <Logo />
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
             {["How it works", "Features", "Pricing"].map((label) => (
               <a
@@ -491,14 +485,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {/* Brand */}
             <div>
-              <Link href="/" className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-                  <Receipt className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <span className="font-semibold tracking-tight">
-                  Invoice<span className="text-primary">ser</span>
-                </span>
-              </Link>
+              <Logo />
               <p className="mt-3 text-sm text-muted-foreground">
                 Professional invoicing for freelancers and small teams.
               </p>

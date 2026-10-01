@@ -71,7 +71,7 @@ export function ProductTour({ hasInvoices }: { hasInvoices: boolean }) {
         </button>
 
         {s.icon && (
-          <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mb-4 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
             {s.icon}
           </div>
         )}
@@ -90,7 +90,7 @@ export function ProductTour({ hasInvoices }: { hasInvoices: boolean }) {
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   i === step
-                    ? "bg-violet-600 dark:bg-violet-400"
+                    ? "bg-amber-600 dark:bg-amber-400"
                     : "bg-gray-200 dark:bg-gray-700"
                 }`}
               />

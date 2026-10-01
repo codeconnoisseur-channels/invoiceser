@@ -32,9 +32,9 @@ function getTodayLabel() {
 }
 
 const STAT_THEMES = {
-  blue:    { cardBg: "bg-blue-50/60 dark:bg-blue-950/30",   border: "border-l-blue-500",   iconBg: "bg-blue-500",  iconColor: "text-white",  labelColor: "text-blue-700 dark:text-blue-300",  valColor: "text-blue-900 dark:text-blue-50" },
-  amber:   { cardBg: "bg-amber-50/60 dark:bg-amber-950/30", border: "border-l-amber-500",  iconBg: "bg-amber-500", iconColor: "text-white",  labelColor: "text-amber-700 dark:text-amber-300", valColor: "text-amber-900 dark:text-amber-50" },
-  emerald: { cardBg: "bg-emerald-50/60 dark:bg-emerald-950/30", border: "border-l-emerald-500", iconBg: "bg-emerald-500", iconColor: "text-white", labelColor: "text-emerald-700 dark:text-emerald-300", valColor: "text-emerald-900 dark:text-emerald-50" },
+  orange:  { accent: "bg-orange-500", iconBg: "bg-orange-50", iconColor: "text-orange-600" },
+  amber:   { accent: "bg-amber-500", iconBg: "bg-amber-50", iconColor: "text-amber-700" },
+  emerald: { accent: "bg-emerald-500", iconBg: "bg-emerald-50", iconColor: "text-emerald-700" },
 } as const;
 
 function StatCard({
@@ -48,10 +48,11 @@ function StatCard({
 }) {
   const t = STAT_THEMES[theme];
   return (
-    <div className={`rounded-2xl ${t.cardBg} border border-gray-200/50 dark:border-gray-800 border-l-4 ${t.border} shadow-card dark:shadow-card-dark p-6 card-hover`}>
+    <div className="relative overflow-hidden rounded-2xl border border-[#e9e1d8] bg-white p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover">
+      <span className={`absolute inset-x-0 top-0 h-1 ${t.accent}`} aria-hidden="true" />
       <div className="flex items-center justify-between mb-4">
-        <p className={`text-[11px] font-bold ${t.labelColor} uppercase tracking-widest`}>{label}</p>
-        <div className={`w-10 h-10 rounded-xl ${t.iconBg} flex items-center justify-center shadow-md`}>
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#7d746c]">{label}</p>
+        <div className={`flex size-10 items-center justify-center rounded-xl ${t.iconBg} ${t.iconColor}`}>
           {icon}
         </div>
       </div>
@@ -62,8 +63,8 @@ function StatCard({
         </>
       ) : (
         <>
-          <p className={`text-2xl lg:text-xl xl:text-2xl 2xl:text-3xl font-extrabold ${t.valColor} tracking-tight tabular-nums`}>{value}</p>
-          {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">{sub}</p>}
+          <p className="text-2xl font-extrabold tracking-tight text-[#24211e] tabular-nums lg:text-xl xl:text-2xl 2xl:text-3xl">{value}</p>
+          {sub ? <p className="mt-2 text-xs font-medium text-[#8c837a]">{sub}</p> : null}
         </>
       )}
     </div>
@@ -100,17 +101,17 @@ export default function DashboardPage() {
   const hasInvoices = (stats?.totalCount ?? 0) > 0;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="mx-auto flex max-w-7xl animate-fade-in flex-col gap-7">
 
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center ring-1 ring-primary-200 dark:ring-primary-800 mt-0.5 shrink-0">
-            <Zap className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+          <div className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 ring-1 ring-primary-100">
+            <Zap className="size-5 text-primary-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-              {getGreeting()}, {firstName} 👋
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#24211e]">
+              {getGreeting()}, {firstName}
             </h1>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 font-medium">{getTodayLabel()}</p>
           </div>
@@ -131,8 +132,8 @@ export default function DashboardPage() {
       {!hasInvoices && stats ? (
         /* ── Empty state: guide, not zeros ── */
         <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark p-14 text-center max-w-lg mx-auto animate-slide-up mt-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-blue-200/50 dark:ring-blue-700/30">
-            <FileText className="w-9 h-9 text-blue-500" />
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-orange-200/50 dark:ring-orange-700/30">
+            <FileText className="w-9 h-9 text-orange-500" />
           </div>
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">Ready to send your first invoice?</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed max-w-xs mx-auto">
@@ -152,32 +153,32 @@ export default function DashboardPage() {
               label="Total Invoices"
               value={stats ? String(stats.totalCount) : null}
               sub="sent, pending & paid"
-              icon={<FileText className="w-5 h-5 text-white" />}
-              theme="blue"
+              icon={<FileText className="size-5" />}
+              theme="orange"
             />
             <StatCard
               label="Awaiting Payment"
               value={stats ? formatCurrency(stats.totalPending, currency) : null}
               sub={pendingSubText ?? ""}
-              icon={<Clock className="w-5 h-5 text-white" />}
+              icon={<Clock className="size-5" />}
               theme="amber"
             />
             <StatCard
               label="Total Collected"
               value={stats ? formatCurrency(stats.totalPaid, currency) : null}
               sub={`all paid invoices`}
-              icon={<CheckCircle2 className="w-5 h-5 text-white" />}
+              icon={<CheckCircle2 className="size-5" />}
               theme="emerald"
             />
           </div>
 
           {/* Wallet panel */}
           <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 shadow-card dark:shadow-card-dark overflow-hidden">
-            <div className="flex items-center gap-3 px-6 py-4 bg-violet-50/70 dark:bg-violet-950/30 border-b border-violet-100 dark:border-violet-900/30">
-              <div className="w-9 h-9 rounded-xl bg-violet-500 flex items-center justify-center shadow-md">
+            <div className="flex items-center gap-3 px-6 py-4 bg-amber-50/70 dark:bg-amber-950/30 border-b border-amber-100 dark:border-amber-900/30">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-md">
                 <Wallet className="w-4.5 h-4.5 text-white" />
               </div>
-              <h2 className="text-sm font-bold text-violet-800 dark:text-violet-200">Earnings by Currency</h2>
+              <h2 className="text-sm font-bold text-amber-800 dark:text-amber-200">Earnings by Currency</h2>
             </div>
             <div className="p-6">
               {wallet === undefined ? (

@@ -81,7 +81,7 @@ function SuccessContent() {
         {/* Loading user / running mutation */}
         {(loading || upgrading) && (
           <>
-            <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-5" />
+            <Loader2 className="w-10 h-10 animate-spin text-amber-500 mx-auto mb-5" />
             <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
               Activating your Pro plan…
             </h1>
@@ -92,7 +92,7 @@ function SuccessContent() {
         {/* Mutation resolved — waiting for Convex reactive confirmation */}
         {!loading && !upgrading && waitingForPro && !isPro && !failed && (
           <>
-            <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-5" />
+            <Loader2 className="w-10 h-10 animate-spin text-amber-500 mx-auto mb-5" />
             <h1 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
               Confirming your upgrade…
             </h1>
@@ -103,8 +103,8 @@ function SuccessContent() {
         {/* Confirmed Pro by reactive query */}
         {isPro && (
           <>
-            <div className="w-16 h-16 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mx-auto mb-5 border border-violet-200 dark:border-violet-800">
-              <Sparkles className="w-8 h-8 text-violet-600 dark:text-violet-400" />
+            <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-5 border border-amber-200 dark:border-amber-800">
+              <Sparkles className="w-8 h-8 text-amber-600 dark:text-amber-400" />
             </div>
             <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
               You&apos;re on Pro!
@@ -115,7 +115,7 @@ function SuccessContent() {
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
               Taking you to your dashboard…
             </p>
-            <Button asChild className="bg-violet-600 hover:bg-violet-700 gap-2">
+            <Button asChild className="bg-amber-600 hover:bg-amber-700 gap-2">
               <Link href="/dashboard">
                 <Sparkles className="w-4 h-4" />Go to dashboard
               </Link>
@@ -139,7 +139,7 @@ function SuccessContent() {
             </p>
             <div className="flex flex-col gap-3">
               <Button
-                className="bg-violet-600 hover:bg-violet-700"
+                className="bg-amber-600 hover:bg-amber-700"
                 onClick={retry}
               >
                 Try again
